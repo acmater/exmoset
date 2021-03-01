@@ -3,7 +3,7 @@ from rdkit import Chem
 from .property import Property
 
 
-class NumRings(Property):
+class NumAtoms(Property):
     """
     How many rings the molecule contains
     """
@@ -16,7 +16,7 @@ class NumRings(Property):
 
     @staticmethod
     def calc_property(molecules):
-        return np.array([x.GetRingInfo().NumRings() for x in molecules])
+        return np.array([len(x.GetAtoms()) for x in molecules])
 
 
 if __name__ == "__main__":
