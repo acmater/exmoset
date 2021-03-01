@@ -1,15 +1,14 @@
 import numpy as np
 from rdkit import Chem
-import pprint
-from collections import namedtuple
 
 from molecule import *
 from atom import *
+from bond import *
 
 
 molecules = ['COC(CN)C#N', 'CC(C)(OC=N)C#C', 'CC(C)(OC=N)C#N', 'CN(CC#C)CC#N', 'CN(CC#N)CC#N', 'CC(C#C)C(C)C#C', 'CC(C#C)C(C)C#N', 'CC(C#C)C(N)C#N', 'CC(C#C)C(O)C#C', 'CC(C#C)C(O)C#N', 'CC(C#N)C(C)C#N', 'CC(C#N)C(N)C#C', 'CC(C#N)C(N)C#N', 'CC(C#N)C(O)C#C', 'CC(C#N)C(O)C#N', 'NC(C#C)C(O)C#N', 'NC(C#N)C(O)C#C', 'NC(C#N)C(O)C#N', 'OC(C#C)C(O)C#C', 'OC(C#C)C(O)C#N', 'OC(C#N)C(O)C#N', 'CC(NCC#C)C#N', 'CC(NCC#N)C#C', 'CC(NCC#N)C#N', 'CNC(C#N)C#CC', 'CNC(CC#C)C#N', 'CNC(CC#N)C#C', 'CNC(CC#N)C#N', 'CCNC(C#C)C#N', 'CCNC(C#N)C#N', 'CC(C)C(C#C)C#C', 'CC(C)C(C#C)C#N', 'CC(C)C(C#N)C#N', 'CC(O)C(C#C)C#C', 'CC(O)C(C#C)C#N', 'C#CCC#CCC1CN1', 'N#CCC#CCC1CN1', 'C#CCCC#CC1CN1', 'N#CCCC#CC1CN1', 'CC#CC(C#C)C(C)C', 'CC#CC(C#C)C(C)O', 'CC#CC(C#N)C(C)C', 'CC#CC(C#N)C(C)O', 'CC#CC(C)(C)OC=N', 'CC#CC(C)C(C)C#C', 'CC#CC(C)C(C)C#N', 'CC#CC(C)C(N)C#N', 'CC#CC(C)C(O)C#C', 'CC#CC(C)C(O)C#N', 'CC#CC(N)C(C)C#N', 'CC#CC(N)C(N)C#N', 'CC#CC(N)C(O)C#N', 'CC#CC(O)C(C)C#C', 'CC#CC(O)C(C)C#N', 'CC#CC(O)C(N)C#N', 'CC#CC(O)C(O)C#C', 'CC#CC(O)C(O)C#N', 'CC#CC(C)NCC#N', 'CC#CCN(C)CC#N', 'CC#CCNC(C)C#N', 'CC(=O)OC(C)(C)C#C', 'CC(=O)OC(C)(C)C#N', 'CC(C)(OC(N)=O)C#C', 'CC(C)(OC(N)=O)C#N', 'CC(C)(O)C(C#C)C#C', 'CC(C)(CC#C)OC=N', 'CC(C)(CC#N)OC=N', 'CC(C)(CC#N)OC=O', 'CC(C)(NCC#C)C#N', 'CC(C)(NCC#N)C#C', 'CC(C)(NCC#N)C#N', 'CC(C)(COC=N)C#N', 'CC(C)C(CC#C)C#C', 'CC(C)C(CC#C)C#N', 'CC(C)C(CC#N)C#C', 'CC(C)C(CC#N)C#N', 'CC(N)C(CC#N)C#N', 'CC(O)C(CC#C)C#C', 'CC(O)C(CC#C)C#N', 'CC(O)C(CC#N)C#C', 'CC(O)C(CC#N)C#N', 'CN(C)C(CC#C)C#N', 'CN(C)C(C#C)CC#N', 'CN(C)C(CC#N)C#N', 'CC(C)CC(C#C)C#C', 'CC(C)CC(C#C)C#N', 'CC(C)CC(C#N)C#N', 'CC(C)OC(C#C)C#N', 'CC(C)OC(C#N)C#N', 'CC(O)CC(C#C)C#C', 'CC(O)CC(C#C)C#N', 'CN(C)CC(C#C)C#N', 'CC(C#C)C(O)CC#C', 'CC(C#C)C(O)CC#N', 'CC(C#C)N(C)CC#N', 'CC(C#N)C(N)CC#N', 'CC(C#N)C(O)CC#C', 'CC(C#N)C(O)CC#N', 'CC(C#N)N(C)CC#C', 'CC(C#N)N(C)CC#N', 'CC(CC#C)C(C)C#C', 'CC(CC#C)C(C)C#N', 'CC(CC#C)C(N)C#N', 'CC(CC#C)C(O)C#C', 'CC(CC#C)C(O)C#N', 'CC(CC#N)C(C)C#C', 'CC(CC#N)C(C)C#N', 'CC(CC#N)C(N)C#N', 'CC(CC#N)C(O)C#C', 'CC(CC#N)C(O)C#N', 'NC(C#N)C(O)CC#C', 'NC(C#N)C(O)CC#N', 'NC(CC#C)C(N)C#N', 'NC(CC#C)C(O)C#N', 'NC(CC#N)C(N)C#N', 'NC(CC#N)C(O)C#C', 'NC(CC#N)C(O)C#N', 'OC(CC#C)C(O)C#C', 'OC(CC#C)C(O)C#N', 'OC(CC#N)C(O)C#C', 'OC(CC#N)C(O)C#N', 'CC(CC(C)C#C)C#C', 'CC(CC(C)C#N)C#C', 'CC(CC(C)C#N)C#N', 'CC(CC(N)C#N)C#C', 'CC(CC(N)C#N)C#N', 'CC(CC(O)C#C)C#C', 'CC(CC(O)C#C)C#N', 'CC(CC(O)C#N)C#C', 'CC(CC(O)C#N)C#N', 'CC(OC(C)C#C)C#C', 'CC(OC(C)C#N)C#C', 'CC(OC(C)C#N)C#N', 'NC(CC(N)C#N)C#N', 'NC(CC(O)C#C)C#N', 'NC(CC(O)C#N)C#N', 'OC(CC(O)C#C)C#C', 'OC(CC(O)C#N)C#C', 'OC(CC(O)C#N)C#N', 'CC(CC#C)NCC#N', 'CC(CC#N)NCC#C', 'CC(CC#N)NCC#N', 'CN(CCC#C)CC#N', 'CN(CCC#N)CC#C', 'CN(CCC#N)CC#N', 'CC(CNCC#C)C#N', 'CC(CNCC#N)C#C', 'CC(CNCC#N)C#N', 'CC(NCCC#C)C#N', 'CC(NCCC#N)C#C', 'CC(NCCC#N)C#N', 'NC(CNCC#C)C#N', 'NC(CNCC#N)C#N', 'OC(CNCC#C)C#N', 'OC(CNCC#N)C#C', 'OC(CNCC#N)C#N', 'CCC#CC(NC)C#N', 'CNC(C#N)C#CCO', 'CC(C#C)C(CO)C#C', 'CC(C#C)C(CO)C#N', 'CC(C#N)C(CN)C#N', 'CC(C#N)C(CO)C#C', 'CC(C#N)C(CO)C#N', 'CCC(C#C)C(C)C#C', 'CCC(C#C)C(C)C#N', 'CCC(C#C)C(N)C#N', 'CCC(C#C)C(O)C#C', 'CCC(C#C)C(O)C#N', 'CCC(C#N)C(C)C#C', 'CCC(C#N)C(C)C#N', 'CCC(C#N)C(N)C#C', 'CCC(C#N)C(N)C#N', 'CCC(C#N)C(O)C#C', 'CCC(C#N)C(O)C#N', 'COC(C#C)C(C)C#C', 'COC(C#C)C(C)C#N', 'COC(C#C)C(N)C#N', 'COC(C#C)C(O)C#C', 'COC(C#C)C(O)C#N', 'COC(C#N)C(C)C#C', 'COC(C#N)C(C)C#N', 'COC(C#N)C(N)C#C', 'COC(C#N)C(N)C#N', 'COC(C#N)C(O)C#C', 'COC(C#N)C(O)C#N', 'NC(C#C)C(CO)C#N', 'NC(C#N)C(CO)C#C', 'NC(C#N)C(CO)C#N', 'NCC(C#N)C(N)C#N', 'NCC(C#N)C(O)C#N', 'OCC(C#C)C(O)C#C', 'OCC(C#C)C(O)C#N', 'OCC(C#N)C(O)C#C', 'OCC(C#N)C(O)C#N', 'CCC(C)(OC=N)C#C', 'CCC(C)(OC=N)C#N', 'CC(CO)C(C#C)C#C', 'CC(CO)C(C#C)C#N', 'CCC(C)C(C#C)C#C', 'CCC(C)C(C#C)C#N', 'CCC(C)C(C#N)C#N', 'CCC(O)C(C#C)C#C', 'CCC(O)C(C#C)C#N', 'COC(C)C(C#C)C#C', 'COC(C)C(C#C)C#N', 'NC(CO)C(C#C)C#N', 'OCC(O)C(C#C)C#C', 'OCC(O)C(C#C)C#N', 'CNC(CC#N)C#CC', 'CCN(CC#C)CC#N', 'CCN(CC#N)CC#N', 'CNC(CC#N)CC#N', 'CNC(CC#CC)C#N', 'CCC(NCC#C)C#N', 'CCC(NCC#N)C#C', 'CCC(NCC#N)C#N', 'CNC(CCC#C)C#N', 'CNC(CCC#N)C#N', 'NCC(NCC#C)C#N', 'NCC(NCC#N)C#N', 'OCC(NCC#C)C#N', 'OCC(NCC#N)C#C', 'OCC(NCC#N)C#N', 'CCNC(C#N)C#CC', 'CCNC(CC#C)C#N', 'CCNC(CC#N)C#C', 'CCNC(CC#N)C#N', 'CNCC(CC#N)C#N', 'CCCNC(C#C)C#N', 'CCCNC(C#N)C#N', 'OCCNC(C#C)C#N', 'OCCNC(C#N)C#N']
 
-properties = [Aromatic,NumRings,NumAtoms,ContainsTriple,ContainsNitrogen,ContainsCarbon,ContainsFluorine,ContainsOxygen]
+properties = [Aromatic,NumRings,NumAtoms,ContainsNitrogen,ContainsCarbon,ContainsFluorine,ContainsOxygen,ContainsSingle,ContainsDouble,ContainsTriple]
 
 molecules2 = ['CC#C', 'CC#N', 'CC#CC', 'CCC#C', 'CCC#N', 'NCC#N', 'OCC#C', 'OCC#N', 'CC#CCO', 'CCC#CC', 'CCCC#C', 'CCCC#N', 'COCC#C', 'COCC#N', 'OCCC#C', 'OCCC#N', 'CCC#CCC', 'CCC#CCO', 'OCC#CCO', 'CC#CCCO', 'CCCC#CC', 'COCC#CC', 'CCCCC#C', 'CCCCC#N', 'CCOCC#C', 'CCOCC#N', 'COCCC#C', 'COCCC#N', 'OCCCC#C', 'OCCCC#N', 'CCC#CCCO', 'CCC#CCOC', 'CCCC#CCC', 'CCCC#CCO', 'COCC#CCO', 'OCCC#CCO', 'CC#CCCCO', 'CCCCC#CC', 'CCOCC#CC', 'COCCC#CC', 'CCCCCC#C', 'CCCCCC#N', 'CCCOCC#C', 'CCCOCC#N', 'CCOCCC#C', 'CCOCCC#N', 'COCCCC#C', 'COCCCC#N', 'OCCCCC#C', 'OCCCCC#N', 'OCCOCC#C', 'OCCOCC#N', 'CCCC#CCCC', 'CCCC#CCCO', 'CCCC#CCOC', 'COCC#CCCO', 'COCC#CCOC', 'OCCC#CCCO', 'CCC#CCCCO', 'CCC#CCCOC', 'CCCCC#CCC', 'CCCCC#CCO', 'CCOCC#CCC', 'CCOCC#CCO', 'COCCC#CCO', 'OCCCC#CCO', 'CC#CCCCCO', 'CC#CCOCCO', 'CCCCCC#CC', 'CCCOCC#CC', 'CCOCCC#CC', 'COCCCC#CC', 'CCCCCCC#C', 'CCCCCCC#N', 'CCCCOCC#C', 'CCCCOCC#N', 'CCCOCCC#C', 'CCCOCCC#N', 'CCOCCCC#C', 'CCOCCCC#N', 'COCCCCC#C', 'COCCCCC#N', 'COCCOCC#C', 'COCCOCC#N', 'OCCCCCC#C', 'OCCCCCC#N', 'OCCCOCC#C', 'OCCCOCC#N', 'OCCOCCC#C', 'OCCOCCC#N', 'CCCC#CCCCO', 'CCCC#CCCOC', 'CCCC#CCOCC', 'CCCCC#CCCC', 'CCCCC#CCCO', 'CCCCC#CCOC', 'CCOCC#CCCO', 'CCOCC#CCOC', 'COCC#CCCCO', 'COCCC#CCCO', 'COCCC#CCOC', 'OCCCC#CCCO', 'CCC#CCCCCO', 'CCC#CCCCOC', 'CCC#CCOCCO', 'CCCCCC#CCC', 'CCCCCC#CCO', 'CCCOCC#CCC', 'CCCOCC#CCO', 'CCOCCC#CCC', 'CCOCCC#CCO', 'COCCCC#CCO', 'OCCCCC#CCO', 'OCCOCC#CCO', 'CC#CCCCCCO', 'CC#CCCOCCO', 'CC#CCOCCCO', 'CCCCCCC#CC', 'CCCCOCC#CC', 'CCCOCCC#CC', 'CCOCCCC#CC', 'COCCCCC#CC', 'COCCOCC#CC', 'CCCCCCCC#C', 'CCCCCCCC#N', 'CCCCCOCC#C', 'CCCCCOCC#N', 'CCCCOCCC#C', 'CCCCOCCC#N', 'CCCOCCCC#C', 'CCCOCCCC#N', 'CCOCCCCC#C', 'CCOCCCCC#N', 'CCOCCOCC#C', 'CCOCCOCC#N', 'COCCCCCC#C', 'COCCCCCC#N', 'COCCCOCC#C', 'COCCCOCC#N', 'COCCOCCC#C', 'COCCOCCC#N', 'OCCCCCCC#C', 'OCCCCCCC#N', 'OCCCCOCC#C', 'OCCCCOCC#N', 'OCCCOCCC#C', 'OCCCOCCC#N', 'OCCOCCCC#C', 'OCCOCCCC#N']
 
@@ -19,8 +18,8 @@ molecules4 =[1,2,3]
 
 class Similarity_Analysis():
     def __init__(self,molecules,properties,significance=0.1):
-        self.molecules = molecules
-        self.properties = [prop(molecules) for prop in properties]
+        self.molecules = [Chem.MolFromSmiles(mol) for mol in molecules]
+        self.properties = [prop(self.molecules) for prop in properties]
         self.entropy = [x.entropy() for x in self.properties]
         self.significance = significance
 
@@ -32,7 +31,7 @@ class Similarity_Analysis():
 
 
 if __name__ == "__main__":
-    analy = Similarity_Analysis(molecules,properties)
+    analy = Similarity_Analysis(molecules3,properties)
     print(analy.entropy)
 
     print(analy)

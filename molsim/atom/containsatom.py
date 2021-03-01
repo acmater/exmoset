@@ -13,7 +13,7 @@ class ContainsAtom(Property):
 
     @staticmethod
     def calc_property(molecules,atom):
-        return np.array([1 if atom in mol else 0 for mol in molecules])
+        return np.array([1 if atom in [a.GetSymbol() for a in mol.GetAtoms()] else 0 for mol in molecules])
 
     def summative_label(self,significance=0.1):
         if self.entropy() < significance:
