@@ -1,13 +1,13 @@
 import numpy as np
 from rdkit import Chem
-from .property import Property
+from property import Property
 
 class ContainsTriple(Property):
     """
     How many rings the molecule contains
     """
     def __init__(self,molecules):
-        assert isinstance(molecules[0],str) or isinstance(molecules[0],Chem.rdchem.Mol), "Not a supported molecular format"
+        super().__init__(molecules)
         if isinstance(molecules[0],str):
             molecules = super().convert_mols(molecules)
 

@@ -11,8 +11,8 @@ class Property(ABC):
     Abstract Class that handles individual molecular properties to provide extensability and
     customize print operations
     """
-    def __init__(self):
-        pass
+    def __init__(self,molecules):
+        assert isinstance(molecules[0],str) or isinstance(molecules[0],Chem.rdchem.Mol), "Not a supported molecular format"
 
     def __str__(self):
         return f"{np.array_repr(self.values)}"
@@ -47,6 +47,10 @@ class Property(ABC):
 
         return ent
 
+    @staticmethod
+    def convert_mols(molecules):
+        return [Chem.MolFromSmiles(mol) for mol in molecules]
+
     @abstractmethod
     def summative_label(self):
         pass
@@ -54,7 +58,3 @@ class Property(ABC):
     @abstractmethod
     def calc_property(self):
         pass
-
-    @staticmethod
-    def convert_mols(molecules):
-        return [Chem.MolFromSmiles(mol) for mol in molecules]
