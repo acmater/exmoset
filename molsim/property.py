@@ -26,26 +26,28 @@ class Property(ABC):
     def __len__(self):
         return len(self.values)
 
-    def entropy(self,base=None):
+    def entropy(self,base=None,form="Discrete"):
         """ Computes entropy of label distribution. """
+        if form == "Discrete":
+            n_labels = len(self.values)
 
-        n_labels = len(self.values)
+            if n_labels <= 1:
+                return 0
 
-        if n_labels <= 1:
-            return 0
+            value,counts = np.unique(self.values, return_counts=True)
+            probs = counts / n_labels
+            n_classes = np.count_nonzero(probs)
+            if n_classes <= 1:
+                return 0
+            ent = 0.
+            # Compute entropy
+            base = 2 if base is None else base
+            for i in probs:
+                ent -= i * log(i, base)
 
-        value,counts = np.unique(self.values, return_counts=True)
-        probs = counts / n_labels
-        n_classes = np.count_nonzero(probs)
-        if n_classes <= 1:
-            return 0
-        ent = 0.
-        # Compute entropy
-        base = 2 if base is None else base
-        for i in probs:
-            ent -= i * log(i, base)
-
-        return ent
+            return ent
+        elif form == "Continuous":
+            pass # TODO Add this functionality
 
     @staticmethod
     def convert_mols(molecules):

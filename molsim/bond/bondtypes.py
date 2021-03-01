@@ -12,7 +12,7 @@ class BondType(Property):
         if isinstance(molecules[0],str):
             molecules = super().convert_mols(molecules)
         self.bond_type   = bond_type
-        self.values = self.calc_property(molecules,bond_type)
+        self.values      = self.calc_property(molecules,bond_type)
 
     @staticmethod
     def calc_property(molecules,bond_type):

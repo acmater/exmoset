@@ -1,1 +1,1 @@
-from .containsatom import ContainsNitrogen, ContainsCarbon, ContainsOxygen, ContainsFluorine
+from .containsatom import *

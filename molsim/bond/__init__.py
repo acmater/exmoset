@@ -1,1 +1,1 @@
-from .bondtypes import ContainsSingle,ContainsDouble,ContainsTriple
+from .bondtypes import *
