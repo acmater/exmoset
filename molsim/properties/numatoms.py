@@ -18,6 +18,10 @@ class NumAtoms(Property):
     def calc_property(molecules):
         return np.array([len(x.GetAtoms()) for x in molecules])
 
+    def summative_label(self,significance=0.1):
+        if self.entropy() < significance:
+            return f"{int(np.round(np.mean(self.values)))} Atoms"
+
 
 if __name__ == "__main__":
     a = "CCNC"

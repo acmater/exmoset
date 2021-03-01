@@ -34,18 +34,19 @@ class Property(ABC):
         value,counts = np.unique(self.values, return_counts=True)
         probs = counts / n_labels
         n_classes = np.count_nonzero(probs)
-
         if n_classes <= 1:
             return 0
-
         ent = 0.
-
         # Compute entropy
         base = 2 if base is None else base
         for i in probs:
             ent -= i * log(i, base)
 
         return ent
+
+    @abstractmethod
+    def summative_label(self):
+        pass
 
     @abstractmethod
     def calc_property(self):

@@ -25,6 +25,9 @@ class Similarity_Analysis():
 
 
 if __name__ == "__main__":
-    print(Similarity_Analysis(molecules,properties).mean)
-    print(Similarity_Analysis(molecules,properties).labels)
-    print(Similarity_Analysis(molecules,properties).entropy)
+    analy = Similarity_Analysis(molecules,properties)
+    print(analy.mean)
+    print(analy.labels)
+    print(analy.entropy)
+
+    print([prop.summative_label(significance=0.05) for prop in analy.properties])
