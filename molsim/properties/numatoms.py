@@ -2,7 +2,6 @@ import numpy as np
 from rdkit import Chem
 from .property import Property
 
-
 class NumAtoms(Property):
     """
     How many rings the molecule contains

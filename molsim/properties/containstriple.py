@@ -2,7 +2,7 @@ import numpy as np
 from rdkit import Chem
 from .property import Property
 
-class NumRings(Property):
+class ContainsTriple(Property):
     """
     How many rings the molecule contains
     """
@@ -14,16 +14,18 @@ class NumRings(Property):
         self.values = self.calc_property(molecules)
 
     @staticmethod
-    def calc_property(molecules):
-        return np.array([x.GetRingInfo().NumRings() for x in molecules])
+    def maxbondtype(mol):
+        types = [b.GetBondType() for b in mol.GetBonds()]
+        if "TRIPLE" in types:
+            return 3
+        elif "DOUBLE" in types:
+            return 2
+        else:
+            return 1
+
+    def calc_property(self,molecules):
+        return np.array([self.maxbondtype(x) for x in molecules])
 
     def summative_label(self,significance=0.1):
         if self.entropy() < significance:
-            return f"{int(np.round(np.mean(self.values)))} Rings"
-
-
-if __name__ == "__main__":
-    a = "CCNC"
-    b = "c1ccccc1"
-    mols = list(map(Chem.MolFromSmiles,[a,b]))
-    print(NumRings(mols).values)
+            return f"Contains Triple Bond"

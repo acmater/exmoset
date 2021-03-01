@@ -17,6 +17,9 @@ class Property(ABC):
     def __str__(self):
         return f"{np.array_repr(self.values)}"
 
+    def name(self):
+        return type(self).__name__
+
     def __getitem__(self,idx):
         return self.values[idx]
 
