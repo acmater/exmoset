@@ -21,9 +21,6 @@ by similarity analysis is sorted in accordance with that.
 
 ### TODO
 
-Figure out how to properly set abstract method in properties class to require that all
-subclasses have the .values property without creating and AttributeError.
-
 I would like to extend this code to continuous descriptors such as electronic spatial extent or something similar.
 I think however that doing that would require implementing https://en.wikipedia.org/wiki/Limiting_density_of_discrete_points.
 Which would be very tricky.
@@ -43,3 +40,4 @@ But the best formulation may be using KL-Div between the original distribution (
 3. Add substructure properties which allow you to specify a functional group using SMARTS syntax and check to see if it is present in a particular set of molecules
    1. Is it possible to automate the identification of molecular features?
 4. Speed it up. The code was written to get a working prototype as quickly as possible, but the current codebase is slow to execute and their should be some ways to dramatically accelerate it.
+5. Add functionality to read from a pandas dataset when obtaining results as this further increases flexibility.

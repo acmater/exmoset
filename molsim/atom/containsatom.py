@@ -6,10 +6,11 @@ class ContainsAtom(Property):
     """
     Whether or not the molecule contains Nitrogen
     """
-    def __init__(self,atom,molecules):
+    def __init__(self,atom,molecules,df=None):
         super().__init__(molecules)
         self.atom   = atom
         self.values = self.calc_property(molecules,atom)
+        self.ent_type = "Discrete"
 
     @staticmethod
     def calc_property(molecules,atom):
@@ -22,21 +23,21 @@ class ContainsAtom(Property):
 # Instances
 
 class ContainsNitrogen(ContainsAtom):
-    def __init__(self,molecules,atom="N"):
+    def __init__(self,molecules,atom="N",df=None):
         super().__init__(atom,molecules)
         self.values = super().calc_property(molecules,atom)
 
 class ContainsCarbon(ContainsAtom):
-    def __init__(self,molecules,atom="C"):
+    def __init__(self,molecules,atom="C",df=None):
         super().__init__(atom,molecules)
         self.values = super().calc_property(molecules,atom)
 
 class ContainsOxygen(ContainsAtom):
-    def __init__(self,molecules,atom="O"):
+    def __init__(self,molecules,atom="O",df=None):
         super().__init__(atom,molecules)
         self.values = super().calc_property(molecules,atom)
 
 class ContainsFluorine(ContainsAtom):
-    def __init__(self,molecules,atom="F"):
+    def __init__(self,molecules,atom="F",df=None):
         super().__init__(atom,molecules)
         self.values = super().calc_property(molecules,atom)
