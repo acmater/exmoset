@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from rdkit import Chem
 import numpy as np
 from math import log
+from entropy_estimators import continuous
 
 class Property(ABC):
     """
@@ -45,9 +46,11 @@ class Property(ABC):
             for i in probs:
                 ent -= i * log(i, base)
 
-            return ent
         elif form == "Continuous":
-            pass # TODO Add this functionality
+            ent = continuous.get_h(self.values,k=5)
+            print(f"Continuous: {ent}")
+
+        return ent
 
     @staticmethod
     def convert_mols(molecules):
