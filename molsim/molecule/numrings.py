@@ -19,5 +19,5 @@ class NumRings(Property):
         return np.array([x.GetRingInfo().NumRings() for x in molecules])
 
     def summative_label(self,significance=0.1):
-        if self.entropy() < significance:
+        if self.entropy(self.values,self.ent_type):
             return f"{int(np.round(np.mean(self.values)))} Rings"

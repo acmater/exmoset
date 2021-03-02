@@ -33,11 +33,12 @@ class Substructure(Property):
         return matches
 
     def summative_label(self,significance=0.1):
+        summary = []
         for substructure in self.substructures:
-            if self.entropy() < significance:
-                # What in the world is going on here?!?!?!
-                print(np.mean(self.values[substructure]) > 0.5)
-                if np.mean(self.values[substructure]) > 0.5 == False:
-                    print("This Value is False")
-                print(np.mean(self.values[substructure]) > 0.5)
-                return f"Contains {substructure} Group" if np.mean(self.values[substructure] > 0.5) else f"Doesn't Contain {substructure} Group"
+            print(f"Working on structure: {substructure}")
+            if self.entropy(self.values[substructure],self.ent_type) < significance:
+                print(f"Inside the inner loop. Entropy is {self.entropy(self.values[substructure],self.ent_type)}")
+                print(f"Due to signifiance, identifying presence of absence of {substructure}")
+                print(f"Average value of {substructure} is {np.mean(self.values[substructure])}")
+                summary.append(f"Contains {substructure} Group" if np.mean(self.values[substructure]) > 0.5 else f"Doesn't Contain {substructure} Group")
+        return "\n".join(summary)

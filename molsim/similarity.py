@@ -47,17 +47,17 @@ molecules10 = ['CC1=NC(=CN1)C#N', 'CC(N)=[NH+]CC([O-])=O',
        'NC1=NC2=NON=C2N1', 'OC1=CN2N=NN=C2N1', 'CC1=NC(=CN1)N(=O)=O',
        'CC1=CC(=O)N=C(F)N1', 'CN1C=CC(=O)N=C1F']
 
-properties = [Aromatic,
-              NumRings,
-              NumAtoms,
-              ContainsNitrogen,
-              ContainsCarbon,
-              ContainsFluorine,
-              ContainsOxygen,
-              ContainsSingle,
-              ContainsDouble,
-              ContainsTriple,
-              ZPVE]
+properties = [Aromatic]
+"""NumRings,
+NumAtoms,
+ContainsNitrogen,
+ContainsCarbon,
+ContainsFluorine,
+ContainsOxygen,
+ContainsSingle,
+ContainsDouble,
+ContainsTriple]#,"""
+#MolProp]
 
 class Similarity_Analysis():
     def __init__(self,molecules,
@@ -72,17 +72,19 @@ class Similarity_Analysis():
             sub_df = df.loc[molecules]
 
         if substructures is not None:
-            sub_match = Substructure(molecules,substructures)
+            substructures = Substructure(molecules,substructures)
+            substructures.summative_label()
 
-        self.properties = [prop(self.molecules,df=sub_df) for prop in properties] + [sub_match]
-        self.entropy = [x.entropy() for x in self.properties]
+        self.properties = [prop(self.molecules,df=sub_df) for prop in properties] + [substructures]
+        self.entropy = [x.entropy(x.values,x.ent_type) for x in self.properties]
         self.significance = significance
 
     def __str__(self):
         header  = ["Subset Description"]
         results = ["\t{:<60}".format(prop.summative_label(significance=self.significance)) \
-                  for prop in self.properties if prop.summative_label(significance=self.significance) is not None]
+              for prop in self.properties if prop.summative_label(significance=self.significance) is not None]
         return "\n".join(header + results)
+        return ""
 
 if __name__ == "__main__":
     analy = Similarity_Analysis(molecules4,

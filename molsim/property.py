@@ -27,15 +27,16 @@ class Property(ABC):
     def __len__(self):
         return len(self.values)
 
-    def entropy(self,base=None):
+    @staticmethod
+    def entropy(values,ent_type,base=None):
         """ Computes entropy of label distribution. """
-        if self.ent_type == "Discrete":
-            n_labels = len(self.values)
+        if ent_type == "Discrete":
+            n_labels = len(values)
 
             if n_labels <= 1:
                 return 0
 
-            value,counts = np.unique(self.values, return_counts=True)
+            value,counts = np.unique(values, return_counts=True)
             probs = counts / n_labels
             n_classes = np.count_nonzero(probs)
             if n_classes <= 1:
@@ -46,8 +47,8 @@ class Property(ABC):
             for i in probs:
                 ent -= i * log(i, base)
 
-        elif self.ent_type == "Continuous":
-            ent = continuous.get_h(self.values,k=5,norm="euclidean")
+        elif ent_type == "Continuous":
+            ent = continuous.get_h(values,k=5,norm="euclidean")
             print(f"Continuous: {ent}")
 
         return ent
