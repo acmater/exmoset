@@ -32,5 +32,14 @@ class TestContainsAtom(unittest.TestCase):
     def test_contains_O(self):
         assert atom_props.entropy(atom_props["O"])
 
+
+class TestContainsBond(unittest.TestCase):
+    global bond_props
+    bond_props = ContainsAtom(test_mols,["SINGLE","DOUBLE","TRIPLE"])
+    def test_contains_SINGLE(self):
+        assert bond_props.entropy(bond_props["SINGLE"]) == 0, "Entropy calculation for contains Single bond is broken"
+    def test_contains_TRIPLE(self):
+        assert bond_props.entropy(bond_props["TRIPLE"]) == 0, "Entropy Calculation for contains Triple bond is broken"
+
 if __name__ == "__main__":
     unittest.main()
