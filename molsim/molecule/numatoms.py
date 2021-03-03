@@ -13,11 +13,11 @@ class NumAtoms(Property):
 
         self.values = self.calc_property(molecules)
         self.ent_type = "Discrete"
-        
+
     @staticmethod
     def calc_property(molecules):
         return np.array([len(x.GetAtoms()) for x in molecules])
 
     def summative_label(self,significance=0.1):
-        if self.entropy(self.values,self.ent_type):
+        if self.entropy(self.values,self.ent_type) < significance:
             return f"{int(np.round(np.mean(self.values)))} Atoms"

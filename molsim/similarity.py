@@ -8,16 +8,14 @@ from bond import *
 from substructure import *
 from data import *
 
-properties = [Aromatic,NumRings]
-"""NumAtoms,
+properties = [Aromatic,NumRings,NumAtoms,
 ContainsNitrogen,
 ContainsCarbon,
 ContainsFluorine,
 ContainsOxygen,
 ContainsSingle,
 ContainsDouble,
-ContainsTriple],"""
-#MolProp]
+ContainsTriple]
 
 class Similarity_Analysis():
     def __init__(self,molecules,
@@ -43,8 +41,8 @@ class Similarity_Analysis():
 
     def __str__(self):
         header  = ["Subset Description"]
-        results = ["\t{:<60}".format(prop.summative_label(significance=self.significance)) \
-              for prop in self.properties if prop.summative_label(significance=self.significance) is not None]
+        labels = [prop.summative_label(significance=self.significance) for prop in self.properties]
+        results = ["\t{:<60}".format(label) for label in labels if label is not None]
 
         if len(results) == 0:
             return "No Discernible pattern"
@@ -54,7 +52,7 @@ class Similarity_Analysis():
 
 
 if __name__ == "__main__":
-    analy = Similarity_Analysis(molecules12,
+    analy = Similarity_Analysis(molecules10,
                                 properties,
                                 molprops=["Dipole Moment","Isotropic Polarizability"],
                                 substructures = ["[OH]","[NH2]","[CC]"],

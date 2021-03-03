@@ -9,9 +9,7 @@ class ContainsAtom(Property):
     def __init__(self,atom,molecules,df=None):
         super().__init__(molecules)
         self.atom   = atom
-        print(self.atom)
         self.values = self.calc_property(molecules,atom)
-        print(self.values)
         self.ent_type = "Discrete"
 
     @staticmethod
@@ -19,8 +17,8 @@ class ContainsAtom(Property):
         return np.array([1 if atom in [a.GetSymbol() for a in mol.GetAtoms()] else 0 for mol in molecules])
 
     def summative_label(self,significance=0.1):
-        if self.entropy(self.values,self.ent_type):
-            return f"Contains {self.atom}" if np.mean(self.values > 0.5) else f"Doesn't Contain {self.atom}"
+        if self.entropy(self.values,self.ent_type) < significance:
+            return f"Contains {self.atom}" if np.mean(self.values) > 0.5 else f"Doesn't Contain {self.atom}"
 
 # Instances
 
