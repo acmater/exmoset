@@ -47,7 +47,7 @@ class Property(ABC):
                 ent -= i * log(i, base)
 
         elif self.ent_type == "Continuous":
-            ent = continuous.get_h(values,k=5,norm="euclidean")
+            ent = continuous.get_h(values,k=10,norm="euclidean",min_dist=0.001)
 
         return ent
 

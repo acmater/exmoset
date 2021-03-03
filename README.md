@@ -9,9 +9,6 @@ This method is guided by the underlying principle of finding labels with minimum
 across the provided set of molecules. Intuitively these labels represent a "pure" description
 of the space of interest, with the label adopting almost exclusively a single value.
 
-Extending this approach to continuous labels is a future task with the discussion about
-how this could be done provided below.
-
 ## API
 The Similarity_Analysis Class handles the analysis of the molecular subset with a provided set
 of properties. The properties were built with extensability in mind. The API for a property is
@@ -40,6 +37,9 @@ of "purity" that is intuitive for discrete distributions is lost in the continuo
 There are some alternatives https://thomasberrett.github.io/EntropyEstimation.pdf and https://github.com/paulbrodersen/entropy_estimators.
 
 But the best formulation may be using KL-Div between the original distribution (in the entire dataset), and the distribution in the subset of interest.
+
+So the final major code refactorization that I want to consider now is a further decomposition of the problem.
+Currently molprop, substructure, atom, and bond are the four main classes, but their functionality is restricted. Having these as their own superclasses that inherit from property and then spawning particular instances like atom_types would allow me to extend it further to other atomic properties such as charge, radical, hybridisation, etc.
 
 1. Add the ability to print out molecules that could not be converted in Chem.mol objects
 2. Another nice feature would be the capacity to select two distributions and identify what properties are different between them.
