@@ -9,10 +9,6 @@ from substructure import *
 from data import *
 
 properties = [Aromatic,NumRings,NumAtoms,
-ContainsNitrogen,
-ContainsCarbon,
-ContainsFluorine,
-ContainsOxygen,
 ContainsSingle,
 ContainsDouble,
 ContainsTriple]
@@ -20,6 +16,7 @@ ContainsTriple]
 class Similarity_Analysis():
     def __init__(self,molecules,
                       properties,
+                      atoms=None,
                       molprops=None,
                       substructures=None,
                       significance=0.1,
@@ -36,7 +33,10 @@ class Similarity_Analysis():
         if substructures is not None:
             substructures = Substructure(molecules,substructures)
 
-        self.properties = [prop(self.molecules,df=sub_df) for prop in properties] + [substructures,molecular_properties]
+        if atoms is not None:
+            atom_props = ContainsAtom(molecules,atoms)
+
+        self.properties = [prop(self.molecules,df=sub_df) for prop in properties] + [substructures,molecular_properties,atom_props]
         self.significance = significance
 
     def __str__(self):
@@ -54,6 +54,7 @@ class Similarity_Analysis():
 if __name__ == "__main__":
     analy = Similarity_Analysis(molecules10,
                                 properties,
+                                atoms=["C","N","O","F"],
                                 molprops=["Dipole Moment","Isotropic Polarizability"],
                                 substructures = ["[OH]","[NH2]","[CC]"],
                                 significance=0.1,
