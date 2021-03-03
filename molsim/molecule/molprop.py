@@ -13,7 +13,6 @@ class MolProp(Property):
         self.ent_type    = "Continuous"
         self.properties  = properties
         self.values      = self.calc_property(molecules,df)
-        print(self.values)
 
     def calc_property(self,molecules,df):
         props = {}
