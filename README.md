@@ -46,6 +46,7 @@ But the best formulation may be using KL-Div between the original distribution (
 5. Move Tests into correct directories
 6. Add code snippet examples for how to run
 
+Currently adding pre-commit hooks.
 
 ```python
 #Add Python Code
