@@ -1,12 +1,23 @@
 import numpy as np
-from rdkit import Chem
 from molsim.property import Property
 
 class ContainsAtom(Property):
     """
     Whether or not the molecule contains Nitrogen
     """
-    def __init__(self,molecules,atoms,df=None):
+    def __init__(self,molecules,atoms):
+        """
+        Initialization of class
+
+        Paramters
+        ---------
+        molecules : [str] or [Chem.rdchem.Mol]
+            A list of molecules to be analyzed.
+
+        atoms : [str]
+            A list of strings representing atom types to be considered.
+
+        """
         super().__init__(molecules)
         if isinstance(molecules[0],str):
             molecules = super().convert_mols(molecules)
@@ -15,6 +26,15 @@ class ContainsAtom(Property):
         self.ent_type = "Discrete"
 
     def calc_property(self,molecules,atoms):
+        """
+        Calculates the presence or absence of each atom type in the set of molecules provided.
+
+        Returns
+        -------
+        atoms : {"<atom_type>" : np.array}
+            Each atom type (expressed as elemental symbol strings is mapped to the binary vector describing
+            whether or not it is present in each molecule.
+        """
         atoms = {}
         for atom in self.atoms:
             atoms[atom] = np.array([1 if atom in [a.GetSymbol() for a in mol.GetAtoms()] else 0 for mol in molecules])
