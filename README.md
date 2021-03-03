@@ -15,6 +15,10 @@ The Similarity_Analysis Class handles the analysis of the molecular subset with 
 of properties. The properties were built with extensability in mind. The API for a property is
 defined by the Property abstract class with its associated methods.
 
+The majority of the work is handled by the property metaclass, which contains the key entropy functionality
+for both continuous and discrete cases. This is called by all of its subclasses to determine the importance
+of each of the properties that they are assessing.
+
 Property instances are further decomposed into three separate subclasses - atom, bond, and molecule
 properties. All of these utilize the API provided by property, and the information provided
 by similarity analysis is sorted in accordance with that.
@@ -39,3 +43,10 @@ But the best formulation may be using KL-Div between the original distribution (
 2. Another nice feature would be the capacity to select two distributions and identify what properties are different between them.
 3. Speed it up. The code was written to get a working prototype as quickly as possible, but the current codebase is slow to execute and their should be some ways to dramatically accelerate it.
 4. Embed all atomtype and bondtype classes into a single class for atom analysis and bond analysis.
+5. Move Tests into correct directories
+6. Add code snippet examples for how to run
+
+
+```python
+#Add Python Code
+```
