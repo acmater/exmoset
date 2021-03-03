@@ -32,13 +32,20 @@ class Substructure(Property):
             matches[substructure] = np.array([mol.HasSubstructMatch(substructure_patt) for mol in molecules],dtype=np.int)
         return matches
 
-    def summative_label(self,significance=0.1):
+    def summative_label(self,significance=0.1,verbose=False):
         summary = []
         for substructure in self.substructures:
-            print(f"Working on structure: {substructure}")
-            if self.entropy(self.values[substructure],self.ent_type) < significance:
-                print(f"Inside the inner loop. Entropy is {self.entropy(self.values[substructure],self.ent_type)}")
-                print(f"Due to signifiance, identifying presence of absence of {substructure}")
-                print(f"Average value of {substructure} is {np.mean(self.values[substructure])}")
-                summary.append(f"Contains {substructure} Group" if np.mean(self.values[substructure]) > 0.5 else f"Doesn't Contain {substructure} Group")
-        return "\n".join(summary)
+            if verbose:
+                print(f"Working on structure: {substructure}")
+                if self.entropy(self.values[substructure],self.ent_type) < significance:
+                    print(f"Inside the inner loop. Entropy is {self.entropy(self.values[substructure],self.ent_type)}")
+                    print(f"Due to signifiance, identifying presence of absence of {substructure}")
+                    print(f"Average value of {substructure} is {np.mean(self.values[substructure])}")
+                    print()
+                    summary.append(f"Contains {substructure} Group" if np.mean(self.values[substructure]) > 0.5 else f"Doesn't Contain {substructure} Group")
+            else:
+                if self.entropy(self.values[substructure],self.ent_type) < significance:
+                    summary.append(f"Contains {substructure} Group" if np.mean(self.values[substructure]) > 0.5 else f"Doesn't Contain {substructure} Group")
+
+        if summary:
+            return "\n".join(summary)

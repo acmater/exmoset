@@ -4,7 +4,7 @@ Abstract Class for individual molecular properties
 from abc import ABC, abstractmethod
 from rdkit import Chem
 import numpy as np
-from math import log
+from math import log, e
 from entropy_estimators import continuous
 
 class Property(ABC):
@@ -43,13 +43,12 @@ class Property(ABC):
                 return 0
             ent = 0.
             # Compute entropy
-            base = 2 if base is None else base
+            base = e if base is None else base
             for i in probs:
                 ent -= i * log(i, base)
 
         elif ent_type == "Continuous":
             ent = continuous.get_h(values,k=5,norm="euclidean")
-            print(f"Continuous: {ent}")
 
         return ent
 
