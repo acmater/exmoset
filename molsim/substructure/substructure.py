@@ -1,6 +1,6 @@
 import numpy as np
 from rdkit import Chem
-from property import Property
+from molsim.property import Property
 
 class Substructure(Property):
     def __init__(self,molecules,substructures):

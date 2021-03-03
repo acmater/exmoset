@@ -2,11 +2,13 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from molecule import *
-from atom import *
-from bond import *
-from substructure import *
-from data import *
+import sys
+print(sys.path)
+
+from molsim.atom import *
+from molsim.bond import *
+from molsim.substructure import *
+from molsim.data import 
 
 test_mols = molecules4
 

@@ -1,7 +1,9 @@
 import numpy as np
 from rdkit import Chem
-from property import Property
+from molsim.property import Property
 
+print("worked this time")
+print()
 class ContainsAtom(Property):
     """
     Whether or not the molecule contains Nitrogen
