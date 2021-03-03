@@ -22,10 +22,10 @@ class ContainsAtom(Property):
         if isinstance(molecules[0],str):
             molecules = super().convert_mols(molecules)
         self.atoms    = atoms
-        self.values   = self.calc_property(molecules,atoms)
+        self.values   = self.calc_property(molecules)
         self.ent_type = "Discrete"
 
-    def calc_property(self,molecules,atoms):
+    def calc_property(self,molecules):
         """
         Calculates the presence or absence of each atom type in the set of molecules provided.
 

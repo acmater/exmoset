@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 from molsim.atom import ContainsAtom
-from molsim.bond import *
+from molsim.bond import ContainsBond
 from molsim.substructure import Substructure
 from molsim.data import *
 from molsim.molecule import MolProp

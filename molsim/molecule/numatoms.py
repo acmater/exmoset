@@ -18,5 +18,5 @@ class NumAtoms(Property):
         return np.array([len(x.GetAtoms()) for x in molecules])
 
     def summative_label(self,significance=0.1):
-        if self.entropy(self.values,self.ent_type) < significance:
+        if self.entropy(self.values) < significance:
             return f"{int(np.round(np.mean(self.values)))} Atoms"

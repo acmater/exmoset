@@ -3,20 +3,18 @@ from rdkit import Chem
 import pandas as pd
 
 from molecule import *
-from atom import *
-from bond import *
-from substructure import *
+from atom import ContainsAtom
+from bond import ContainsBond
+from substructure import Substructure
 from data import *
 
-properties = [Aromatic,NumRings,NumAtoms,
-ContainsSingle,
-ContainsDouble,
-ContainsTriple]
+properties = [Aromatic,NumRings,NumAtoms]
 
 class Similarity_Analysis():
     def __init__(self,molecules,
                       properties,
                       atoms=None,
+                      bonds=None,
                       molprops=None,
                       substructures=None,
                       significance=0.1,
@@ -27,16 +25,21 @@ class Similarity_Analysis():
             df     = pd.read_csv(file,index_col="SMILES")
             sub_df = df.loc[molecules]
 
+        if atoms is not None:
+            atom_props = ContainsAtom(molecules,atoms)
+
+        if bonds is not None:
+            bond_props = ContainsBond(molecules,bonds)
+
         if molprops is not None:
             molecular_properties = MolProp(molecules,molprops,sub_df)
 
         if substructures is not None:
             substructures = Substructure(molecules,substructures)
 
-        if atoms is not None:
-            atom_props = ContainsAtom(molecules,atoms)
 
-        self.properties = [prop(self.molecules,df=sub_df) for prop in properties] + [substructures,molecular_properties,atom_props]
+
+        self.properties = [prop(self.molecules,df=sub_df) for prop in properties] + [atom_props,bond_props,molecular_properties,substructures]
         self.significance = significance
 
     def __str__(self):
@@ -55,6 +58,7 @@ if __name__ == "__main__":
     analy = Similarity_Analysis(molecules10,
                                 properties,
                                 atoms=["C","N","O","F"],
+                                bonds=["SINGLE","DOUBLE","TRIPLE"],
                                 molprops=["Dipole Moment","Isotropic Polarizability"],
                                 substructures = ["[OH]","[NH2]","[CC]"],
                                 significance=0.1,

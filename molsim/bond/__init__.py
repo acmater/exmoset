@@ -1,1 +1,1 @@
-from .bondtypes import *
+from .containsbond import ContainsBond
