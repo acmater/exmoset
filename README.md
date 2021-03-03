@@ -37,7 +37,5 @@ But the best formulation may be using KL-Div between the original distribution (
 
 1. Add the ability to print out molecules that could not be converted in Chem.mol objects
 2. Another nice feature would be the capacity to select two distributions and identify what properties are different between them.
-3. Add substructure properties which allow you to specify a functional group using SMARTS syntax and check to see if it is present in a particular set of molecules
-   1. Is it possible to automate the identification of molecular features?
-4. Speed it up. The code was written to get a working prototype as quickly as possible, but the current codebase is slow to execute and their should be some ways to dramatically accelerate it.
-5. Add functionality to read from a pandas dataset when obtaining results as this further increases flexibility.
+3. Speed it up. The code was written to get a working prototype as quickly as possible, but the current codebase is slow to execute and their should be some ways to dramatically accelerate it.
+4. Embed all atomtype and bondtype classes into a single class for atom analysis and bond analysis.
