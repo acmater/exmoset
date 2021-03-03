@@ -23,15 +23,15 @@ class ContainsAtom(Property):
     def summative_label(self,significance=0.1,verbose=True):
         summary = []
         for atom in self.atoms:
-            if self.entropy(self.values[atom],self.ent_type) < significance:
+            if self.entropy(self[atom]) < significance:
                 if verbose:
                     print(f"Working on Atom: {atom}")
-                    print(f"Inside the inner loop. Entropy is {self.entropy(self.values[atom],self.ent_type)}")
+                    print(f"Inside the inner loop. Entropy is {self.entropy(self[atom])}")
                     print(f"Due to signifiance, calculating average presence {atom}")
-                    print(f"Average value of {atom} is {np.mean(self.values[atom])}")
+                    print(f"Average value of {atom} is {np.mean(self[atom])}")
                     print()
 
-                    summary.append(f"Contains {atom}" if np.mean(self.values[atom]) > 0.5 else f"Does not contain {atom}")
+                    summary.append(f"Contains {atom}" if np.mean(self[atom]) > 0.5 else f"Does not contain {atom}")
 
         if summary:
             return "\n".join(summary)

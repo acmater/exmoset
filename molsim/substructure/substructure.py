@@ -37,15 +37,15 @@ class Substructure(Property):
         for substructure in self.substructures:
             if verbose:
                 print(f"Working on structure: {substructure}")
-                if self.entropy(self.values[substructure],self.ent_type) < significance:
-                    print(f"Inside the inner loop. Entropy is {self.entropy(self.values[substructure],self.ent_type)}")
+                if self.entropy(selfs[substructure]) < significance:
+                    print(f"Inside the inner loop. Entropy is {self.entropy(self[substructure])}")
                     print(f"Due to signifiance, identifying presence of absence of {substructure}")
-                    print(f"Average value of {substructure} is {np.mean(self.values[substructure])}")
+                    print(f"Average value of {substructure} is {np.mean(self[substructure])}")
                     print()
-                    summary.append(f"Contains {substructure} Group" if np.mean(self.values[substructure]) > 0.5 else f"Doesn't Contain {substructure} Group")
+                    summary.append(f"Contains {substructure} Group" if np.mean(self[substructure]) > 0.5 else f"Doesn't Contain {substructure} Group")
             else:
-                if self.entropy(self.values[substructure],self.ent_type) < significance:
-                    summary.append(f"Contains {substructure} Group" if np.mean(self.values[substructure]) > 0.5 else f"Doesn't Contain {substructure} Group")
+                if self.entropy(self[substructure]) < significance:
+                    summary.append(f"Contains {substructure} Group" if np.mean(self[substructure]) > 0.5 else f"Doesn't Contain {substructure} Group")
 
         if summary:
             return "\n".join(summary)

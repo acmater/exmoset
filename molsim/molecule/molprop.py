@@ -25,15 +25,15 @@ class MolProp(Property):
         for prop in self.properties:
             if verbose:
                 print(f"Working on property: {prop}")
-                if self.entropy(self.values[prop],self.ent_type) < significance:
-                    print(f"Inside the inner loop. Entropy is {self.entropy(self.values[prop],self.ent_type)}")
+                if self.entropy(self[prop],self) < significance:
+                    print(f"Inside the inner loop. Entropy is {self.entropy(self[prop])}")
                     print(f"Due to signifiance, calculating average value of {prop}")
-                    print(f"Average value of {prop} is {np.mean(self.values[prop])}")
+                    print(f"Average value of {prop} is {np.mean(self[prop])}")
                     print()
 
-                    summary.append(f"These molecules share similar values of {prop} centred around {np.mean(self.values[prop])}")
+                    summary.append(f"These molecules share similar values of {prop} centred around {np.mean(self[prop])}")
             else:
-                if self.entropy(self.values[prop],self.ent_type) < significance:
-                    summary.append(f"These molecules share similar values of {prop} centred around {np.mean(self.values[prop])}")
+                if self.entropy(self[prop],self) < significance:
+                    summary.append(f"These molecules share similar values of {prop} centred around {np.mean(self[prop])}")
         if summary:
             return "\n".join(summary)
