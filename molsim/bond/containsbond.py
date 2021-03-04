@@ -31,7 +31,7 @@ class ContainsBond(Property):
                     print(f"Average value of {bond} is {np.mean(self[bond])}")
                     print()
 
-                    summary.append(f"Contains {bond}" if np.mean(self[bond]) > 0.5 else f"Does not contain {bond}")
+                summary.append(f"Contains {bond}" if np.mean(self[bond]) > 0.5 else f"Does not contain {bond}")
 
         if summary:
             return "\n".join(summary)

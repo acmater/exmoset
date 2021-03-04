@@ -51,7 +51,7 @@ class ContainsAtom(Property):
                     print(f"Average value of {atom} is {np.mean(self[atom])}")
                     print()
 
-                    summary.append(f"Contains {atom}" if np.mean(self[atom]) > 0.5 else f"Does not contain {atom}")
+                summary.append(f"Contains {atom}" if np.mean(self[atom]) > 0.5 else f"Does not contain {atom}")
 
         if summary:
             return "\n".join(summary)

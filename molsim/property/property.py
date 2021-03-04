@@ -52,8 +52,20 @@ class Property(ABC):
         return ent
 
     @staticmethod
-    def convert_mols(molecules):
-        return [Chem.MolFromSmiles(mol) for mol in molecules]
+    def convert_mols(molecules,debug=False):
+        failed     = []
+        successful = []
+        for mol in molecules:
+            molobj = Chem.MolFromSmiles(mol)
+            if molobj is not None:
+                successful.append(molobj)
+            else:
+                failed.append(molobj)
+                print(f"Failed to convert {mol}")
+        if debug:
+            return successful, failed
+        else:
+            return successful
 
     @abstractmethod
     def summative_label(self):

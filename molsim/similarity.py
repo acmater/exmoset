@@ -10,6 +10,23 @@ from data import *
 
 properties = [Aromatic,NumRings,NumAtoms]
 
+def convert_mols(molecules,debug=False):
+    failed     = []
+    successful = []
+    smiles     = []
+    for mol in molecules:
+        molobj = Chem.MolFromSmiles(mol)
+        if molobj is not None:
+            successful.append(molobj)
+            smiles.append(mol)
+        else:
+            failed.append(molobj)
+            print(f"Failed to convert {mol}")
+    if debug:
+        return successful, smiles, failed
+    else:
+        return successful, smiles
+
 class Similarity_Analysis():
     def __init__(self,molecules,
                       properties,
@@ -17,25 +34,28 @@ class Similarity_Analysis():
                       bonds=None,
                       molprops=None,
                       substructures=None,
+                      verbose=False,
                       significance=0.1,
                       file=None):
-        self.molecules = [Chem.MolFromSmiles(mol) for mol in molecules]
+        self.molecules, self.smiles = convert_mols(molecules)
+        self.verbose = verbose
+
         if file is not None:
             print(f"Importing {file}")
             df     = pd.read_csv(file,index_col="SMILES")
-            sub_df = df.loc[molecules]
+            sub_df = df.loc[self.smiles]
 
         if atoms is not None:
-            atom_props = ContainsAtom(molecules,atoms)
+            atom_props = ContainsAtom(self.molecules,atoms)
 
         if bonds is not None:
-            bond_props = ContainsBond(molecules,bonds)
+            bond_props = ContainsBond(self.molecules,bonds)
 
         if molprops is not None:
-            molecular_properties = MolProp(molecules,molprops,sub_df)
+            molecular_properties = MolProp(self.smiles,molprops,sub_df)
 
         if substructures is not None:
-            substructures = Substructure(molecules,substructures)
+            substructures = Substructure(self.molecules,substructures)
 
 
 
@@ -44,7 +64,7 @@ class Similarity_Analysis():
 
     def __str__(self):
         header  = ["Subset Description"]
-        labels = [prop.summative_label(significance=self.significance) for prop in self.properties]
+        labels = [prop.summative_label(significance=self.significance,verbose=self.verbose) for prop in self.properties]
         results = ["\t{:<60}".format(label) for label in labels if label is not None]
 
         if len(results) == 0:
@@ -55,18 +75,18 @@ class Similarity_Analysis():
 
 
 if __name__ == "__main__":
-    analy = Similarity_Analysis(molecules6,
+    analy = Similarity_Analysis(molecules4,
                                 properties,
                                 atoms=["C","N","O","F"],
                                 bonds=["SINGLE","DOUBLE","TRIPLE"],
-                                molprops=["Dipole Moment","Isotropic Polarizability", "Electronic Spatial Extent"],
+                                molprops=["Dipole Moment","Isotropic Polarizability", "Electronic Spatial Extent", "Rotational Constant A"],
                                 substructures = ["[OH]","[NH2]","[CC]"],
                                 significance=0.1,
                                 file="data/QM9_Data.csv")
     print(analy)
 
-    df = pd.read_csv("data/QM9_Data.csv",index_col="SMILES")
+    """df = pd.read_csv("data/QM9_Data.csv",index_col="SMILES")
     x = df.loc[molecules6]["Dipole Moment"].to_numpy()
     import matplotlib.pyplot as plt
     plt.hist(x)
-    plt.show()
+    plt.show()"""

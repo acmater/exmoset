@@ -42,10 +42,8 @@ class Substructure(Property):
                     print(f"Due to signifiance, identifying presence of absence of {substructure}")
                     print(f"Average value of {substructure} is {np.mean(self[substructure])}")
                     print()
-                    summary.append(f"Contains {substructure} Group" if np.mean(self[substructure]) > 0.5 else f"Doesn't Contain {substructure} Group")
-            else:
-                if self.entropy(self[substructure]) < significance:
-                    summary.append(f"Contains {substructure} Group" if np.mean(self[substructure]) > 0.5 else f"Doesn't Contain {substructure} Group")
+                summary.append(f"Contains {substructure} Group" if np.mean(self[substructure]) > 0.5 else f"Doesn't Contain {substructure} Group")
+
 
         if summary:
             return "\n".join(summary)
