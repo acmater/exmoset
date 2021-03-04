@@ -1,4 +1,4 @@
-from .label import Label
+from exmoset.abstract import Label
 
 class Multiclass(Label):
     """

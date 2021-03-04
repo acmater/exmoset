@@ -1,5 +1,5 @@
 import numpy as np
-from .label import Label
+from exmoset.abstract import Label
 
 class Continuous(Label):
     """
