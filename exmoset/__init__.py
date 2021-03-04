@@ -3,4 +3,4 @@ import exmoset.bond
 import exmoset.data
 import exmoset.molecule
 import exmoset.substructure
-import exmoset.property
+import exmoset.abstract

@@ -1,6 +1,6 @@
 import numpy as np
 from rdkit import Chem
-from exmoset.property import Property
+from exmoset.abstract import Property
 from exmoset.labels import Binary
 
 class Aromatic(Property):

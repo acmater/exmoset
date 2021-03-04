@@ -1,5 +1,5 @@
 import numpy as np
-from exmoset.property import Property
+from exmoset.abstract import Property
 
 class NumAtoms(Property):
     """
