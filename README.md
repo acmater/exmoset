@@ -1,7 +1,6 @@
 # EXplainable MOlecular SETs
 
 ### Considering possible namechange to the one above.
-
 Package to automate the identification of molecular similarity given an arbitrary set
 of molecules and associated functions to calculate the value of particular properties.
 
@@ -22,8 +21,24 @@ Property instances are further decomposed into three separate subclasses - atom,
 properties. All of these utilize the API provided by property, and the information provided
 by similarity analysis is sorted in accordance with that.
 
-### TODO
+## Entropy Estimation
+Key to the functioning of this approach is the estimation of entropy for a given random variable. Both discrete (for properties such as aromaticity) and continuous (for properties like electronic spatial extent) have to be considered, and different approaches are used to estimate the entropy.
 
+The discrete entropy is estimated using the plug in estimator that assumes a uniform probability over the classes represented in the vector. A simple implenetation was adapted from -
+
+The continuous entropy estimator uses the Kozachenko and Leonenko (1987) estimator in which k-nearest neighbour distances are used to approximate the entropy of the underlying distribution. The implementation is provided by the entropy esitmators package of Paul Broderson (https://github.com/paulbrodersen/entropy_estimators).
+
+## Label Types
+### Binary
+Binary labels indicate the presence of absence of a particular element, bond type, or molecular feature (such as aromaticity). Simplest to calculate and best behaved with respect to the entropy estimators. Uses a discrete entropy estimator.
+
+### Multiclass
+Discrete labels where the value can be any integer. Examples include number of rings, number of atoms, or number of each type of bond. Uses a discrete entropy estimator.
+
+### Continuous
+Continuous labels where the value can be any real number. Examples include electronic spatial extent, dipole moment, and free energy. Uses the continuous entropy estimator
+
+### TODO
 I would like to extend this code to continuous descriptors such as electronic spatial extent or something similar.
 I think however that doing that would require implementing https://en.wikipedia.org/wiki/Limiting_density_of_discrete_points.
 Which would be very tricky.
@@ -48,6 +63,8 @@ Currently molprop, substructure, atom, and bond are the four main classes, but t
 2. Add plotting functionality.
 3. Speed it up. The code was written to get a working prototype as quickly as possible, but the current codebase is slow to execute and their should be some ways to dramatically accelerate it.
 4. Add code snippet examples for how to run
+5. Add feature to identify outliers from a group
+
 
 #### Notes
 There are some portions of the code that look like they could be offloaded to the abstract class. In particular

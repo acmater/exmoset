@@ -91,13 +91,23 @@ class Property(ABC):
         else:
             return successful
 
-    @abstractmethod
     def summative_label(self):
-        """
-        Method to calculate which properties have entropy low enough to be considered
-        significant.
-        """
-        pass
+        # I think I can make this code general. Just need to determine a few things.
+        summary = {}
+        for prop in self.atoms:
+            if self.entropy(self[atom]) < significance:
+                if verbose:
+                    print(f"Working on Atom: {atom}")
+                    print(f"Inside the inner loop. Entropy is {self.entropy(self[atom])}")
+                    print(f"Due to signifiance, calculating average presence {atom}")
+                    print(f"Average value of {atom} is {np.mean(self[atom])}")
+                    print()
+
+                summary.append(f"Contains {atom}" if np.mean(self[atom]) > 0.5 else f"Does not contain {atom}")
+
+        if summary:
+            return "\n".join(summary)
+
 
     @abstractmethod
     def calc_property(self):

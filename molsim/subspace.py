@@ -10,24 +10,7 @@ from data import *
 
 properties = [Aromatic,NumRings,NumAtoms]
 
-def convert_mols(molecules,debug=False):
-    failed     = []
-    successful = []
-    smiles     = []
-    for mol in molecules:
-        molobj = Chem.MolFromSmiles(mol)
-        if molobj is not None:
-            successful.append(molobj)
-            smiles.append(mol)
-        else:
-            failed.append(molobj)
-            print(f"Failed to convert {mol}")
-    if debug:
-        return successful, smiles, failed
-    else:
-        return successful, smiles
-
-class Similarity_Analysis():
+class Subspace():
     def __init__(self,molecules,
                       properties,
                       atoms=None,
@@ -37,7 +20,7 @@ class Similarity_Analysis():
                       verbose=False,
                       significance=0.1,
                       file=None):
-        self.molecules, self.smiles = convert_mols(molecules)
+        self.molecules, self.smiles = self.convert_mols(molecules)
         self.verbose = verbose
 
         if file is not None:
@@ -60,6 +43,8 @@ class Similarity_Analysis():
         self.properties = [prop(self.molecules,df=sub_df) for prop in properties] + [atom_props,bond_props,molecular_properties,substructures]
         self.significance = significance
 
+
+
     def __str__(self):
         header  = ["Subset Description"]
         labels = [prop.summative_label(significance=self.significance,verbose=self.verbose) for prop in self.properties]
@@ -71,9 +56,29 @@ class Similarity_Analysis():
             final = "\n".join(header + results)
             return final
 
+    def __or__(self, other):
+
+
+    def convert_mols(molecules,debug=False):
+        failed     = []
+        successful = []
+        smiles     = []
+        for mol in molecules:
+            molobj = Chem.MolFromSmiles(mol)
+            if molobj is not None:
+                successful.append(molobj)
+                smiles.append(mol)
+            else:
+                failed.append(molobj)
+                print(f"Failed to convert {mol}")
+        if debug:
+            return successful, smiles, failed
+        else:
+            return successful, smiles
+
 
 if __name__ == "__main__":
-    analy = Similarity_Analysis(molecules6,
+    analy = Subspace(molecules6,
                                 properties,
                                 atoms=["C","N","O","F"],
                                 bonds=["SINGLE","DOUBLE","TRIPLE"],
