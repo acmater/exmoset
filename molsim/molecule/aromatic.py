@@ -1,6 +1,7 @@
 import numpy as np
 from rdkit import Chem
 from molsim.property import Property
+from molsim.labels import Binary
 
 class Aromatic(Property):
     """
@@ -11,13 +12,14 @@ class Aromatic(Property):
         if isinstance(molecules[0],str):
             molecules = super().convert_mols(molecules)
 
-        self.values  = self.calc_property(molecules)
-        self.ent_type    = "Discrete"
+        self.label   = self.calc_property(molecules)
 
     @staticmethod
     def calc_property(molecules):
-        return np.array([bool(x.GetAromaticAtoms()) for x in molecules],dtype=np.int)
+        return Binary("Aromatic",
+                      np.array([bool(x.GetAromaticAtoms()) for x in molecules],dtype=np.int),
+                      context="whole")
 
     def summative_label(self,significance=0.1,verbose=False):
-        if self.entropy(self.values) < significance:
-            return f"Aromatic" if np.mean(self.values > 0.5) else f"Non-Aromatic"
+        if self.entropy(self.label) < significance:
+            return self.label.summary()

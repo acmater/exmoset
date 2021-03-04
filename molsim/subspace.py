@@ -8,7 +8,7 @@ from bond import ContainsBond
 from substructure import Substructure
 from data import *
 
-properties = [Aromatic,NumRings,NumAtoms]
+properties = [Aromatic]#,NumRings,NumAtoms]
 
 class Subspace():
     def __init__(self,molecules,
@@ -57,8 +57,9 @@ class Subspace():
             return final
 
     def __or__(self, other):
+        pass
 
-
+    @staticmethod
     def convert_mols(molecules,debug=False):
         failed     = []
         successful = []
@@ -78,12 +79,12 @@ class Subspace():
 
 
 if __name__ == "__main__":
-    analy = Subspace(molecules6,
-                                properties,
-                                atoms=["C","N","O","F"],
-                                bonds=["SINGLE","DOUBLE","TRIPLE"],
-                                molprops=["Dipole Moment","Isotropic Polarizability", "Electronic Spatial Extent", "Rotational Constant A"],
-                                substructures = ["[OH]","[NH2]","[CC]"],
-                                significance=0.1,
-                                file="data/QM9_Data.csv")
+    analy = Subspace(molecules4,
+                        properties,
+                        atoms=[],#["C","N","O","F"],
+                        bonds=[],#["SINGLE","DOUBLE","TRIPLE"],
+                        molprops=[],#["Dipole Moment","Isotropic Polarizability", "Electronic Spatial Extent", "Rotational Constant A"],
+                        substructures = [],#["[OH]","[NH2]","[CC]"],
+                        significance=0.1,
+                        file="data/QM9_Data.csv")
     print(analy)

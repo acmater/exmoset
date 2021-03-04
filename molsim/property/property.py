@@ -30,7 +30,7 @@ class Property(ABC):
     def __len__(self):
         return len(self.values)
 
-    def entropy(self,values,base=None):
+    def entropy(self,label,base=None):
         """ Computes entropy of label distribution.
 
         Parameters
@@ -41,13 +41,16 @@ class Property(ABC):
         base: float
             Floating number used as base for entropy calculation.
         """
-        if self.ent_type == "Discrete":
-            n_labels = len(values)
+        if self.__class__ == "Continuous":
+            ent = continuous.get_h(label.values,k=10,norm="euclidean",min_dist=0.001)
+
+        else:
+            n_labels = len(label.values)
 
             if n_labels <= 1:
                 return 0
 
-            value,counts = np.unique(values, return_counts=True)
+            value, counts = np.unique(label.values, return_counts=True)
             probs = counts / n_labels
             n_classes = np.count_nonzero(probs)
             if n_classes <= 1:
@@ -57,9 +60,6 @@ class Property(ABC):
             base = e if base is None else base
             for i in probs:
                 ent -= i * log(i, base)
-
-        elif self.ent_type == "Continuous":
-            ent = continuous.get_h(values,k=10,norm="euclidean",min_dist=0.001)
 
         return ent
 
@@ -94,7 +94,7 @@ class Property(ABC):
     def summative_label(self):
         # I think I can make this code general. Just need to determine a few things.
         summary = {}
-        for prop in self.atoms:
+        for prop in self.prop:
             if self.entropy(self[atom]) < significance:
                 if verbose:
                     print(f"Working on Atom: {atom}")
