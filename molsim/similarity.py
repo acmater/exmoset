@@ -57,8 +57,6 @@ class Similarity_Analysis():
         if substructures is not None:
             substructures = Substructure(self.molecules,substructures)
 
-
-
         self.properties = [prop(self.molecules,df=sub_df) for prop in properties] + [atom_props,bond_props,molecular_properties,substructures]
         self.significance = significance
 
@@ -75,7 +73,7 @@ class Similarity_Analysis():
 
 
 if __name__ == "__main__":
-    analy = Similarity_Analysis(molecules4,
+    analy = Similarity_Analysis(molecules6,
                                 properties,
                                 atoms=["C","N","O","F"],
                                 bonds=["SINGLE","DOUBLE","TRIPLE"],
@@ -84,9 +82,3 @@ if __name__ == "__main__":
                                 significance=0.1,
                                 file="data/QM9_Data.csv")
     print(analy)
-
-    """df = pd.read_csv("data/QM9_Data.csv",index_col="SMILES")
-    x = df.loc[molecules6]["Dipole Moment"].to_numpy()
-    import matplotlib.pyplot as plt
-    plt.hist(x)
-    plt.show()"""

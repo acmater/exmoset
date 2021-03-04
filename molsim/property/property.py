@@ -19,6 +19,9 @@ class Property(ABC):
         return f"{np.array_repr(self.values)}"
 
     def name(self):
+        """
+        Returns name of property subclass.
+        """
         return type(self).__name__
 
     def __getitem__(self,idx):
@@ -28,7 +31,16 @@ class Property(ABC):
         return len(self.values)
 
     def entropy(self,values,base=None):
-        """ Computes entropy of label distribution. """
+        """ Computes entropy of label distribution.
+
+        Parameters
+        ----------
+        values : np.ndarray
+            The array of label values.
+
+        base: float
+            Floating number used as base for entropy calculation.
+        """
         if self.ent_type == "Discrete":
             n_labels = len(values)
 
@@ -53,6 +65,18 @@ class Property(ABC):
 
     @staticmethod
     def convert_mols(molecules,debug=False):
+        """
+        Helper function to convert smiles into Chem.rdchem.Mol objects
+
+        Parameters
+        ----------
+        molecules : [str]
+            Iterable of SMILES representations of the molecules of interest.
+
+        debug : bool, default=False
+            Whether or not failed smiles will also be returned for debugging purposes.
+        """
+
         failed     = []
         successful = []
         for mol in molecules:
@@ -69,8 +93,15 @@ class Property(ABC):
 
     @abstractmethod
     def summative_label(self):
+        """
+        Method to calculate which properties have entropy low enough to be considered
+        significant.
+        """
         pass
 
     @abstractmethod
     def calc_property(self):
+        """
+        Method to calculate the label associated with each property for each molecule within the subset.
+        """
         pass

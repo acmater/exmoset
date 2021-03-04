@@ -43,7 +43,5 @@ class Substructure(Property):
                     print(f"Average value of {substructure} is {np.mean(self[substructure])}")
                     print()
                 summary.append(f"Contains {substructure} Group" if np.mean(self[substructure]) > 0.5 else f"Doesn't Contain {substructure} Group")
-
-
         if summary:
             return "\n".join(summary)
