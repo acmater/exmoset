@@ -1,5 +1,6 @@
 import numpy as np
 from molsim.property import Property
+from molsim.labels import Binary
 
 class ContainsAtom(Property):
     """
@@ -37,12 +38,14 @@ class ContainsAtom(Property):
         """
         atoms = {}
         for atom in self.atoms:
-            atoms[atom] = np.array([1 if atom in [a.GetSymbol() for a in mol.GetAtoms()] else 0 for mol in molecules])
+            atoms[atom] = Binary(atom,
+                                 np.array([1 if atom in [a.GetSymbol() for a in mol.GetAtoms()] else 0 for mol in molecules]),
+                                 context="part")
         return atoms
 
     def summative_label(self,significance=0.1,verbose=True):
         summary = []
-        for atom in self.atoms:
+        for atom, label in self.values.items():
             if self.entropy(self[atom]) < significance:
                 if verbose:
                     print(f"Working on Atom: {atom}")
@@ -51,7 +54,7 @@ class ContainsAtom(Property):
                     print(f"Average value of {atom} is {np.mean(self[atom])}")
                     print()
 
-                summary.append(f"Contains {atom}" if np.mean(self[atom]) > 0.5 else f"Does not contain {atom}")
+                summary.append(label.summary())
 
         if summary:
             return "\n".join(summary)

@@ -29,8 +29,8 @@ class Property(ABC):
 
     def __len__(self):
         return len(self.values)
-        
-    def entropy_label(self,label,base=None):
+
+    def entropy(self,label,base=None):
         """ Computes entropy of label distribution.
 
         Parameters
@@ -41,7 +41,7 @@ class Property(ABC):
         base: float
             Floating number used as base for entropy calculation.
         """
-        if self.__class__ == "Continuous":
+        if type(label).__name__ == "Continuous":
             ent = continuous.get_h(label.values,k=10,norm="euclidean",min_dist=0.001)
 
         else:
@@ -63,7 +63,7 @@ class Property(ABC):
 
         return ent
 
-    def entropy(self,values,base=None):
+    '''def entropy(self,values,base=None):
         """ Computes entropy of label distribution.
 
         Parameters
@@ -94,7 +94,7 @@ class Property(ABC):
         elif self.ent_type == "Continuous":
             ent = continuous.get_h(values,k=10,norm="euclidean",min_dist=0.001)
 
-        return ent
+        return ent'''
 
     @staticmethod
     def convert_mols(molecules,debug=False):

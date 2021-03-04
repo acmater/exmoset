@@ -28,12 +28,11 @@ class TestDatabaseExtraction(unittest.TestCase):
     df     = pd.read_csv("molsim/data/QM9_Data.csv",index_col="SMILES")
     sub_df = df.loc[test_mols]
     molprops = MolProp(test_mols,properties=["Dipole Moment","ZPVE"],df=sub_df)
-
     def test_molprop(self):
-        assert len(molprops["Dipole Moment"] == 86), "Molecular Property dictionary is not being properly generated."
+        assert len(molprops["Dipole Moment"]) == 86, "Molecular Property dictionary is not being properly generated."
 
     def test_max_ZPVE(self):
-        assert max(molprops["ZPVE"] == 0.216981), "Issue in the ZPVE section of the dictionary."
+        assert max(molprops["ZPVE"]) == 0.216981, "Issue in the ZPVE section of the dictionary."
 
     def test_fake_prop(self):
         with self.assertRaises(KeyError):

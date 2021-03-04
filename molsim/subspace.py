@@ -79,12 +79,12 @@ class Subspace():
 
 
 if __name__ == "__main__":
-    analy = Subspace(molecules4,
+    analy = Subspace(molecules10,
                         properties,
-                        atoms=[],#["C","N","O","F"],
-                        bonds=[],#["SINGLE","DOUBLE","TRIPLE"],
-                        molprops=[],#["Dipole Moment","Isotropic Polarizability", "Electronic Spatial Extent", "Rotational Constant A"],
-                        substructures = [],#["[OH]","[NH2]","[CC]"],
+                        atoms=["C","N","O","F"],
+                        bonds=["SINGLE","DOUBLE","TRIPLE"],
+                        molprops=["Dipole Moment","Isotropic Polarizability", "Electronic Spatial Extent", "Rotational Constant A"],
+                        substructures = ["[OH]","[NH2]","[CC]"],
                         significance=0.1,
                         file="data/QM9_Data.csv")
     print(analy)

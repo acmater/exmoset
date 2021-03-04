@@ -1,5 +1,6 @@
 import numpy as np
 from molsim.property import Property
+from molsim.labels import Binary
 
 class ContainsBond(Property):
     """
@@ -17,13 +18,15 @@ class ContainsBond(Property):
         bonds = {}
         # This really slow, change how the code functions to generate the bond description and then test each type against it.
         for bond in self.bonds:
-            bonds[bond] = np.array([1 if bond in [b.GetBondType().__str__() for b in mol.GetBonds()] else 0 for mol in molecules])
+            bonds[bond] = Binary(bond,
+                                 np.array([1 if bond in [b.GetBondType().__str__() for b in mol.GetBonds()] else 0 for mol in molecules]),
+                                 context="part")
         return bonds
 
     def summative_label(self,significance=0.1,verbose=True):
         summary = []
-        for bond in self.bonds:
-            if self.entropy(self[bond]) < significance:
+        for bond, label in self.values.items():
+            if self.entropy(label) < significance:
                 if verbose:
                     print(f"Working on Bond: {bond}")
                     print(f"Inside the inner loop. Entropy is {self.entropy(self[bond])}")
@@ -31,7 +34,7 @@ class ContainsBond(Property):
                     print(f"Average value of {bond} is {np.mean(self[bond])}")
                     print()
 
-                summary.append(f"Contains {bond}" if np.mean(self[bond]) > 0.5 else f"Does not contain {bond}")
+                summary.append(label.summary())
 
         if summary:
             return "\n".join(summary)

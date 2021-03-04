@@ -1,5 +1,6 @@
 import numpy as np
 from molsim.property import Property
+from molsim.labels import Continuous
 
 class MolProp(Property):
     """
@@ -10,27 +11,28 @@ class MolProp(Property):
         assert isinstance(molecules[0],str), "Molecules for this method must be provided as immutable, string representations"
 
         self.ent_type    = "Continuous"
-        self.properties  = properties
-        self.values      = self.calc_property(molecules,df)
+        self.values      = self.calc_property(molecules,properties,df)
 
-    def calc_property(self,molecules,df):
+    def calc_property(self,molecules,properties,df):
         props = {}
-        for prop in self.properties:
-            props[prop] = df[prop].to_numpy()
+        for prop in properties:
+            props[prop] = Continuous(prop,
+                                     df[prop].to_numpy(),
+                                     context="molecule")
         return props
 
     def summative_label(self,significance=0.1,verbose=True):
         summary = []
-        for prop in self.properties:
-            if verbose:
+        for prop, label in self.values.items():
+            if self.entropy(label) < significance:
                 print(f"Working on property: {prop}")
-                if self.entropy(self[prop]) < significance:
-                    print(f"Inside the inner loop. Entropy is {self.entropy(self[prop])}")
+                if verbose:
+                    print(f"Inside the inner loop. Entropy is {self.entropy(label)}")
                     print(f"Due to signifiance, calculating average value of {prop}")
-                    print(f"Average value of {prop} is {np.mean(self[prop])}")
+                    print(f"Average value of {prop} is {(self[prop].av)}")
                     print()
 
-                summary.append(f"These molecules share similar values of {prop} centred around {np.mean(self[prop])}")
+                summary.append(label.summary())
 
         if summary:
             return "\n".join(summary)

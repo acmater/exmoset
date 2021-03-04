@@ -1,6 +1,7 @@
 import numpy as np
+from .label import Label
 
-class Binary():
+class Binary(Label):
     """
     Class that handles the manipulation of binary molecular labels.
     """
