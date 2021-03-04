@@ -2,11 +2,11 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from molsim.atom import ContainsAtom
-from molsim.bond import ContainsBond
-from molsim.substructure import Substructure
-from molsim.data import *
-from molsim.molecule import MolProp
+from exmoset.atom import ContainsAtom
+from exmoset.bond import ContainsBond
+from exmoset.substructure import Substructure
+from exmoset.data import *
+from exmoset.molecule import MolProp
 
 test_mols = molecules4
 
@@ -25,7 +25,7 @@ class TestSubstructure(unittest.TestCase):
 
 class TestDatabaseExtraction(unittest.TestCase):
     global df, sub_df, molprops
-    df     = pd.read_csv("molsim/data/QM9_Data.csv",index_col="SMILES")
+    df     = pd.read_csv("exmoset/data/QM9_Data.csv",index_col="SMILES")
     sub_df = df.loc[test_mols]
     molprops = MolProp(test_mols,properties=["Dipole Moment","ZPVE"],df=sub_df)
     def test_molprop(self):

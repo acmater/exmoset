@@ -1,6 +1,6 @@
-import molsim.atom
-import molsim.bond
-import molsim.data
-import molsim.molecule
-import molsim.substructure
-import molsim.property
+import exmoset.atom
+import exmoset.bond
+import exmoset.data
+import exmoset.molecule
+import exmoset.substructure
+import exmoset.property

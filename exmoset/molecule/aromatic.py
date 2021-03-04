@@ -1,7 +1,7 @@
 import numpy as np
 from rdkit import Chem
-from molsim.property import Property
-from molsim.labels import Binary
+from exmoset.property import Property
+from exmoset.labels import Binary
 
 class Aromatic(Property):
     """

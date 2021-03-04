@@ -1,6 +1,6 @@
 import numpy as np
-from molsim.property import Property
-from molsim.labels import Binary
+from exmoset.property import Property
+from exmoset.labels import Binary
 
 class ContainsAtom(Property):
     """

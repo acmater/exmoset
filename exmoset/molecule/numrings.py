@@ -1,5 +1,5 @@
 import numpy as np
-from molsim.property import Property
+from exmoset.property import Property
 
 class NumRings(Property):
     """
