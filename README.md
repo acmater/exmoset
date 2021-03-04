@@ -1,6 +1,5 @@
 # EXplainable MOlecular SETs
 
-### Considering possible namechange to the one above.
 Package to automate the identification of molecular similarity given an arbitrary set
 of molecules and associated functions to calculate the value of particular properties.
 
