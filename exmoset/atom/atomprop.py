@@ -2,11 +2,11 @@ import numpy as np
 from exmoset.property import Property
 from exmoset.labels import Binary
 
-class ContainsAtom(Property):
+class AtomProp(Property):
     """
-    Whether or not the molecule contains Nitrogen
+    Class that handles atomic property fingerprints that are provided to it.
     """
-    def __init__(self,molecules,atoms):
+    def __init__(self,molecules,fingerprints):
         """
         Initialization of class
 
@@ -15,15 +15,15 @@ class ContainsAtom(Property):
         molecules : [str] or [Chem.rdchem.Mol]
             A list of molecules to be analyzed.
 
-        atoms : [str]
-            A list of strings representing atom types to be considered.
+        fingerprints : [fingerprints]
+            A list of proprety fingerprints that will be used as the system iterates over the molecules.
 
         """
         super().__init__(molecules)
         if isinstance(molecules[0],str):
             molecules = super().convert_mols(molecules)
-        self.atoms    = atoms
-        self.values   = self.calc_property(molecules)
+        self.fingerprints    = fingerprints
+        self.values          = self.calc_property(molecules)
 
     def calc_property(self,molecules):
         """

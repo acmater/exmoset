@@ -20,30 +20,29 @@ class MolSet():
                       verbose=False,
                       significance=0.1,
                       file=None):
-        self.molecules, self.smiles = self.convert_mols(molecules)
+        molecules, smiles = self.convert_mols(molecules)
+        self.molecules = {x : y for x,y in zip(smiles,molecules)}
         self.verbose = verbose
 
         if file is not None:
             print(f"Importing {file}")
             df     = pd.read_csv(file,index_col="SMILES")
-            sub_df = df.loc[self.smiles]
+            sub_df = df.loc[self.molecules.keys()]
 
         if atoms is not None:
-            atom_props = ContainsAtom(self.molecules,atoms)
+            atom_props = ContainsAtom(list(self.molecules.values()),atoms)
 
         if bonds is not None:
-            bond_props = ContainsBond(self.molecules,bonds)
+            bond_props = ContainsBond(list(self.molecules.values()),bonds)
 
         if molprops is not None:
-            molecular_properties = MolProp(self.smiles,molprops,sub_df)
+            molecular_properties = MolProp(list(self.molecules.keys()),molprops,sub_df)
 
         if substructures is not None:
-            substructures = Substructure(self.molecules,substructures)
+            substructures = Substructure(list(self.molecules.values()),substructures)
 
-        self.properties = [prop(self.molecules,df=sub_df) for prop in properties] + [atom_props,bond_props,molecular_properties,substructures]
+        self.properties = [prop(list(self.molecules.values()),df=sub_df) for prop in properties] + [atom_props,bond_props,molecular_properties,substructures]
         self.significance = significance
-
-
 
     def __str__(self):
         header  = ["Subset Description"]
@@ -79,7 +78,7 @@ class MolSet():
 
 
 if __name__ == "__main__":
-    analy = Subspace(molecules10,
+    analy = MolSet(molecules10,
                         properties,
                         atoms=["C","N","O","F"],
                         bonds=["SINGLE","DOUBLE","TRIPLE"],

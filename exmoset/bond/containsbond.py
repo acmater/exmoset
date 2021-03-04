@@ -12,7 +12,6 @@ class ContainsBond(Property):
             molecules = super().convert_mols(molecules)
         self.bonds    = bonds
         self.values   = self.calc_property(molecules)
-        self.ent_type = "Discrete"
 
     def calc_property(self,molecules):
         bonds = {}
