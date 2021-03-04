@@ -29,8 +29,8 @@ class Property(ABC):
 
     def __len__(self):
         return len(self.values)
-
-    def entropy(self,label,base=None):
+        
+    def entropy_label(self,label,base=None):
         """ Computes entropy of label distribution.
 
         Parameters
@@ -60,6 +60,39 @@ class Property(ABC):
             base = e if base is None else base
             for i in probs:
                 ent -= i * log(i, base)
+
+        return ent
+
+    def entropy(self,values,base=None):
+        """ Computes entropy of label distribution.
+
+        Parameters
+        ----------
+        values : np.ndarray
+            The array of label values.
+
+        base: float
+            Floating number used as base for entropy calculation.
+        """
+        if self.ent_type == "Discrete":
+            n_labels = len(values)
+
+            if n_labels <= 1:
+                return 0
+
+            value,counts = np.unique(values, return_counts=True)
+            probs = counts / n_labels
+            n_classes = np.count_nonzero(probs)
+            if n_classes <= 1:
+                return 0
+            ent = 0.
+            # Compute entropy
+            base = e if base is None else base
+            for i in probs:
+                ent -= i * log(i, base)
+
+        elif self.ent_type == "Continuous":
+            ent = continuous.get_h(values,k=10,norm="euclidean",min_dist=0.001)
 
         return ent
 
