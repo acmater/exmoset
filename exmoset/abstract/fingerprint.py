@@ -1,3 +1,44 @@
 class Fingerprint():
-    def __init__(self):
-        pass
+    """
+    Fingerprint that describes a particular property in accordance with a set of properties
+
+    Parameters
+    ----------
+    name : str
+        Name of the property.
+
+    context : "atom","bond","molecule","substructure"
+        The context in which the property should be calculated.
+
+    label_type : "binary","multiclass","continuous"
+        The type of label distribution that is expected - determines how the
+        property is described and how the entropy is calculated.
+
+    calculator : <function>
+        A python function that will be called during the class determined by the context
+        to determine the value of the property.
+    """
+    def __init__(self,name,
+                      context,
+                      label_type,
+                      calculator):
+        self.name = name
+        self.context = context
+        self.label_type = label_type
+        self.calculator = calculator
+
+    def __repr__(self):
+        return f"Fingerprint({self.name},{self.context},{self.label_type},{self.calculator})"
+
+    def __str__(self):
+        return f"Fingerprint\n\t" + "\n\t".join([f"Name : {self.name:^24}",
+                                                 f"Context: {self.context:^18}",
+                                                 f"Label Type: {self.label_type:^11}",
+                                                 f"Calculator : {self.calculator:^5}"])
+
+if __name__ == "__main__":
+    a = Fingerprint(name="Contains C",
+                    context="molecule",
+                    label_type="binary",
+                    calculator="add")
+    print(a)
