@@ -13,6 +13,10 @@ test_mols = molecules4
 # Is there a better way to do the global portions of the code below? Intuitively I should be able
 # to customize the initialization of each class and provide it as an attribute, but that doesn't seem to work.
 
+class TestFailedMoleculeConversion(unittest.TestCase):
+    def test_failed_import(self):
+        assert len(Substructure(broken,substructures=["[CC]"])["[CC]"]) == 0, "The system is not removing failed smile conversions"
+
 class TestSubstructure(unittest.TestCase):
     global substructures
     substructures = Substructure(test_mols,substructures=["[NH2]"])

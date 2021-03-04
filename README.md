@@ -41,7 +41,6 @@ But the best formulation may be using KL-Div between the original distribution (
 So the final major code refactorization that I want to consider now is a further decomposition of the problem.
 Currently molprop, substructure, atom, and bond are the four main classes, but their functionality is restricted. Having these as their own superclasses that inherit from property and then spawning particular instances like atom_types would allow me to extend it further to other atomic properties such as charge, radical, hybridisation, etc.
 
-1. Add the ability to print out molecules that could not be converted in Chem.mol objects
 2. Another nice feature would be the capacity to select two distributions and identify what properties are different between them.
 3. Speed it up. The code was written to get a working prototype as quickly as possible, but the current codebase is slow to execute and their should be some ways to dramatically accelerate it.
 6. Add code snippet examples for how to run
