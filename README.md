@@ -59,6 +59,8 @@ Currently molprop, substructure, atom, and bond are the four main classes, but t
    1. There's actually more scope here than looking at differences. The labels can be viewed as logical descriptions of the group, with logical operations defined on them.
    2. To do this I need to break down the summative labels into properties that get assigned to the similarity analysis class (with an associated print statement) and then when operations like and or addition are applied, it performs labelwise comparison.
    3. This would be nice as it would readily enable comparison between groups.
+   4. I think this is quite a bit simpler than above, just make a set of the labels that two particular groups share.
+   5. Of importance is the possibility that I may need to consider mutual information labelling. I need to understand this better.
 2. Add plotting functionality.
 3. Speed it up. The code was written to get a working prototype as quickly as possible, but the current codebase is slow to execute and their should be some ways to dramatically accelerate it.
 4. Add code snippet examples for how to run

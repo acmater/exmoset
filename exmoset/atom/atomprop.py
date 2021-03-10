@@ -23,19 +23,19 @@ class AtomProp(Property):
         if isinstance(molecules[0],str):
             molecules = super().convert_mols(molecules)
         self.fingerprints    = fingerprints
-        self.values          = self.calc_property(molecules)
+        self.values          = self.calc_property(molecules,fingerprints)
 
     def calc_property(self,molecules):
         """
-        Calculates the presence or absence of each atom type in the set of molecules provided.
+        Uses the calculator in each fingerprint object to calculate the label for each atom in each molecule.
 
         Returns
         -------
-        atoms : {"<atom_type>" : np.array}
+        name : {"<atom_type>" : np.array}
             Each atom type (expressed as elemental symbol strings is mapped to the binary vector describing
             whether or not it is present in each molecule.
         """
-        atoms = {}
+        props = {}
         for atom in self.atoms:
             atoms[atom] = Binary(atom,
                                  np.array([1 if atom in [a.GetSymbol() for a in mol.GetAtoms()] else 0 for mol in molecules]),
