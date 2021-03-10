@@ -8,8 +8,29 @@ across the provided set of molecules. Intuitively these labels represent a "pure
 of the space of interest, with the label adopting almost exclusively a single value.
 
 ## API
-The Similarity_Analysis Class handles the analysis of the molecular subset with a provided set
-of properties. The properties were built with extensability in mind. The API for a property is
+The MolSet Class handles the analysis of the molecular set with a provided set of properties. These properties are provided as fingerprints which provide information about how to calculate the property, how it  will be described (defined by context and name).
+
+```python
+a = Fingerprint(name="Contains C",
+                  context="molecule",
+                  label_type="binary",
+                  calculator="add")
+```
+
+## Context
+There are four different contexts that will be considered by MolSet (atom, bond, molecule, and substructure). Each context dictates what the label describes and determines internally when it will be calculated.
+
+## Label Types
+### Binary
+Binary labels indicate the presence of absence of a particular element, bond type, or molecular feature (such as aromaticity). Simplest to calculate and best behaved with respect to the entropy estimators. Uses a discrete entropy estimator.
+
+### Multiclass
+Discrete labels where the value can be any integer. Examples include number of rings, number of atoms, or number of each type of bond. Uses a discrete entropy estimator.
+
+### Continuous
+Continuous labels where the value can be any real number. Examples include electronic spatial extent, dipole moment, and free energy. Uses the continuous entropy estimator
+
+The properties were built with extensability in mind. The API for a property is
 defined by the Property abstract class with its associated methods.
 
 The majority of the work is handled by the property metaclass, which contains the key entropy functionality
@@ -27,31 +48,7 @@ The discrete entropy is estimated using the plug in estimator that assumes a uni
 
 The continuous entropy estimator uses the Kozachenko and Leonenko (1987) estimator in which k-nearest neighbour distances are used to approximate the entropy of the underlying distribution. The implementation is provided by the entropy esitmators package of Paul Broderson (https://github.com/paulbrodersen/entropy_estimators).
 
-## Label Types
-### Binary
-Binary labels indicate the presence of absence of a particular element, bond type, or molecular feature (such as aromaticity). Simplest to calculate and best behaved with respect to the entropy estimators. Uses a discrete entropy estimator.
-
-### Multiclass
-Discrete labels where the value can be any integer. Examples include number of rings, number of atoms, or number of each type of bond. Uses a discrete entropy estimator.
-
-### Continuous
-Continuous labels where the value can be any real number. Examples include electronic spatial extent, dipole moment, and free energy. Uses the continuous entropy estimator
-
 ### TODO
-I would like to extend this code to continuous descriptors such as electronic spatial extent or something similar.
-I think however that doing that would require implementing https://en.wikipedia.org/wiki/Limiting_density_of_discrete_points.
-Which would be very tricky.
-
-Additionally, these continuous decisions need to be taken against some standard I believe. What exactly
-this standard should be is difficult.
-
-The reason for this is that as they are not discrete, they will never have multiple instances of the same class, so the notion
-of "purity" that is intuitive for discrete distributions is lost in the continuous case.
-
-There are some alternatives https://thomasberrett.github.io/EntropyEstimation.pdf and https://github.com/paulbrodersen/entropy_estimators.
-
-But the best formulation may be using KL-Div between the original distribution (in the entire dataset), and the distribution in the subset of interest.
-
 So the final major code refactorization that I want to consider now is a further decomposition of the problem.
 Currently molprop, substructure, atom, and bond are the four main classes, but their functionality is restricted. Having these as their own superclasses that inherit from property and then spawning particular instances like atom_types would allow me to extend it further to other atomic properties such as charge, radical, hybridisation, etc.
 
@@ -64,7 +61,9 @@ Currently molprop, substructure, atom, and bond are the four main classes, but t
 2. Add plotting functionality.
 3. Speed it up. The code was written to get a working prototype as quickly as possible, but the current codebase is slow to execute and their should be some ways to dramatically accelerate it.
 4. Add code snippet examples for how to run
-5. Add feature to identify outliers from a group
+5. Add feature to represent label of cluster as a vector, can then strongest outliers for a given set.
+6. Add feature to identify outliers from a group
+   1. This one involves
 
 
 #### Notes
