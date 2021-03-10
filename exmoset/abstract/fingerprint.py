@@ -33,7 +33,7 @@ class Fingerprint():
         self.mol_format = mol_format
 
     def __repr__(self):
-        return f"Fingerprint({self.name},{self.context},{self.label_type},{self.calculator})"
+        return f"Fingerprint({self.name},{self.context},{self.label_type},{self.calculator},{self.mol_format})"
 
     def __str__(self):
         return f"Fingerprint\n\t" + "\n\t".join([f"Name : {self.name:^24}",
