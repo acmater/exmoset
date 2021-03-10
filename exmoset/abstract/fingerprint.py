@@ -17,6 +17,9 @@ class Fingerprint():
     calculator : <function>
         A python function that will be called during the class determined by the context
         to determine the value of the property.
+
+    mol_format : str
+        Which molecular format will be accessed from the Molecule object.
     """
     def __init__(self,name,
                       context,
@@ -36,7 +39,8 @@ class Fingerprint():
         return f"Fingerprint\n\t" + "\n\t".join([f"Name : {self.name:^24}",
                                                  f"Context: {self.context:^18}",
                                                  f"Label Type: {self.label_type:^11}",
-                                                 f"Calculator : {self.calculator:^5}"])
+                                                 f"Calculator : {self.calculator:^5}"],
+                                                 f"Mol Format : {self.mol_format:^5}")
 
 if __name__ == "__main__":
     a = Fingerprint(name="Contains C",
