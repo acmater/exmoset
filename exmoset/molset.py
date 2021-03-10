@@ -13,6 +13,8 @@ from labels import Binary, Multiclass, Continuous
 
 #np.array([1 if "C" in [a.GetSymbol() for a in mol.GetAtoms()]
 def contains_c(mol):
+    return np.array([1 if "C" in mol else 0])
+def contains_o(mol):
     return np.array([1 if "O" in mol else 0])
 
 properties = [Aromatic]#,NumRings,NumAtoms]
@@ -20,7 +22,12 @@ test_fingerprint =  [Fingerprint(name="Contains C",
                     context="molecule",
                     label_type="binary",
                     calculator=contains_c,
-                    mol_format="smiles")]
+                    mol_format="smiles"),
+                    Fingerprint(name="Contains O",
+                                        context="molecule",
+                                        label_type="binary",
+                                        calculator=contains_o,
+                                        mol_format="smiles")]
 
 label_types = {"binary"     : Binary,
                "multiclass" : Multiclass,
@@ -67,17 +74,18 @@ class MolSet():
 
         #fingerprints = {fingerprint.name : fingerprint for fingerprint in fingerprints}
         prop_values = np.zeros((len(fingerprints),len(self.Molecules)))
-        print(prop_values)
 
         for i,molecule in enumerate(self.Molecules):
             for j,fingerprint in enumerate(fingerprints):
                 prop_values[j,i] = fingerprint.calculator(molecule[fingerprint.mol_format])
 
+        print(prop_values)
+
         label_dict = {}
         for i,fp in enumerate(fingerprints):
             label_dict[fp.name] = label_types[fp.label_type](fp.name,prop_values[i],fp.context)
 
-        print(label_dict["Contains C"])
+        print(label_dict["Contains O"])
 
 
         if file is not None:

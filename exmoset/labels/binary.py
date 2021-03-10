@@ -12,6 +12,7 @@ class Binary(Label):
         self.values  = values
         self.av      = np.mean(values)
         self.context = context
+        self.entropy = self.entropy()
 
     def summary(self,verbose=False):
         if self.context == "whole":
