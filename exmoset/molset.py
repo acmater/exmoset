@@ -8,12 +8,32 @@ from atom import ContainsAtom
 from bond import ContainsBond
 from substructure import Substructure
 from data import *
+from abstract import Molecule
 
 properties = [Aromatic]#,NumRings,NumAtoms]
 
 class MolSet():
+    """
+    A molecular set to be analysed.
+
+    Attributes
+    ----------
+    molecules : list
+        A list of molecules that will be parsed into the Molecule class
+
+    properties : list
+        A list of property fingerprints that will be calculated for each system
+
+    mol_converters : dict, default = {}
+        A list of molecule converters that will be passed as kwargs to the Molecule object
+
+        Example: {"rdkit" : Chem.MolFromSmiles}
+        This will then be provided as keyword arguments to Molecule and given the particular mol as an argument.
+        Molecule(mol, rdkit=Chem.MolFromSmiles(mol))
+    """
     def __init__(self,molecules,
                       properties,
+                      mol_converters={},
                       atoms=None,
                       bonds=None,
                       molprops=None,
@@ -24,6 +44,8 @@ class MolSet():
         molecules, smiles = self.convert_mols(molecules)
         self.molecules = {x : y for x,y in zip(smiles,molecules)}
         self.verbose = verbose
+
+        self.Molecules = [Molecule(mol,**mol_converters) for mol in tqdm.tqdm(molecules)]
 
         if file is not None:
             print(f"Importing {file}")
@@ -84,6 +106,7 @@ class MolSet():
 if __name__ == "__main__":
     analysis = MolSet(molecules10,
                     properties,
+                    mol_converters={"rd" : Chem.MolFromSmiles},
                     atoms=["C","N","O","F"],
                     bonds=["SINGLE","DOUBLE","TRIPLE"],
                     molprops=["Dipole Moment","Isotropic Polarizability", "Electronic Spatial Extent", "Rotational Constant A"],

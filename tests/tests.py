@@ -20,7 +20,8 @@ class TestMolecule(unittest.TestCase):
         test = Molecule("CCC")
         assert test, "Molecule object not correctly generated"
     def test_mol_gen_rdkit(self):
-        test2 = Molecule("CCC",mol=Chem.MolFromSmiles("CCC"))
+        mol_converters = {"mol" : Chem.MolFromSmiles("CCC")}
+        test2 = Molecule("CCC",**mol_converers)
         assert isinstance(test2.mol,Chem.rdchem.Mol), "Extra attribute generation not working for Molecule class"
     def test_mol_eq(self):
         assert Molecule("CCC",mol=Chem.MolFromSmiles("CCC")) == Molecule("CCC"), "Molecule equality not working"

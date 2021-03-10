@@ -39,5 +39,6 @@ class Molecule():
         return True if self.rep == other.rep else False
 
 if __name__ == "__main__":
-    test = Molecule("CCC",mol=Chem.MolFromSmiles("CCC"))
+    mol_converters = {"mol" : Chem.MolFromSmiles("CCC")}
+    test = Molecule("CCC",**mol_converters)
     test2 = Molecule("CCC")
