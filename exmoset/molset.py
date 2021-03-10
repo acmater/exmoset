@@ -18,13 +18,13 @@ def contains_o(mol):
     return np.array([1 if "O" in mol else 0])
 
 properties = [Aromatic]#,NumRings,NumAtoms]
-test_fingerprint =  [Fingerprint(name="Contains C",
-                    context="molecule",
+test_fingerprint =  [Fingerprint(name="Contain C",
+                    context="Molecules",
                     label_type="binary",
                     calculator=contains_c,
                     mol_format="smiles"),
                     Fingerprint(name="Contains O",
-                                        context="molecule",
+                                        context="part",
                                         label_type="binary",
                                         calculator=contains_o,
                                         mol_format="smiles")]
@@ -76,8 +76,8 @@ class MolSet():
         prop_values = np.zeros((len(fingerprints),len(self.Molecules)))
 
         for i,molecule in enumerate(self.Molecules):
-            for j,fingerprint in enumerate(fingerprints):
-                prop_values[j,i] = fingerprint.calculator(molecule[fingerprint.mol_format])
+            for j,fp in enumerate(fingerprints):
+                prop_values[j,i] = fp.calculator(molecule[fp.mol_format])
 
         print(prop_values)
 
@@ -85,8 +85,7 @@ class MolSet():
         for i,fp in enumerate(fingerprints):
             label_dict[fp.name] = label_types[fp.label_type](fp.name,prop_values[i],fp.context)
 
-        print(label_dict["Contains O"])
-
+        print([label.summary() for label in label_dict.values()])
 
         if file is not None:
             print(f"Importing {file}")
