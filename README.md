@@ -8,7 +8,20 @@ across the provided set of molecules. Intuitively these labels represent a "pure
 of the space of interest, with the label adopting almost exclusively a single value.
 
 ## API
-The MolSet Class handles the analysis of the molecular set with a provided set of properties. These properties are provided as fingerprints which provide information about how to calculate the property, how it  will be described (defined by context and name).
+The MolSet Class handles the analysis of the molecular set with a provided set of properties. All that must be provided to the MolSet class is the set of smiles. It has a large number of additional arguments that can customize its behaviour.
+
+```python
+analysis = MolSet(molecules10,
+                properties,
+                atoms=["C","N","O","F"], # Atoms to check the presence of
+                bonds=["SINGLE","DOUBLE","TRIPLE"], # bonds to check the presence of
+                molprops=["Dipole Moment","Isotropic Polarizability", "Electronic Spatial Extent", "Rotational Constant A"], # Dataframe labels to check the entropy of
+                substructures = ["[OH]","[NH2]","[CC]"], # Substrcutre to check the presence of
+                significance=0.1, # Default significance threshold that must be met.
+                file="data/QM9_Data.csv") # Datafile indexed by the molprops method
+```
+
+These properties are provided as fingerprints which provide information about how to calculate the property, how it  will be described (defined by context and name).
 
 ```python
 a = Fingerprint(name="Contains C",
@@ -64,6 +77,8 @@ Currently molprop, substructure, atom, and bond are the four main classes, but t
 5. Add feature to represent label of cluster as a vector, can then strongest outliers for a given set.
 6. Add feature to identify outliers from a group
    1. This one involves
+7. Figure out how to provide dataframe indexing. (Should be doable using just the function call method in fingerprint)
+8. Add custom sensitivity settings to fingerprint so that they are set to the default provided to molset if no custom default is provided.
 
 
 #### Notes

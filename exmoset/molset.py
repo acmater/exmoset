@@ -58,6 +58,9 @@ class MolSet():
     def __or__(self, other):
         pass
 
+    def get_outliers(self):
+        pass # TODO Implement
+
     @staticmethod
     def convert_mols(molecules,debug=False):
         failed     = []
@@ -78,12 +81,12 @@ class MolSet():
 
 
 if __name__ == "__main__":
-    analy = MolSet(molecules10,
-                        properties,
-                        atoms=["C","N","O","F"],
-                        bonds=["SINGLE","DOUBLE","TRIPLE"],
-                        molprops=["Dipole Moment","Isotropic Polarizability", "Electronic Spatial Extent", "Rotational Constant A"],
-                        substructures = ["[OH]","[NH2]","[CC]"],
-                        significance=0.1,
-                        file="data/QM9_Data.csv")
-    print(analy)
+    analysis = MolSet(molecules10,
+                    properties,
+                    atoms=["C","N","O","F"],
+                    bonds=["SINGLE","DOUBLE","TRIPLE"],
+                    molprops=["Dipole Moment","Isotropic Polarizability", "Electronic Spatial Extent", "Rotational Constant A"],
+                    substructures = ["[OH]","[NH2]","[CC]"],
+                    significance=0.1,
+                    file="data/QM9_Data.csv")
+    print(analysis)
