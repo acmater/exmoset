@@ -1,17 +1,29 @@
 import unittest
 import numpy as np
 import pandas as pd
+from rdkit import Chem
 
 from exmoset.atom import ContainsAtom
 from exmoset.bond import ContainsBond
 from exmoset.substructure import Substructure
 from exmoset.data import *
 from exmoset.molecule import MolProp
+from exmoset.abstract import Molecule
 
 test_mols = molecules4
 
 # Is there a better way to do the global portions of the code below? Intuitively I should be able
 # to customize the initialization of each class and provide it as an attribute, but that doesn't seem to work.
+
+class TestMolecule(unittest.TestCase):
+    def test_mol_gen(self):
+        test = Molecule("CCC")
+        assert test, "Molecule object not correctly generated"
+    def test_mol_gen_rdkit(self):
+        test2 = Molecule("CCC",mol=Chem.MolFromSmiles("CCC"))
+        assert isinstance(test2.mol,Chem.rdchem.Mol), "Extra attribute generation not working for Molecule class"
+    def test_mol_eq(self):
+        assert Molecule("CCC",mol=Chem.MolFromSmiles("CCC")) == Molecule("CCC"), "Molecule equality not working"
 
 class TestFailedMoleculeConversion(unittest.TestCase):
     def test_failed_import(self):

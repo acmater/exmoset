@@ -1,6 +1,7 @@
 import numpy as np
 from rdkit import Chem
 import pandas as pd
+import tqdm
 
 from molecule import *
 from atom import ContainsAtom
