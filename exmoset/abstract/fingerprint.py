@@ -21,11 +21,13 @@ class Fingerprint():
     def __init__(self,name,
                       context,
                       label_type,
-                      calculator):
+                      calculator,
+                      mol_format):
         self.name = name
         self.context = context
         self.label_type = label_type
         self.calculator = calculator
+        self.mol_format = mol_format
 
     def __repr__(self):
         return f"Fingerprint({self.name},{self.context},{self.label_type},{self.calculator})"
@@ -40,5 +42,6 @@ if __name__ == "__main__":
     a = Fingerprint(name="Contains C",
                     context="molecule",
                     label_type="binary",
-                    calculator="add")
+                    calculator="add",
+                    mol_format="smiles")
     print(a)

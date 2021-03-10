@@ -45,7 +45,10 @@ class MolSet():
         self.molecules = {x : y for x,y in zip(smiles,molecules)}
         self.verbose = verbose
 
-        self.Molecules = [Molecule(mol,**mol_converters) for mol in tqdm.tqdm(molecules)]
+        self.Molecules = []
+        for mol in tqdm.tqdm(smiles):
+            formats = {key : mol_converters[key](mol) for key in mol_converters.keys()}
+            self.Molecules.append(Molecule(mol, **formats))
 
         if file is not None:
             print(f"Importing {file}")
@@ -106,7 +109,7 @@ class MolSet():
 if __name__ == "__main__":
     analysis = MolSet(molecules10,
                     properties,
-                    mol_converters={"rd" : Chem.MolFromSmiles},
+                    mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                     atoms=["C","N","O","F"],
                     bonds=["SINGLE","DOUBLE","TRIPLE"],
                     molprops=["Dipole Moment","Isotropic Polarizability", "Electronic Spatial Extent", "Rotational Constant A"],
