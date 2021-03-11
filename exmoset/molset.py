@@ -56,18 +56,18 @@ class MolSet():
             df     = pd.read_csv(file,index_col="SMILES")
             sub_df = df.loc[[mol.smiles for mol in self.Molecules]]
 
-        prop_values = np.zeros((len(fingerprints),len(self.Molecules)))
+        self.prop_values = np.zeros((len(fingerprints),len(self.Molecules)))
 
         for i,molecule in enumerate(self.Molecules):
             for j,fp in enumerate(fingerprints):
                 if fp.file is not None:
-                    prop_values[j,i] = fp.calculator(molecule[fp.mol_format],file=sub_df)
+                    self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format],file=sub_df)
                 else:
-                    prop_values[j,i] = fp.calculator(molecule[fp.mol_format])
+                    self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format])
 
         self.label_dict = {}
         for i,fp in enumerate(fingerprints):
-            self.label_dict[fp.name] = label_types[fp.label_type](fp.name,prop_values[i],fp.context)
+            self.label_dict[fp.name] = label_types[fp.label_type](fp.name,self.prop_values[i],fp.context)
 
         self.significance     = significance
         self.properties       = np.array(list(self.label_dict.keys()))
@@ -89,6 +89,17 @@ class MolSet():
         return ma.array(vector, mask=mask), mask
 
 
+    def get_outliers(self):
+        # This is clunky af
+        full_mask = np.zeros((len(self.mask),len(self)))
+        for i in range(len(self)):
+            full_mask[:,i] = self.mask
+        masked_vals = ma.array(self.prop_values,mask=full_mask)
+        return np.where(np.sum((self.vector.reshape(-1,1) - masked_vals),axis=0) != 0) # Need to update distance formulation
+
+    def __len__(self):
+        return len(self.Molecules)
+
     def __str__(self):
         header  = ["Subset Description"]
         labels = [label.summary() for label in self.label_dict.values()]
@@ -104,10 +115,6 @@ class MolSet():
         assert isinstance(other, MolSet)
         return self.properties[ma.where(self.vector == other.vector)]
 
-
-    def get_outliers(self):
-        pass # TODO Implement
-
 if __name__ == "__main__":
     fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
 
@@ -116,15 +123,11 @@ if __name__ == "__main__":
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                     significance=0.1,
                     file="data/QM9_Data.csv")
-    print(analysis.vector)
-    print(analysis)
 
     analysis2 = MolSet(molecules4,
                 fingerprints = fingerprints,
                 mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                 significance=0.1,
                 file="data/QM9_Data.csv")
-    print(analysis2.vector)
 
-
-    print(analysis & analysis2)
+    print(analysis.Molecules[5])
