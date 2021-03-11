@@ -51,17 +51,6 @@ Discrete labels where the value can be any integer. Examples include number of r
 ### Continuous
 Continuous labels where the value can be any real number. Examples include electronic spatial extent, dipole moment, and free energy. Uses the continuous entropy estimator
 
-The properties were built with extensability in mind. The API for a property is
-defined by the Property abstract class with its associated methods.
-
-The majority of the work is handled by the property metaclass, which contains the key entropy functionality
-for both continuous and discrete cases. This is called by all of its subclasses to determine the importance
-of each of the properties that they are assessing.
-
-Property instances are further decomposed into three separate subclasses - atom, bond, and molecule
-properties. All of these utilize the API provided by property, and the information provided
-by similarity analysis is sorted in accordance with that.
-
 ## Entropy Estimation
 Key to the functioning of this approach is the estimation of entropy for a given random variable. Both discrete (for properties such as aromaticity) and continuous (for properties like electronic spatial extent) have to be considered, and different approaches are used to estimate the entropy.
 
@@ -69,11 +58,10 @@ The discrete entropy is estimated using the plug in estimator that assumes a uni
 
 The continuous entropy estimator uses the Kozachenko and Leonenko (1987) estimator in which k-nearest neighbour distances are used to approximate the entropy of the underlying distribution. The implementation is provided by the entropy esitmators package of Paul Broderson (https://github.com/paulbrodersen/entropy_estimators).
 
-### TODO
+## TODO
 So the final major code refactorization that I want to consider now is a further decomposition of the problem.
 Currently molprop, substructure, atom, and bond are the four main classes, but their functionality is restricted. Having these as their own superclasses that inherit from property and then spawning particular instances like atom_types would allow me to extend it further to other atomic properties such as charge, radical, hybridisation, etc.
 
-0. Update docstrings throughout codebase.
 1. Write new tests for all of the new functionalities
 2. Another nice feature would be the capacity to select two distributions and identify what properties are different between them.
    1. There's actually more scope here than looking at differences. The labels can be viewed as logical descriptions of the group, with logical operations defined on them.

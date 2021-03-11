@@ -6,6 +6,7 @@ from rdkit import Chem
 from exmoset.data import *
 from exmoset.utils import Molecule
 from exmoset.fingerprints import *
+from exmoset.labels import *
 
 test_mols = molecules4
 
@@ -30,6 +31,39 @@ class TestFingerprint(unittest.TestCase):
                     label_type="binary",
                     calculator="add",
                     mol_format="smiles"), "Fingerprint generation did not work properly"
+
+class TestBinaryLabel(unittest.TestCase):
+    global binary
+    binary = Binary("binary",np.ones((100,1)))
+    def test_av(self):
+        assert binary.av == 1, "Binary label averaging not working."
+    def test_entropy(self):
+        assert binary.entropy == 0, "Entropy testing for Binary labels not working."
+    def test_name(self):
+        assert binary.name == "binary", "Binary name not working properly."
+
+class TestMulticlassLabel(unittest.TestCase):
+    global multi
+    multi = Multiclass("multi",np.arange(10))
+    def test_av(self):
+        assert multi.av == 4, "Multiclass label averaging not working."
+    def test_entropy(self):
+        assert multi.entropy != 0, "Entropy testing for Multiclass labels not working."
+    def test_name(self):
+        assert multi.name == "multi", "Multiclass label name not working properly."
+
+class TestMulticlassLabel(unittest.TestCase):
+    global cont
+    cont = Continuous("cont",np.arange(10))
+    def test_av(self):
+        assert cont.av == 4.5, "Continuous label averaging not working."
+    def test_entropy(self):
+        assert cont.entropy != 0, "Entropy testing for Continuous labels not working."
+    def test_name(self):
+        assert cont.name == "cont", "Continuous label name not working properly."
+
+class TestSubstructure(unittest.TestCase):
+        pass
 
 """
 class TestFailedMoleculeConversion(unittest.TestCase):
