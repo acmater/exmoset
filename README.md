@@ -60,6 +60,5 @@ The continuous entropy estimator uses the Kozachenko and Leonenko (1987) estimat
 
 ## TODO
 
+1. Should look into named numpy arrays to streamline some of the dictionary use in the code.
 3. Add plotting functionality.
-5. Add feature to identify outliers from a group
-   1. This one involves
