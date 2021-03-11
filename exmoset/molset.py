@@ -23,6 +23,8 @@ def contains_TRIPLE(mol):
     return np.array([1 if 'TRIPLE' in [b.GetBondType().__str__() for b in mol.GetBonds()] else 0])
 def Dipole_Moment(mol,file):
     return file["Dipole Moment"][mol]
+def aromatic(mol):
+    return np.array([bool(mol.GetAromaticAtoms())],dtype=np.int)
 
 fingerprints =  [Fingerprint(name="Contain C",
                                  context="Molecules",
@@ -34,6 +36,11 @@ fingerprints =  [Fingerprint(name="Contain C",
                                  label_type="binary",
                                  calculator=contains_o,
                                  mol_format="smiles"),
+                    Fingerprint(name="Aromatic",
+                                context="whole",
+                                label_type="binary",
+                                calculator=aromatic,
+                                mol_format="rd"),
 # Substructure fingerprints
 
                      Fingerprint(name="Contains OH",
@@ -111,7 +118,6 @@ class MolSet():
             df     = pd.read_csv(file,index_col="SMILES")
             sub_df = df.loc[[mol.smiles for mol in self.Molecules]]
 
-        #fingerprints = {fingerprint.name : fingerprint for fingerprint in fingerprints}
         prop_values = np.zeros((len(fingerprints),len(self.Molecules)))
 
         for i,molecule in enumerate(self.Molecules):
@@ -147,7 +153,7 @@ class MolSet():
         pass # TODO Implement
 
 if __name__ == "__main__":
-    analysis = MolSet(molecules6,
+    analysis = MolSet(molecules2,
                     fingerprints = fingerprints,
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                     significance=0.1,
