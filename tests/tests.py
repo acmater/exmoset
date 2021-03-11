@@ -52,7 +52,7 @@ class TestMulticlassLabel(unittest.TestCase):
     def test_name(self):
         assert multi.name == "multi", "Multiclass label name not working properly."
 
-class TestMulticlassLabel(unittest.TestCase):
+class TestContinuousclassLabel(unittest.TestCase):
     global cont
     cont = Continuous("cont",np.arange(10))
     def test_av(self):
@@ -61,6 +61,19 @@ class TestMulticlassLabel(unittest.TestCase):
         assert cont.entropy != 0, "Entropy testing for Continuous labels not working."
     def test_name(self):
         assert cont.name == "cont", "Continuous label name not working properly."
+
+class TestMolSet(unittest.TestCase):
+    global analysis
+    fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
+    try:
+        analysis = MolSet(molecules4,
+                        fingerprints = fingerprints,
+                        mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
+                        significance=0.1,
+                        file="data/QM9_Data.csv")
+    except Exception:
+        "Molset Class could not be created"
+    
 
 class TestSubstructure(unittest.TestCase):
         pass

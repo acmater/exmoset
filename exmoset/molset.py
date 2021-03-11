@@ -8,12 +8,6 @@ from utils import Molecule
 from labels import Binary, Multiclass, Continuous
 from fingerprints import *
 
-fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
-
-label_types = {"binary"     : Binary,
-               "multiclass" : Multiclass,
-               "continuous" : Continuous}
-
 class MolSet():
     """
     A molecular set to be analysed.
@@ -38,12 +32,18 @@ class MolSet():
 
     file : str, default=None
         An optional file (dataframe) that will be imported by pandas and can be accessed by the fingerprints.
+
+    label_tpyes : {str : <Label Class>}, default = {"binary" : Binary, "multiclass" : Multiclass, "continuous" : Continuous}
+        A dictionary of possible label types for indexing.
     """
     def __init__(self,molecules,
                       fingerprints,
                       mol_converters={},
                       significance=0.1,
-                      file=None):
+                      file=None,
+                      label_types = {"binary"     : Binary,
+                                     "multiclass" : Multiclass,
+                                     "continuous" : Continuous}):
 
         self.Molecules = []
         for mol in tqdm.tqdm(molecules):
@@ -88,6 +88,8 @@ class MolSet():
         pass # TODO Implement
 
 if __name__ == "__main__":
+    fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
+
     analysis = MolSet(molecules4,
                     fingerprints = fingerprints,
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
