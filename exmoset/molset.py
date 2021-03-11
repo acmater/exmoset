@@ -4,9 +4,6 @@ import pandas as pd
 import tqdm
 
 from molecule import *
-from atom import ContainsAtom
-from bond import ContainsBond
-from substructure import Substructure
 from data import *
 from abstract import Molecule, Fingerprint
 from labels import Binary, Multiclass, Continuous
@@ -27,8 +24,7 @@ def contains_TRIPLE(mol):
 def Dipole_Moment(mol,file):
     return file["Dipole Moment"][mol]
 
-properties = [Aromatic]#,NumRings,NumAtoms]
-test_fingerprint =  [Fingerprint(name="Contain C",
+fingerprints =  [Fingerprint(name="Contain C",
                                  context="Molecules",
                                  label_type="binary",
                                  calculator=contains_c,
@@ -96,31 +92,24 @@ class MolSet():
         Example: {"rdkit" : Chem.MolFromSmiles}
         This will then be provided as keyword arguments to Molecule and given the particular mol as an argument.
         Molecule(mol, rdkit=Chem.MolFromSmiles(mol))
+
     """
     def __init__(self,molecules,
-                      properties,
                       fingerprints,
                       mol_converters={},
-                      atoms=None,
-                      bonds=None,
-                      molprops=None,
-                      substructures=None,
                       verbose=False,
                       significance=0.1,
                       file=None):
-        molecules, smiles = self.convert_mols(molecules)
-        self.molecules = {x : y for x,y in zip(smiles,molecules)}
-        self.verbose = verbose
+
+        self.Molecules = []
+        for mol in tqdm.tqdm(molecules):
+            formats = {key : mol_converters[key](mol) for key in mol_converters.keys()}
+            self.Molecules.append(Molecule(mol, **formats))
 
         if file is not None:
             print(f"Importing {file}")
             df     = pd.read_csv(file,index_col="SMILES")
-            sub_df = df.loc[self.molecules.keys()]
-
-        self.Molecules = []
-        for mol in tqdm.tqdm(smiles):
-            formats = {key : mol_converters[key](mol) for key in mol_converters.keys()}
-            self.Molecules.append(Molecule(mol, **formats))
+            sub_df = df.loc[[mol.smiles for mol in self.Molecules]]
 
         #fingerprints = {fingerprint.name : fingerprint for fingerprint in fingerprints}
         prop_values = np.zeros((len(fingerprints),len(self.Molecules)))
@@ -131,32 +120,18 @@ class MolSet():
                     prop_values[j,i] = fp.calculator(molecule[fp.mol_format],file=sub_df)
                 else:
                     prop_values[j,i] = fp.calculator(molecule[fp.mol_format])
-        print(prop_values)
 
-        label_dict = {}
+        self.label_dict = {}
         for i,fp in enumerate(fingerprints):
-            label_dict[fp.name] = label_types[fp.label_type](fp.name,prop_values[i],fp.context)
+            self.label_dict[fp.name] = label_types[fp.label_type](fp.name,prop_values[i],fp.context)
 
-        print([label.summary() for label in label_dict.values()])
+        print([label.summary() for label in self.label_dict.values()])
 
-        if atoms is not None:
-            atom_props = ContainsAtom(list(self.molecules.values()),atoms)
-
-        if bonds is not None:
-            bond_props = ContainsBond(list(self.molecules.values()),bonds)
-
-        if molprops is not None:
-            molecular_properties = MolProp(list(self.molecules.keys()),molprops,sub_df)
-
-        if substructures is not None:
-            substructures = Substructure(list(self.molecules.values()),substructures)
-
-        self.properties = [prop(list(self.molecules.values()),df=sub_df) for prop in properties] + [atom_props,bond_props,molecular_properties,substructures]
         self.significance = significance
 
     def __str__(self):
         header  = ["Subset Description"]
-        labels = [prop.summative_label(significance=self.significance,verbose=self.verbose) for prop in self.properties]
+        labels = [label.summary() for label in self.label_dict.values()]
         results = ["\t{:<60}".format(label) for label in labels if label is not None]
 
         if len(results) == 0:
@@ -171,34 +146,10 @@ class MolSet():
     def get_outliers(self):
         pass # TODO Implement
 
-    @staticmethod
-    def convert_mols(molecules,debug=False):
-        failed     = []
-        successful = []
-        smiles     = []
-        for mol in molecules:
-            molobj = Chem.MolFromSmiles(mol)
-            if molobj is not None:
-                successful.append(molobj)
-                smiles.append(mol)
-            else:
-                failed.append(molobj)
-                print(f"Failed to convert {mol}")
-        if debug:
-            return successful, smiles, failed
-        else:
-            return successful, smiles
-
-
 if __name__ == "__main__":
-    analysis = MolSet(molecules10,
-                    properties,
-                    fingerprints = test_fingerprint,
+    analysis = MolSet(molecules6,
+                    fingerprints = fingerprints,
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
-                    atoms=["C","N","O","F"],
-                    bonds=["SINGLE","DOUBLE","TRIPLE"],
-                    molprops=["Dipole Moment","Isotropic Polarizability", "Electronic Spatial Extent", "Rotational Constant A"],
-                    substructures = ["[OH]","[NH2]","[CC]"],
                     significance=0.1,
                     file="data/QM9_Data.csv")
     print(analysis)
