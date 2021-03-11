@@ -1,5 +1,5 @@
 import numpy as np
-from ..fingerprint import Fingerprint
+from .fingerprint import Fingerprint
 
 atoms = ["C","N","O","F"]
 

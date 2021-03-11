@@ -6,57 +6,9 @@ import tqdm
 from data import *
 from abstract import Molecule
 from labels import Binary, Multiclass, Continuous
-from fingerprints import Fingerprint
-from fingerprints.atom import atom_fingerprints
-from fingerprints.bond import bond_fingerprints
+from fingerprints import *
 
-#np.array([1 if "C" in [a.GetSymbol() for a in mol.GetAtoms()]
-
-
-def contains_OH(mol):
-    return np.array([mol.HasSubstructMatch(Chem.MolFromSmarts("[N]"))],dtype=np.int)
-
-def Dipole_Moment(mol,file):
-    return file["Dipole Moment"][mol]
-def aromatic(mol):
-    return np.array([bool(mol.GetAromaticAtoms())],dtype=np.int)
-def num_atoms(mol):
-    return np.array([len(mol.GetAtoms())])
-def num_rings(mol):
-    return np.array([mol.GetRingInfo().NumRings()])
-
-fingerprints =  [   Fingerprint(name="Aromatic",
-                                context="whole",
-                                label_type="binary",
-                                calculator=aromatic,
-                                mol_format="rd"),
-
-                    Fingerprint(name="Number of Atoms",
-                                context="whole",
-                                label_type="multiclass",
-                                calculator=num_atoms,
-                                mol_format="rd"),
-
-                    Fingerprint(name="Number of Rings",
-                                context="whole",
-                                label_type="multiclass",
-                                calculator=num_rings,
-                                mol_format="rd"),
-# Substructure fingerprints
-
-                     Fingerprint(name="Contains OH",
-                                 context="Molecules",
-                                 label_type="binary",
-                                 calculator=contains_OH,
-                                 mol_format="rd"),
-
-# Continuous Dataset Indexing
-                    Fingerprint(name="Dipole Moment",
-                                context="Molecules",
-                                label_type="continuous",
-                                calculator=Dipole_Moment,
-                                mol_format="smiles",
-                                file=True)] + atom_fingerprints + bond_fingerprints
+fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
 
 label_types = {"binary"     : Binary,
                "multiclass" : Multiclass,
