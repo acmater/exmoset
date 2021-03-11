@@ -99,6 +99,17 @@ class MolSet():
         masked_vals = ma.array(self.prop_values,mask=full_mask)
         return np.where(np.sum((self.vector.reshape(-1,1) - masked_vals),axis=0) != 0) # Need to update distance formulation
 
+    def plot_entropy(self):
+        import matplotlib.pyplot as plt
+        from matplotlib import cm
+        label_dict    = {key : (self.label_dict[key].entropy,self.label_dict[key].sensitivity) for key in self.label_dict}
+        label_dict    = {key : val for key, val in sorted(label_dict.items(), key=lambda item: item[1])}
+
+        plt.bar(range(len(label_dict)), [x[0] for x in label_dict.values()], align="center",alpha=0.5)
+        plt.xticks(range(len(label_dict)), list(label_dict.keys()), rotation=45, ha='right')
+        plt.plot(range(len(label_dict)), [x[1] for x in label_dict.values()], dashes=[6,2],color='k')
+        plt.show()
+
     def __len__(self):
         return len(self.Molecules)
 
@@ -120,7 +131,7 @@ class MolSet():
 if __name__ == "__main__":
     fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
 
-    analysis = MolSet(molecules6,
+    analysis = MolSet(molecules3,
                     fingerprints = fingerprints,
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                     significance=0.1,
@@ -131,5 +142,7 @@ if __name__ == "__main__":
                 mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                 significance=0.1,
                 file="data/QM9_Data.csv")
+
+    analysis.plot_entropy()
 
     print(analysis.Molecules[5])
