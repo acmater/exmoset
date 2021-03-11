@@ -1,4 +1,4 @@
-from exmoset.abstract import Label
+from . import Label
 import numpy as np
 
 class Multiclass(Label):

@@ -1,5 +1,5 @@
 import numpy as np
-from exmoset.abstract import Label
+from . import Label
 
 class Binary(Label):
     """
