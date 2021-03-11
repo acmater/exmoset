@@ -22,10 +22,14 @@ analysis = MolSet(molecules,
 Fingerprints are a standardized way for Molset to calculate the properties for each molecule it is analysing. Its arguments determine how the property will be calculated, custom sensititivies, and through a variety of arguments how exactly the descriptor sentence will be constructed.
 
 ```python
+def contains_C(mol):
+      return 1 if C in mol else 0
+
 contains_carbon = Fingerprint(name="Contains C",
                   context="molecule",
                   label_type="binary",
                   calculator=contains_C,
+                  mol_format="smiles"
                   file=None)
 ```
 

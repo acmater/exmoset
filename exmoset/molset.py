@@ -4,7 +4,7 @@ import pandas as pd
 import tqdm
 
 from data import *
-from abstract import Molecule
+from utils import Molecule
 from labels import Binary, Multiclass, Continuous
 from fingerprints import *
 
@@ -33,11 +33,15 @@ class MolSet():
         This will then be provided as keyword arguments to Molecule and given the particular mol as an argument.
         Molecule(mol, rdkit=Chem.MolFromSmiles(mol))
 
+    significance : float, default = 0.1
+        The default signifiance threshold used when calculating whether or not a particular label is significant.
+
+    file : str, default=None
+        An optional file (dataframe) that will be imported by pandas and can be accessed by the fingerprints.
     """
     def __init__(self,molecules,
                       fingerprints,
                       mol_converters={},
-                      verbose=False,
                       significance=0.1,
                       file=None):
 

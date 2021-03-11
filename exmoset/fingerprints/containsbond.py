@@ -1,3 +1,7 @@
+"""
+Prewritten fingerprints for bond based properties.
+"""
+
 import numpy as np
 from .fingerprint import Fingerprint
 

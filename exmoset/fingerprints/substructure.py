@@ -1,3 +1,7 @@
+"""
+Prewritten fingerprints for substructure matching based properties.
+"""
+
 import numpy as np
 from .fingerprint import Fingerprint
 from rdkit import Chem

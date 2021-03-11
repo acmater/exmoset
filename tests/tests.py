@@ -4,7 +4,8 @@ import pandas as pd
 from rdkit import Chem
 
 from exmoset.data import *
-from exmoset.abstract import Molecule
+from exmoset.utils import Molecule
+from exmoset.fingerprints import *
 
 test_mols = molecules4
 
@@ -22,6 +23,13 @@ class TestMolecule(unittest.TestCase):
     def test_mol_eq(self):
         assert Molecule("CCC",mol=Chem.MolFromSmiles("CCC")) == Molecule("CCC"), "Molecule equality not working"
 
+class TestFingerprint(unittest.TestCase):
+    def test_fingerprint(self):
+        assert Fingerprint(name="Contains C",
+                    context="molecule",
+                    label_type="binary",
+                    calculator="add",
+                    mol_format="smiles"), "Fingerprint generation did not work properly"
 
 """
 class TestFailedMoleculeConversion(unittest.TestCase):

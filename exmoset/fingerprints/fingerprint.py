@@ -20,6 +20,9 @@ class Fingerprint():
 
     mol_format : str
         Which molecular format will be accessed from the Molecule object.
+
+    file : str, default=None
+        A file that can be optionally indexed by the fingerprint method.
     """
     def __init__(self,name,
                       context,
@@ -42,7 +45,7 @@ class Fingerprint():
                                                  f"Context: {self.context:^18}",
                                                  f"Label Type: {self.label_type:^11}",
                                                  f"Calculator : {self.calculator:^5}",
-                                                 f"Mol Format : {self.mol_format:^5}"])
+                                                 f"Mol Format : {self.mol_format:^8}"])
 
 if __name__ == "__main__":
     a = Fingerprint(name="Contains C",

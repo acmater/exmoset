@@ -1,3 +1,7 @@
+"""
+Prewritten fingerprints for atom based properties.
+"""
+
 import numpy as np
 from .fingerprint import Fingerprint
 
