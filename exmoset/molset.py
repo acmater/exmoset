@@ -18,6 +18,13 @@ def contains_o(mol):
     return 1 if "O" in mol else 0
 def contains_OH(mol):
     return np.array([mol.HasSubstructMatch(Chem.MolFromSmarts("[N]"))],dtype=np.int)
+def contains_SINGLE(mol):
+    return np.array([1 if 'SINGLE' in [b.GetBondType().__str__() for b in mol.GetBonds()] else 0])
+def contains_DOUBLE(mol):
+    return np.array([1 if 'DOUBLE' in [b.GetBondType().__str__() for b in mol.GetBonds()] else 0])
+def contains_TRIPLE(mol):
+    return np.array([1 if 'TRIPLE' in [b.GetBondType().__str__() for b in mol.GetBonds()] else 0])
+
 
 properties = [Aromatic]#,NumRings,NumAtoms]
 test_fingerprint =  [Fingerprint(name="Contain C",
@@ -26,15 +33,37 @@ test_fingerprint =  [Fingerprint(name="Contain C",
                                  calculator=contains_c,
                                  mol_format="smiles"),
                      Fingerprint(name="Contains O",
-                                 context="part",
+                                 context="Molecules",
                                  label_type="binary",
                                  calculator=contains_o,
                                  mol_format="smiles"),
+# Substructure fingerprints
+
                      Fingerprint(name="Contains OH",
-                                 context="part",
+                                 context="Molecules",
                                  label_type="binary",
                                  calculator=contains_OH,
-                                 mol_format="rd")]
+                                 mol_format="rd"),
+
+# Bond Fingerprints
+
+                    Fingerprint(name="Contains SINGLE",
+                                context="Molecules",
+                                label_type="binary",
+                                calculator=contains_SINGLE,
+                                mol_format="rd"),
+
+                    Fingerprint(name="Contains DOUBLE",
+                                context="Molecules",
+                                label_type="binary",
+                                calculator=contains_DOUBLE,
+                                mol_format="rd"),
+
+                    Fingerprint(name="Contains TRIPLE",
+                                context="Molecules",
+                                label_type="binary",
+                                calculator=contains_TRIPLE,
+                                mol_format="rd")]
 
 label_types = {"binary"     : Binary,
                "multiclass" : Multiclass,
