@@ -25,21 +25,39 @@ def Dipole_Moment(mol,file):
     return file["Dipole Moment"][mol]
 def aromatic(mol):
     return np.array([bool(mol.GetAromaticAtoms())],dtype=np.int)
+def num_atoms(mol):
+    return np.array([len(mol.GetAtoms())])
+def num_rings(mol):
+    return np.array([mol.GetRingInfo().NumRings()])
 
 fingerprints =  [Fingerprint(name="Contain C",
                                  context="Molecules",
                                  label_type="binary",
                                  calculator=contains_c,
                                  mol_format="smiles"),
+
                      Fingerprint(name="Contains O",
                                  context="Molecules",
                                  label_type="binary",
                                  calculator=contains_o,
                                  mol_format="smiles"),
+
                     Fingerprint(name="Aromatic",
                                 context="whole",
                                 label_type="binary",
                                 calculator=aromatic,
+                                mol_format="rd"),
+
+                    Fingerprint(name="Number of Atoms",
+                                context="whole",
+                                label_type="multiclass",
+                                calculator=num_atoms,
+                                mol_format="rd"),
+
+                    Fingerprint(name="Number of Rings",
+                                context="whole",
+                                label_type="multiclass",
+                                calculator=num_rings,
                                 mol_format="rd"),
 # Substructure fingerprints
 
@@ -153,7 +171,7 @@ class MolSet():
         pass # TODO Implement
 
 if __name__ == "__main__":
-    analysis = MolSet(molecules2,
+    analysis = MolSet(molecules4,
                     fingerprints = fingerprints,
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                     significance=0.1,
