@@ -13,21 +13,28 @@ from labels import Binary, Multiclass, Continuous
 
 #np.array([1 if "C" in [a.GetSymbol() for a in mol.GetAtoms()]
 def contains_c(mol):
-    return np.array([1 if "C" in mol else 0])
+    return 1 if "C" in mol else 0
 def contains_o(mol):
-    return np.array([1 if "O" in mol else 0])
+    return 1 if "O" in mol else 0
+def contains_OH(mol):
+    return np.array([mol.HasSubstructMatch(Chem.MolFromSmarts("[N]"))],dtype=np.int)
 
 properties = [Aromatic]#,NumRings,NumAtoms]
 test_fingerprint =  [Fingerprint(name="Contain C",
-                    context="Molecules",
-                    label_type="binary",
-                    calculator=contains_c,
-                    mol_format="smiles"),
-                    Fingerprint(name="Contains O",
-                                        context="part",
-                                        label_type="binary",
-                                        calculator=contains_o,
-                                        mol_format="smiles")]
+                                 context="Molecules",
+                                 label_type="binary",
+                                 calculator=contains_c,
+                                 mol_format="smiles"),
+                     Fingerprint(name="Contains O",
+                                 context="part",
+                                 label_type="binary",
+                                 calculator=contains_o,
+                                 mol_format="smiles"),
+                     Fingerprint(name="Contains OH",
+                                 context="part",
+                                 label_type="binary",
+                                 calculator=contains_OH,
+                                 mol_format="rd")]
 
 label_types = {"binary"     : Binary,
                "multiclass" : Multiclass,
@@ -67,6 +74,11 @@ class MolSet():
         self.molecules = {x : y for x,y in zip(smiles,molecules)}
         self.verbose = verbose
 
+        if file is not None:
+            print(f"Importing {file}")
+            df     = pd.read_csv(file,index_col="SMILES")
+            sub_df = df.loc[self.molecules.keys()]
+
         self.Molecules = []
         for mol in tqdm.tqdm(smiles):
             formats = {key : mol_converters[key](mol) for key in mol_converters.keys()}
@@ -77,8 +89,10 @@ class MolSet():
 
         for i,molecule in enumerate(self.Molecules):
             for j,fp in enumerate(fingerprints):
-                prop_values[j,i] = fp.calculator(molecule[fp.mol_format])
-
+                if fp.file is not None:
+                    prop_values[j,i] = fp.calculator(molecule[fp.mol_format],file=sub_df)
+                else:
+                    prop_values[j,i] = fp.calculator(molecule[fp.mol_format])
         print(prop_values)
 
         label_dict = {}
@@ -86,11 +100,6 @@ class MolSet():
             label_dict[fp.name] = label_types[fp.label_type](fp.name,prop_values[i],fp.context)
 
         print([label.summary() for label in label_dict.values()])
-
-        if file is not None:
-            print(f"Importing {file}")
-            df     = pd.read_csv(file,index_col="SMILES")
-            sub_df = df.loc[self.molecules.keys()]
 
         if atoms is not None:
             atom_props = ContainsAtom(list(self.molecules.values()),atoms)

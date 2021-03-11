@@ -25,12 +25,14 @@ class Fingerprint():
                       context,
                       label_type,
                       calculator,
-                      mol_format):
-        self.name = name
-        self.context = context
+                      mol_format,
+                      file=None):
+        self.name       = name
+        self.context    = context
         self.label_type = label_type
         self.calculator = calculator
         self.mol_format = mol_format
+        self.file       = file
 
     def __repr__(self):
         return f"Fingerprint({self.name},{self.context},{self.label_type},{self.calculator},{self.mol_format})"
