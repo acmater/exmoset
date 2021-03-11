@@ -24,7 +24,8 @@ def contains_DOUBLE(mol):
     return np.array([1 if 'DOUBLE' in [b.GetBondType().__str__() for b in mol.GetBonds()] else 0])
 def contains_TRIPLE(mol):
     return np.array([1 if 'TRIPLE' in [b.GetBondType().__str__() for b in mol.GetBonds()] else 0])
-
+def Dipole_Moment(mol,file):
+    return file["Dipole Moment"][mol]
 
 properties = [Aromatic]#,NumRings,NumAtoms]
 test_fingerprint =  [Fingerprint(name="Contain C",
@@ -63,7 +64,15 @@ test_fingerprint =  [Fingerprint(name="Contain C",
                                 context="Molecules",
                                 label_type="binary",
                                 calculator=contains_TRIPLE,
-                                mol_format="rd")]
+                                mol_format="rd"),
+
+# Continuous Dataset Indexing
+                    Fingerprint(name="Dipole Moment",
+                                context="Molecules",
+                                label_type="continuous",
+                                calculator=Dipole_Moment,
+                                mol_format="smiles",
+                                file=True)]
 
 label_types = {"binary"     : Binary,
                "multiclass" : Multiclass,
