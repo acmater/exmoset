@@ -64,8 +64,6 @@ class MolSet():
         for i,fp in enumerate(fingerprints):
             self.label_dict[fp.name] = label_types[fp.label_type](fp.name,prop_values[i],fp.context)
 
-        print([label.summary() for label in self.label_dict.values()])
-
         self.significance = significance
 
     def __str__(self):

@@ -3,11 +3,7 @@ import numpy as np
 import pandas as pd
 from rdkit import Chem
 
-from exmoset.atom import ContainsAtom
-from exmoset.bond import ContainsBond
-from exmoset.substructure import Substructure
 from exmoset.data import *
-from exmoset.molecule import MolProp
 from exmoset.abstract import Molecule
 
 test_mols = molecules4
@@ -26,7 +22,6 @@ class TestMolecule(unittest.TestCase):
     def test_mol_eq(self):
         assert Molecule("CCC",mol=Chem.MolFromSmiles("CCC")) == Molecule("CCC"), "Molecule equality not working"
 
-# rewrite tests below
 
 """
 class TestFailedMoleculeConversion(unittest.TestCase):
