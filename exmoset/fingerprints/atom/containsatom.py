@@ -3,9 +3,9 @@ from ..fingerprint import Fingerprint
 
 atoms = ["C","N","O","F"]
 
-def contains(char):
+def contains(atom):
     def sub_contains(mol):
-        return 1 if char in mol else 0
+        return 1 if atom in mol else 0
     return sub_contains
 
 atom_fingerprints = []

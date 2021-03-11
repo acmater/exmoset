@@ -1,39 +1,18 @@
 import numpy as np
-from exmoset.abstract import Property
-from exmoset.labels import Binary
+from ..fingerprint import Fingerprint
 
-class ContainsBond(Property):
-    """
-    Whether or not the molecule contains Nitrogen
-    """
-    def __init__(self,molecules,bonds):
-        super().__init__(molecules)
-        if isinstance(molecules[0],str):
-            molecules = super().convert_mols(molecules)
-        self.bonds    = bonds
-        self.values   = self.calc_property(molecules)
+bonds = ["SINGLE","DOUBLE","TRIPLE"]
 
-    def calc_property(self,molecules):
-        bonds = {}
-        # This really slow, change how the code functions to generate the bond description and then test each type against it.
-        for bond in self.bonds:
-            bonds[bond] = Binary(bond,
-                                 np.array([1 if bond in [b.GetBondType().__str__() for b in mol.GetBonds()] else 0 for mol in molecules]),
-                                 context="part")
-        return bonds
+def contains(bond):
+    def sub_contains(mol):
+         return 1 if bond in [b.GetBondType().__str__() for b in mol.GetBonds()] else 0
+    return sub_contains
 
-    def summative_label(self,significance=0.1,verbose=True):
-        summary = []
-        for bond, label in self.values.items():
-            if self.entropy(label) < significance:
-                if verbose:
-                    print(f"Working on Bond: {bond}")
-                    print(f"Inside the inner loop. Entropy is {self.entropy(self[bond])}")
-                    print(f"Due to signifiance, calculating average presence {bond}")
-                    print(f"Average value of {bond} is {np.mean(self[bond])}")
-                    print()
+bond_fingerprints = []
 
-                summary.append(label.summary())
-
-        if summary:
-            return "\n".join(summary)
+for bond in bonds:
+    bond_fingerprints.append(Fingerprint(name=f"Contains {bond}",
+                context="Molecules",
+                label_type="binary",
+                calculator=contains(bond),
+                mol_format="rd"))

@@ -1,1 +1,1 @@
-from .containsbond import ContainsBond
+from .containsbond import *
