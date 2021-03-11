@@ -47,6 +47,7 @@ class MolSet():
                                      "continuous" : Continuous}):
 
         self.Molecules = []
+        print("Converting Molecules")
         for mol in tqdm.tqdm(molecules):
             formats = {key : mol_converters[key](mol) for key in mol_converters.keys()}
             self.Molecules.append(Molecule(mol, **formats))
@@ -58,7 +59,8 @@ class MolSet():
 
         self.prop_values = np.zeros((len(fingerprints),len(self.Molecules)))
 
-        for i,molecule in enumerate(self.Molecules):
+        print("Calculating Properties")
+        for i,molecule in enumerate(tqdm.tqdm(self.Molecules)):
             for j,fp in enumerate(fingerprints):
                 if fp.file is not None:
                     self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format],file=sub_df)
@@ -118,7 +120,7 @@ class MolSet():
 if __name__ == "__main__":
     fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
 
-    analysis = MolSet(molecules2,
+    analysis = MolSet(molecules6,
                     fingerprints = fingerprints,
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                     significance=0.1,
