@@ -13,7 +13,7 @@ class Binary(Label):
         self.values      = values
         self.context     = context
         self.sensitivity = sensitivity
-        self.av          = np.mean(values)
+        self.av          = np.round(np.mean(values))
         self.entropy     = self.entropy()
 
     def summary(self,verbose=False):

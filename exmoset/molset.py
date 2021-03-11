@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.ma as ma
 from rdkit import Chem
 import pandas as pd
 import tqdm
@@ -69,6 +70,23 @@ class MolSet():
             self.label_dict[fp.name] = label_types[fp.label_type](fp.name,prop_values[i],fp.context)
 
         self.significance = significance
+        self.vector       = vector
+
+    def vector(self):
+        """
+        Represents the meaningful properties as a vector. Uses numpy's masking feature to only include meaningful
+        values within it.
+        """
+        vector = np.zeros((len(self.label_dict),))
+        mask   = np.zeros((len(self.label_dict),))
+        for i,prop in enumerate(self.label_dict.values()):
+            vector[i] = prop.av
+            if prop.entropy < prop.sensitivity:
+                mask[i] = 0
+            else:
+                mask[i] = 1
+        return ma.array(vector, mask=mask)
+
 
     def __str__(self):
         header  = ["Subset Description"]
@@ -90,9 +108,9 @@ class MolSet():
 if __name__ == "__main__":
     fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
 
-    analysis = MolSet(molecules4,
+    analysis = MolSet(molecules6,
                     fingerprints = fingerprints,
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                     significance=0.1,
                     file="data/QM9_Data.csv")
-    print(analysis)
+    print(analysis.vector())
