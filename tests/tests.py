@@ -26,6 +26,9 @@ class TestMolecule(unittest.TestCase):
     def test_mol_eq(self):
         assert Molecule("CCC",mol=Chem.MolFromSmiles("CCC")) == Molecule("CCC"), "Molecule equality not working"
 
+# rewrite tests below
+
+"""
 class TestFailedMoleculeConversion(unittest.TestCase):
     def test_failed_import(self):
         assert len(Substructure(broken,substructures=["[CC]"])["[CC]"]) == 0, "The system is not removing failed smile conversions"
@@ -71,6 +74,6 @@ class TestContainsBond(unittest.TestCase):
         assert bond_props.entropy(bond_props["SINGLE"]) == 0, "Entropy calculation for contains Single bond is broken"
     def test_contains_TRIPLE(self):
         assert bond_props.entropy(bond_props["TRIPLE"]) == 0, "Entropy Calculation for contains Triple bond is broken"
-
+"""
 if __name__ == "__main__":
     unittest.main()

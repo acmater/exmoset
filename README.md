@@ -65,7 +65,6 @@ The continuous entropy estimator uses the Kozachenko and Leonenko (1987) estimat
 So the final major code refactorization that I want to consider now is a further decomposition of the problem.
 Currently molprop, substructure, atom, and bond are the four main classes, but their functionality is restricted. Having these as their own superclasses that inherit from property and then spawning particular instances like atom_types would allow me to extend it further to other atomic properties such as charge, radical, hybridisation, etc.
 
-0. Add separate molecules object that has different representations attached to it.
 1. Another nice feature would be the capacity to select two distributions and identify what properties are different between them.
    1. There's actually more scope here than looking at differences. The labels can be viewed as logical descriptions of the group, with logical operations defined on them.
    2. To do this I need to break down the summative labels into properties that get assigned to the similarity analysis class (with an associated print statement) and then when operations like and or addition are applied, it performs labelwise comparison.
