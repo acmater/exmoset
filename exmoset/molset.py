@@ -3,16 +3,15 @@ from rdkit import Chem
 import pandas as pd
 import tqdm
 
-from molecule import *
 from data import *
-from abstract import Molecule, Fingerprint
+from abstract import Molecule
 from labels import Binary, Multiclass, Continuous
+from fingerprints import Fingerprint
+from fingerprints.atom import atom_fingerprints
 
 #np.array([1 if "C" in [a.GetSymbol() for a in mol.GetAtoms()]
-def contains_c(mol):
-    return 1 if "C" in mol else 0
-def contains_o(mol):
-    return 1 if "O" in mol else 0
+
+
 def contains_OH(mol):
     return np.array([mol.HasSubstructMatch(Chem.MolFromSmarts("[N]"))],dtype=np.int)
 def contains_SINGLE(mol):
@@ -30,19 +29,7 @@ def num_atoms(mol):
 def num_rings(mol):
     return np.array([mol.GetRingInfo().NumRings()])
 
-fingerprints =  [Fingerprint(name="Contain C",
-                                 context="Molecules",
-                                 label_type="binary",
-                                 calculator=contains_c,
-                                 mol_format="smiles"),
-
-                     Fingerprint(name="Contains O",
-                                 context="Molecules",
-                                 label_type="binary",
-                                 calculator=contains_o,
-                                 mol_format="smiles"),
-
-                    Fingerprint(name="Aromatic",
+fingerprints =  [   Fingerprint(name="Aromatic",
                                 context="whole",
                                 label_type="binary",
                                 calculator=aromatic,
@@ -93,7 +80,7 @@ fingerprints =  [Fingerprint(name="Contain C",
                                 label_type="continuous",
                                 calculator=Dipole_Moment,
                                 mol_format="smiles",
-                                file=True)]
+                                file=True)] + atom_fingerprints
 
 label_types = {"binary"     : Binary,
                "multiclass" : Multiclass,
