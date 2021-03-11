@@ -59,17 +59,7 @@ The discrete entropy is estimated using the plug in estimator that assumes a uni
 The continuous entropy estimator uses the Kozachenko and Leonenko (1987) estimator in which k-nearest neighbour distances are used to approximate the entropy of the underlying distribution. The implementation is provided by the entropy esitmators package of Paul Broderson (https://github.com/paulbrodersen/entropy_estimators).
 
 ## TODO
-So the final major code refactorization that I want to consider now is a further decomposition of the problem.
-Currently molprop, substructure, atom, and bond are the four main classes, but their functionality is restricted. Having these as their own superclasses that inherit from property and then spawning particular instances like atom_types would allow me to extend it further to other atomic properties such as charge, radical, hybridisation, etc.
 
-1. Write new tests for all of the new functionalities
-2. Another nice feature would be the capacity to select two distributions and identify what properties are different between them.
-   1. There's actually more scope here than looking at differences. The labels can be viewed as logical descriptions of the group, with logical operations defined on them.
-   2. To do this I need to break down the summative labels into properties that get assigned to the similarity analysis class (with an associated print statement) and then when operations like and or addition are applied, it performs labelwise comparison.
-   3. This would be nice as it would readily enable comparison between groups.
-   4. I think this is quite a bit simpler than above, just make a set of the labels that two particular groups share.
-   5. Of importance is the possibility that I may need to consider mutual information labelling. I need to understand this better.
 3. Add plotting functionality.
-4. Add feature to represent label of cluster as a vector, can then strongest outliers for a given set.
 5. Add feature to identify outliers from a group
    1. This one involves

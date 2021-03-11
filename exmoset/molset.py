@@ -69,10 +69,11 @@ class MolSet():
         for i,fp in enumerate(fingerprints):
             self.label_dict[fp.name] = label_types[fp.label_type](fp.name,prop_values[i],fp.context)
 
-        self.significance = significance
-        self.vector       = vector
+        self.significance     = significance
+        self.properties       = np.array(list(self.label_dict.keys()))
+        self.vector,self.mask = self.calc_vector()
 
-    def vector(self):
+    def calc_vector(self):
         """
         Represents the meaningful properties as a vector. Uses numpy's masking feature to only include meaningful
         values within it.
@@ -85,7 +86,7 @@ class MolSet():
                 mask[i] = 0
             else:
                 mask[i] = 1
-        return ma.array(vector, mask=mask)
+        return ma.array(vector, mask=mask), mask
 
 
     def __str__(self):
@@ -99,8 +100,10 @@ class MolSet():
             final = "\n".join(header + results)
             return final
 
-    def __or__(self, other):
-        pass
+    def __and__(self, other):
+        assert isinstance(other, MolSet)
+        return self.properties[ma.where(self.vector == other.vector)]
+
 
     def get_outliers(self):
         pass # TODO Implement
@@ -108,9 +111,20 @@ class MolSet():
 if __name__ == "__main__":
     fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
 
-    analysis = MolSet(molecules6,
+    analysis = MolSet(molecules2,
                     fingerprints = fingerprints,
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                     significance=0.1,
                     file="data/QM9_Data.csv")
-    print(analysis.vector())
+    print(analysis.vector)
+    print(analysis)
+
+    analysis2 = MolSet(molecules4,
+                fingerprints = fingerprints,
+                mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
+                significance=0.1,
+                file="data/QM9_Data.csv")
+    print(analysis2.vector)
+
+
+    print(analysis & analysis2)
