@@ -6,8 +6,8 @@ class Multiclass(Label):
     Class that handles the manipulation of multiclass molecular labels.
     """
     def __init__(self,name,
-                      verb,
                       values,
+                      verb="contain",
                       noun="Molecules",
                       sensitivity=0.1):
         self.name        = name

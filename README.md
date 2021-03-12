@@ -66,8 +66,5 @@ All nouns are pluran
 
 ## TODO
 
-1. Fix grammar structure for fingerprint method.
 2. Add additional dunder method to molset class.
 3. Add the ability to pass kwargs to the entropy calculator in label
-4. Use the label super class to removed the redundant initialization code for Label subclasses (Binary, etc.)
-5. Fix MolSet descriptive summary method

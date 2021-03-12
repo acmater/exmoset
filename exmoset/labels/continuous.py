@@ -6,8 +6,8 @@ class Continuous(Label):
     Class that handles the manipulation of continuous molecular labels.
     """
     def __init__(self,name,
-                      verb,
                       values,
+                      verb="share",
                       noun='Atoms',
                       sensitivity=0.1):
         self.name        = name

@@ -6,8 +6,8 @@ class Binary(Label):
     Class that handles the manipulation of binary molecular labels.
     """
     def __init__(self,property,
-                      verb,
                       values,
+                      verb="are",
                       noun='Molecules',
                       sensitivity=0.1):
         self.property    = property

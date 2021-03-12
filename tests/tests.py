@@ -29,6 +29,7 @@ class TestFingerprint(unittest.TestCase):
     def test_fingerprint(self):
         assert Fingerprint(name="Contains C",
                     context="molecule",
+                    verb="are",
                     label_type="binary",
                     calculator="add",
                     mol_format="smiles"), "Fingerprint generation did not work properly"
@@ -41,7 +42,7 @@ class TestBinaryLabel(unittest.TestCase):
     def test_entropy(self):
         assert binary.entropy == 0, "Entropy testing for Binary labels not working."
     def test_name(self):
-        assert binary.name == "binary", "Binary name not working properly."
+        assert binary.property == "binary", "Binary name not working properly."
 
 class TestMulticlassLabel(unittest.TestCase):
     global multi
