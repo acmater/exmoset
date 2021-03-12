@@ -7,7 +7,7 @@ from rdkit import Chem
 if __name__ == "__main__":
     fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
 
-    analysis = MolSet(molecules2,
+    analysis = MolSet(molecules10,
                     fingerprints = fingerprints,
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                     significance=0.1,
@@ -24,3 +24,4 @@ if __name__ == "__main__":
     #plt.show()
     print(analysis.get_outliers())
     print(analysis & analysis2)
+    print(analysis)

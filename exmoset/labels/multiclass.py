@@ -9,11 +9,11 @@ class Multiclass(Label):
                       values,
                       context='atom',
                       sensitivity=0.1):
-        self.name    = name
-        self.values  = values
-        self.context = context
+        self.name        = name
+        self.values      = values
+        self.context     = context
         self.sensitivity = sensitivity
-        self.av      = np.int(np.mean(values))
+        self.av          = np.int(np.mean(values))
         self.entropy     = self.entropy()
 
     def summary(self,verbose=False):

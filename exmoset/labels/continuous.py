@@ -9,20 +9,19 @@ class Continuous(Label):
                       values,
                       context='atom',
                       sensitivity=0.1):
-        self.name    = name
-        self.values  = values
-        self.context = context
-        self.av      = np.mean(values)
+        self.name        = name
+        self.values      = values
+        self.context     = context
         self.sensitivity = sensitivity
+        self.av          = np.mean(values)
         self.entropy     = self.entropy()
 
-    def summary(self,verbose=False):
+    def summary(self):
+        """
+        A continuous label summary.
+
+        Grammatical Structure
+        <noun> share a similar <property> centred around <average value>
+        """
         if self.entropy < self.sensitivity:
-            if self.context == "atom":
-                return f"Atoms share a similar {self.name} centred around {self.av}"
-            elif self.context == "bonds":
-                return f"Bonds share a similar {self.name} centred around {self.av}"
-            elif self.context == "molecule":
-                return f"Molecules share a similar {self.name} centred around {self.av}"
-            else:
-                return f"{self.context} {self.name} at {self.av}"
+            return f"{self.context} share a similar {self.name} centred around {self.av:.4f}"

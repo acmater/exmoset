@@ -49,3 +49,7 @@ class Label(ABC):
                 ent -= i * log(i, base)
 
         return ent
+
+    @abstractmethod
+    def summary(self):
+        pass

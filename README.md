@@ -61,7 +61,13 @@ The continuous entropy estimator uses the Kozachenko and Leonenko (1987) estimat
 ## Vector Description
 Internal operations utilize an information vector to describe the MolSet. This information vector is produced by the `calc_vector` method and returns a masked array showing the average meaningful (meaning it is rounded to an integer for binary and multiclass labels) label with values that exceed the entropy theshold masked. The comparison operations between sets are expedited through the use of these vector descriptions.
 
+## Grammatical Structure
+All nouns are pluran
+
 ## TODO
 
 1. Fix grammar structure for fingerprint method.
-2. Add additional dunder method to molset class
+2. Add additional dunder method to molset class.
+3. Add the ability to pass kwargs to the entropy calculator in label
+4. Use the label super class to removed the redundant initialization code for Label subclasses (Binary, etc.)
+5. Fix MolSet descriptive summary method
