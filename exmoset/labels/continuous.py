@@ -1,5 +1,6 @@
 import numpy as np
 from . import Label
+from entropy_estimators import continuous
 
 class Continuous(Label):
     """
@@ -16,6 +17,13 @@ class Continuous(Label):
         self.sensitivity = sensitivity
         self.av          = np.mean(values)
         self.entropy     = self.entropy()
+
+    def entropy(self):
+        """
+        Estimates the entropy of a continuous distribution.
+        """
+        ent = continuous.get_h(self.values,k=10,norm="euclidean",min_dist=0.001)
+        return ent
 
     def summary(self):
         """
