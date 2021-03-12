@@ -18,11 +18,11 @@ class Continuous(Label):
         self.av          = np.mean(values)
         self.entropy     = self.entropy()
 
-    def entropy(self):
+    def entropy(self,k=10,norm="euclidean",min_dist=0.001):
         """
         Estimates the entropy of a continuous distribution.
         """
-        ent = continuous.get_h(self.values,k=10,norm="euclidean",min_dist=0.001)
+        ent = continuous.get_h(self.values,k=k,norm=norm,min_dist=min_dist)
         return ent
 
     def summary(self):

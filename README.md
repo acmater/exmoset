@@ -65,6 +65,3 @@ Internal operations utilize an information vector to describe the MolSet. This i
 All nouns are pluran
 
 ## TODO
-
-2. Add additional dunder method to molset class.
-3. Add the ability to pass kwargs to the entropy calculator in label
