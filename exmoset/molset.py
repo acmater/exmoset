@@ -82,13 +82,19 @@ class MolSet():
         """
         vector = np.zeros((len(self.label_dict),))
         mask   = np.zeros((len(self.label_dict),))
+        test = []
         for i,prop in enumerate(self.label_dict.values()):
             vector[i] = prop.av
             if prop.entropy < prop.sensitivity:
                 mask[i] = 0
             else:
                 mask[i] = 1
-        return ma.array(vector, mask=mask), mask
+
+        x = np.array(tuple(vector), dtype=[(key,"<f4") for key in self.label_dict.keys()])
+
+
+
+        return ma.array(x, mask=tuple(mask)), mask
 
 
     def get_outliers(self):
@@ -113,7 +119,7 @@ class MolSet():
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
         plt.tight_layout()
-        plt.show()
+        return plt.gcf()
 
     def __len__(self):
         return len(self.Molecules)
@@ -148,6 +154,9 @@ if __name__ == "__main__":
                 significance=0.1,
                 file="data/QM9_Data.csv")
 
-    analysis.plot_entropy()
+    import matplotlib.pyplot as plt
+    fig = analysis.plot_entropy()
+    #plt.show()
+    test = analysis.calc_vector()
 
     print(analysis.Molecules[5])

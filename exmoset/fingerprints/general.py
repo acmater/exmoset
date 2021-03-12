@@ -8,6 +8,9 @@ from rdkit import Chem
 
 def Dipole_Moment(mol,file):
     return file["Dipole Moment"][mol]
+def Electronic_Spatial_Extent(mol, file):
+    return file["Electronic Spatial Extent"][mol]
+    
 def aromatic(mol):
     return np.array([bool(mol.GetAromaticAtoms())],dtype=np.int)
 def num_atoms(mol):
@@ -38,5 +41,12 @@ general_fingerprints = [Fingerprint(name="Aromatic",
                                 context="Molecules",
                                 label_type="continuous",
                                 calculator=Dipole_Moment,
+                                mol_format="smiles",
+                                file=True),
+
+                    Fingerprint(name="Electronic Spatial Extent",
+                                context="Molecules",
+                                label_type="continuous",
+                                calculator=Electronic_Spatial_Extent,
                                 mol_format="smiles",
                                 file=True)]
