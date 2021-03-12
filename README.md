@@ -65,3 +65,4 @@ Internal operations utilize an information vector to describe the MolSet. This i
 All nouns are pluran
 
 ## TODO
+1. Could I add mutual information to examine subsets of the parent set? For example the subset formed by generate_outliers?

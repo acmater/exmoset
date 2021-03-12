@@ -49,6 +49,7 @@ class MolSet():
         for mol in tqdm.tqdm(molecules):
             formats = {key : mol_converters[key](mol) for key in mol_converters.keys()}
             self.Molecules.append(Molecule(mol, **formats))
+        self.Molecules = np.array(self.Molecules)
 
         if file is not None:
             print(f"Importing {file}")
@@ -169,3 +170,6 @@ class MolSet():
             if self.struct[key] == other.struct[key]:
                 keys.append(key)
         return keys
+
+    def __getitem__(self,idx):
+        return self.Molecules[idx]
