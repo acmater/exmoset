@@ -76,6 +76,16 @@ class MolSet():
         """
         Represents the meaningful properties as a vector. Uses numpy's masking feature to only include meaningful
         values within it.
+
+        Returns
+        -------
+        np.MaskedArray
+            This array masks all non important values and uses the averages in other positions. Is used in
+            generate outliers to determine the distance for each label.
+
+        np.MaskedArray(Struct)
+            A masked struct that has each value accessible by the fingerprints assocaited name. Is used for various dunder methods
+            such as __and__.
         """
         vector = np.zeros((len(self.label_dict),))
         mask   = np.zeros((len(self.label_dict),))
@@ -93,6 +103,15 @@ class MolSet():
 
     def get_outliers(self):
         # This is clunky af
+        """
+        Function that compares the meaningul vector description of a class and identifiers species that are not correctly
+        described by it and returns the indices of these species.
+
+        Returns
+        -------
+        np.BooleanArray
+            An array that can be used to index self.Molecules to return the outlier species.
+        """
         full_mask = np.zeros((len(self.vector.mask),len(self)))
         for i in range(len(self)):
             full_mask[:,i] = self.vector.mask
@@ -100,6 +119,14 @@ class MolSet():
         return np.where(np.sum((self.vector.reshape(-1,1) - masked_vals),axis=0) != 0) # Need to update distance formulation
 
     def plot_entropy(self):
+        """
+        Helper function to plot the entropy (and its associated sensitivity) for each fingerprint within the code.
+
+        Returns
+        -------
+        plt.fig
+            The matplotlib figure that can then be plotted using plt.show() on the subsequent line.
+        """
         import matplotlib.pyplot as plt
         from matplotlib import cm
         label_dict    = {key : (self.label_dict[key].entropy,self.label_dict[key].sensitivity) for key in self.label_dict}
@@ -116,6 +143,9 @@ class MolSet():
         return plt.gcf()
 
     def __len__(self):
+        """
+        Helper function to determine length. Length is entirely determined by how many molecules are in the set.
+        """
         return len(self.Molecules)
 
     def __str__(self):
@@ -130,6 +160,9 @@ class MolSet():
             return final
 
     def __and__(self, other):
+        """
+        Overrides the boolean and operation to identify meaningful labels that are shared between two MolSets.
+        """
         assert isinstance(other, MolSet)
         keys = []
         for i,key in enumerate(self.label_dict.keys()):
