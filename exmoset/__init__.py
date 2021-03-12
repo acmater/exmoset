@@ -1,2 +1,2 @@
 import exmoset.data
-import exmoset.utils
+import exmoset.molecule

@@ -4,7 +4,7 @@ import pandas as pd
 from rdkit import Chem
 
 from exmoset.data import *
-from exmoset.utils import Molecule
+from exmoset.molecule import Molecule
 from exmoset.fingerprints import *
 from exmoset.labels import *
 

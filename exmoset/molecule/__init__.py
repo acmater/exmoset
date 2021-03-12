@@ -1,1 +1,1 @@
-from .molprop  import MolProp
+from .molecule import Molecule

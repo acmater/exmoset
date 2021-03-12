@@ -5,7 +5,7 @@ import pandas as pd
 import tqdm
 
 from data import *
-from utils import Molecule
+from molecule import Molecule
 from labels import Binary, Multiclass, Continuous
 from fingerprints import *
 
@@ -72,7 +72,6 @@ class MolSet():
             self.label_dict[fp.name] = label_types[fp.label_type](fp.name,self.prop_values[i],fp.context)
 
         self.significance     = significance
-        self.properties       = np.array(list(self.label_dict.keys()))
         self.vector,self.mask = self.calc_vector()
 
     def calc_vector(self):
@@ -91,8 +90,6 @@ class MolSet():
                 mask[i] = 1
 
         x = np.array(tuple(vector), dtype=[(key,"<f4") for key in self.label_dict.keys()])
-
-
 
         return ma.array(x, mask=tuple(mask)), mask
 
@@ -114,8 +111,8 @@ class MolSet():
         plt.bar(range(len(label_dict)), [x[0] for x in label_dict.values()], align="center",alpha=0.5,color="r")
         plt.xticks(range(len(label_dict)), list(label_dict.keys()), rotation=45, ha='right')
         plt.ylabel("Entropy",fontsize=16)
-        ax = plt.gca()
         plt.plot(range(len(label_dict)), [x[1] for x in label_dict.values()], dashes=[6,2],color='k')
+        ax = plt.gca()
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
         plt.tight_layout()
@@ -137,7 +134,11 @@ class MolSet():
 
     def __and__(self, other):
         assert isinstance(other, MolSet)
-        return self.properties[ma.where(self.vector == other.vector)]
+        keys = []
+        for i,key in enumerate(self.label_dict.keys()):
+            if self.vector[key] == other.vector[key]:
+                keys.append(key)
+        return keys
 
 if __name__ == "__main__":
     fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
@@ -157,6 +158,5 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     fig = analysis.plot_entropy()
     #plt.show()
-    test = analysis.calc_vector()
 
-    print(analysis.Molecules[5])
+    print(analysis & analysis2)
