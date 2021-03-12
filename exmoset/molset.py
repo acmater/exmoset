@@ -71,8 +71,8 @@ class MolSet():
         for i,fp in enumerate(fingerprints):
             self.label_dict[fp.name] = label_types[fp.label_type](fp.name,self.prop_values[i],fp.context)
 
-        self.significance     = significance
-        self.vector,self.mask = self.calc_vector()
+        self.significance       = significance
+        self.vector,self.struct = self.calc_vector()
 
     def calc_vector(self):
         """
@@ -89,16 +89,15 @@ class MolSet():
             else:
                 mask[i] = 1
 
-        x = np.array(tuple(vector), dtype=[(key,"<f4") for key in self.label_dict.keys()])
+        struct = np.array(tuple(vector), dtype=[(key,"<f4") for key in self.label_dict.keys()])
 
-        return ma.array(x, mask=tuple(mask)), mask
-
+        return ma.array(vector, mask=mask), ma.array(struct, mask=tuple(mask))
 
     def get_outliers(self):
         # This is clunky af
-        full_mask = np.zeros((len(self.mask),len(self)))
+        full_mask = np.zeros((len(self.vector.mask),len(self)))
         for i in range(len(self)):
-            full_mask[:,i] = self.mask
+            full_mask[:,i] = self.vector.mask
         masked_vals = ma.array(self.prop_values,mask=full_mask)
         return np.where(np.sum((self.vector.reshape(-1,1) - masked_vals),axis=0) != 0) # Need to update distance formulation
 
@@ -136,14 +135,14 @@ class MolSet():
         assert isinstance(other, MolSet)
         keys = []
         for i,key in enumerate(self.label_dict.keys()):
-            if self.vector[key] == other.vector[key]:
+            if self.struct[key] == other.struct[key]:
                 keys.append(key)
         return keys
 
 if __name__ == "__main__":
     fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
 
-    analysis = MolSet(molecules3,
+    analysis = MolSet(molecules2,
                     fingerprints = fingerprints,
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                     significance=0.1,
@@ -158,5 +157,5 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     fig = analysis.plot_entropy()
     #plt.show()
-
+    print(analysis.get_outliers())
     print(analysis & analysis2)

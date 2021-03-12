@@ -8,7 +8,7 @@ across the provided set of molecules. Intuitively these labels represent a "pure
 of the space of interest, with the label adopting almost exclusively a single value.
 
 ## API
-The MolSet Class handles the analysis of a given molecular set in accordance with the list of fingerprints provided. The molecules can be passed to MolSet in any format, with additional conversions specified by the mol_converter argument.
+The `MolSet` Class handles the analysis of a given molecular set in accordance with the list of fingerprints provided. The molecules can be passed to MolSet in any format, with additional conversions specified by the mol_converter argument.
 
 ```python
 analysis = MolSet(molecules,
@@ -59,7 +59,7 @@ The discrete entropy is estimated using the plug in estimator that assumes a uni
 The continuous entropy estimator uses the Kozachenko and Leonenko (1987) estimator in which k-nearest neighbour distances are used to approximate the entropy of the underlying distribution. The implementation is provided by the entropy esitmators package of Paul Broderson (https://github.com/paulbrodersen/entropy_estimators).
 
 ## Vector Description
-Internal operations utilize an information vector to describe the MolSet. This information vector is produced by the calc_vector method and returns a masked array showing the average meaningful (meaning it is rounded to an integer for binary and multiclass labels) label with values that exceed the entropy theshold masked. The comparison operations between sets are expedited through the use of these vector descriptions. 
+Internal operations utilize an information vector to describe the MolSet. This information vector is produced by the `calc_vector` method and returns a masked array showing the average meaningful (meaning it is rounded to an integer for binary and multiclass labels) label with values that exceed the entropy theshold masked. The comparison operations between sets are expedited through the use of these vector descriptions.
 
 ## TODO
 
