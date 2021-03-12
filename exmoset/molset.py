@@ -67,7 +67,7 @@ class MolSet():
 
         self.label_dict = {}
         for i,fp in enumerate(fingerprints):
-            self.label_dict[fp.name] = label_types[fp.label_type](fp.name,self.prop_values[i],fp.context)
+            self.label_dict[fp.name] = label_types[fp.label_type](fp.name,fp.verb,self.prop_values[i],fp.context)
 
         self.significance       = significance
         self.vector,self.struct = self.calc_vector()

@@ -15,7 +15,8 @@ def contains(atom):
 atom_fingerprints = []
 
 for atom in atoms:
-    atom_fingerprints.append(Fingerprint(name=f"Contains {atom}",
+    atom_fingerprints.append(Fingerprint(name=f"{atom}",
+                verb="contain",
                 context="Molecules",
                 label_type="binary",
                 calculator=contains(atom),

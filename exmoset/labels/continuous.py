@@ -6,12 +6,13 @@ class Continuous(Label):
     Class that handles the manipulation of continuous molecular labels.
     """
     def __init__(self,name,
+                      verb,
                       values,
-                      context='atom',
+                      noun='Atoms',
                       sensitivity=0.1):
         self.name        = name
         self.values      = values
-        self.context     = context
+        self.noun        = noun
         self.sensitivity = sensitivity
         self.av          = np.mean(values)
         self.entropy     = self.entropy()
@@ -24,4 +25,4 @@ class Continuous(Label):
         <noun> share a similar <property> centred around <average value>
         """
         if self.entropy < self.sensitivity:
-            return f"{self.context} share a similar {self.name} centred around {self.av:.4f}"
+            return f"{self.noun} share a similar {self.name} centred around {self.av:.4f}"

@@ -17,6 +17,13 @@ class Label(ABC):
     def __len__(self):
         return len(self.values)
 
+    @staticmethod
+    def neg(string):
+        if "are" in string:
+            return string.replace("are", "are not")
+        elif "contain" in string:
+            return string.replace("contain", "do not contain")
+
     def entropy(self,base=None):
         """ Computes entropy of label distribution.
 

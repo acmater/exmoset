@@ -10,7 +10,7 @@ def Dipole_Moment(mol,file):
     return file["Dipole Moment"][mol]
 def Electronic_Spatial_Extent(mol, file):
     return file["Electronic Spatial Extent"][mol]
-    
+
 def aromatic(mol):
     return np.array([bool(mol.GetAromaticAtoms())],dtype=np.int)
 def num_atoms(mol):
@@ -20,24 +20,28 @@ def num_rings(mol):
 
 
 general_fingerprints = [Fingerprint(name="Aromatic",
-                                context="whole",
+                                context="Molecules",
+                                verb="are",
                                 label_type="binary",
                                 calculator=aromatic,
                                 mol_format="rd"),
 
-                    Fingerprint(name="Number of Atoms",
-                                context="whole",
+                    Fingerprint(name="Atoms",
+                                context="Molecules",
+                                verb="contain",
                                 label_type="multiclass",
                                 calculator=num_atoms,
                                 mol_format="rd"),
 
-                    Fingerprint(name="Number of Rings",
-                                context="whole",
+                    Fingerprint(name="Rings",
+                                context="Molecules",
+                                verb="contain",
                                 label_type="multiclass",
                                 calculator=num_rings,
                                 mol_format="rd"),
 
                     Fingerprint(name="Dipole Moment",
+                                verb="",
                                 context="Molecules",
                                 label_type="continuous",
                                 calculator=Dipole_Moment,
@@ -45,6 +49,7 @@ general_fingerprints = [Fingerprint(name="Aromatic",
                                 file=True),
 
                     Fingerprint(name="Electronic Spatial Extent",
+                                verb="",
                                 context="Molecules",
                                 label_type="continuous",
                                 calculator=Electronic_Spatial_Extent,

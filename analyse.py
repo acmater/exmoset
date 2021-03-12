@@ -7,7 +7,7 @@ from rdkit import Chem
 if __name__ == "__main__":
     fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
 
-    analysis = MolSet(molecules10,
+    analysis = MolSet(molecules,
                     fingerprints = fingerprints,
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                     significance=0.1,

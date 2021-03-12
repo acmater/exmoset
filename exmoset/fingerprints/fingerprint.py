@@ -25,12 +25,14 @@ class Fingerprint():
         A file that can be optionally indexed by the fingerprint method.
     """
     def __init__(self,name,
+                      verb,
                       context,
                       label_type,
                       calculator,
                       mol_format,
                       file=None):
         self.name       = name
+        self.verb       = verb
         self.context    = context
         self.label_type = label_type
         self.calculator = calculator
@@ -38,10 +40,11 @@ class Fingerprint():
         self.file       = file
 
     def __repr__(self):
-        return f"Fingerprint({self.name},{self.context},{self.label_type},{self.calculator},{self.mol_format})"
+        return f"Fingerprint({self.name},{self.verb},{self.context},{self.label_type},{self.calculator},{self.mol_format})"
 
     def __str__(self):
         return f"Fingerprint\n\t" + "\n\t".join([f"Name : {self.name:^24}",
+                                                 f"Verb : {self.verb:^24}",
                                                  f"Context: {self.context:^18}",
                                                  f"Label Type: {self.label_type:^11}",
                                                  f"Calculator : {self.calculator:^5}",
