@@ -4,10 +4,8 @@ from rdkit import Chem
 import pandas as pd
 import tqdm
 
-from data import *
-from molecule import Molecule
-from labels import Binary, Multiclass, Continuous
-from fingerprints import *
+from .molecule import Molecule
+from .labels import Binary, Multiclass, Continuous
 
 class MolSet():
     """
@@ -138,24 +136,3 @@ class MolSet():
             if self.struct[key] == other.struct[key]:
                 keys.append(key)
         return keys
-
-if __name__ == "__main__":
-    fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
-
-    analysis = MolSet(molecules2,
-                    fingerprints = fingerprints,
-                    mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
-                    significance=0.1,
-                    file="data/QM9_Data.csv")
-
-    analysis2 = MolSet(molecules4,
-                fingerprints = fingerprints,
-                mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
-                significance=0.1,
-                file="data/QM9_Data.csv")
-
-    import matplotlib.pyplot as plt
-    fig = analysis.plot_entropy()
-    #plt.show()
-    print(analysis.get_outliers())
-    print(analysis & analysis2)

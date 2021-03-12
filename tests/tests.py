@@ -5,11 +5,12 @@ from rdkit import Chem
 
 from exmoset.data import *
 from exmoset.molecule import Molecule
-from exmoset.fingerprints import *
+from fingerprints import *
 from exmoset.labels import *
+from exmoset import MolSet
 
 test_mols = molecules4
-
+fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
 # Is there a better way to do the global portions of the code below? Intuitively I should be able
 # to customize the initialization of each class and provide it as an attribute, but that doesn't seem to work.
 
@@ -64,16 +65,23 @@ class TestContinuousclassLabel(unittest.TestCase):
 
 class TestMolSet(unittest.TestCase):
     global analysis
-    fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
-    try:
-        analysis = MolSet(molecules4,
+    def test_molset_generation(self):
+        try:
+            analysis = MolSet(molecules4,
+                            fingerprints = fingerprints,
+                            mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
+                            significance=0.1,
+                            file="data/QM9_Data.csv")
+        except Exception:
+            "Molset Class could not be created"
+
+class TestGetOutliers(unittest.TestCase):
+    def test_outlier_identification(self):
+        analysis = MolSet(molecules2,
                         fingerprints = fingerprints,
                         mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
-                        significance=0.1,
-                        file="data/QM9_Data.csv")
-    except Exception:
-        "Molset Class could not be created"
-
+                        significance=0.1)
+        assert analysis.get_outliers() == np.array([5]), "Outlier identification is not working correctly."
 
 
 
