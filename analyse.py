@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     import matplotlib.pyplot as plt
     fig = analysis.plot_entropy()
-    #plt.show()
+    plt.savefig("Entropy_Analysis.png",dpi=300,transparent=True)
     print(analysis[analysis.get_outliers()])
     print(analysis & analysis2)
     print(analysis)

@@ -132,11 +132,11 @@ class MolSet():
         from matplotlib import cm
         label_dict    = {key : (self.label_dict[key].entropy,self.label_dict[key].sensitivity) for key in self.label_dict}
         label_dict    = {key : val for key, val in sorted(label_dict.items(), key=lambda item: item[1])}
-
+        plt.style.use("exmoset/utils/matplotlibrc")
         plt.bar(range(len(label_dict)), [x[0] for x in label_dict.values()], align="center",alpha=0.5,color="r")
         plt.xticks(range(len(label_dict)), list(label_dict.keys()), rotation=45, ha='right')
         plt.ylabel("Entropy",fontsize=16)
-        plt.plot(range(len(label_dict)), [x[1] for x in label_dict.values()], dashes=[6,2],color='k')
+        plt.plot(range(len(label_dict)), [x[1] for x in label_dict.values()], dashes=[6,2],color='w')
         ax = plt.gca()
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
