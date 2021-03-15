@@ -25,12 +25,14 @@ class Continuous(Label):
         ent = continuous.get_h(self.values,k=k,norm=norm,min_dist=min_dist)
         return ent
 
-    def summary(self):
+    def summary(self,sensitivity=None):
         """
         A continuous label summary.
 
         Grammatical Structure
         <noun> share a similar <property> centred around <average value>
         """
-        if self.entropy < self.sensitivity:
+        if not sensitivity:
+            sensitivity = self.sensitivity
+        if self.entropy < sensitivity:
             return f"{self.noun} share a similar {self.name} centred around {self.av:.4f}"

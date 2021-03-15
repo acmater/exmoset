@@ -18,7 +18,9 @@ class Binary(Label):
         self.av          = np.round(np.mean(values))
         self.entropy     = self.entropy()
 
-    def summary(self,verbose=False):
-        if self.entropy < self.sensitivity:
+    def summary(self,sensitivity=None):
+        if not sensitivity:
+            sensitivity = self.sensitivity
+        if self.entropy < sensitivity:
             description = f"{self.noun} {self.verb} {self.property}"
             return description if self.av > 0.5 else self.neg(description)

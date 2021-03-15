@@ -18,7 +18,9 @@ class Multiclass(Label):
         self.av          = np.int(np.mean(values))
         self.entropy     = self.entropy()
 
-    def summary(self,verbose=False):
-        if self.entropy < self.sensitivity:
+    def summary(self,sensitivity=None):
+        if not sensitivity:
+            sensitivity = self.sensitivity
+        if self.entropy < sensitivity:
             description = f"{self.noun} {self.verb} {self.av} {self.name}"
             return description

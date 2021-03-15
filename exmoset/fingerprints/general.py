@@ -46,12 +46,12 @@ general_fingerprints = [Fingerprint(name="Aromatic",
                                 label_type="continuous",
                                 calculator=Dipole_Moment,
                                 mol_format="smiles",
-                                file=True),
-
-                    Fingerprint(name="Electronic Spatial Extent",
-                                verb="",
-                                context="Molecules",
-                                label_type="continuous",
-                                calculator=Electronic_Spatial_Extent,
-                                mol_format="smiles",
                                 file=True)]
+
+"""Fingerprint(name="Electronic Spatial Extent",
+            verb="",
+            context="Molecules",
+            label_type="continuous",
+            calculator=Electronic_Spatial_Extent,
+            mol_format="smiles",
+            file=True)]"""
