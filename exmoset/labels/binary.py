@@ -19,6 +19,15 @@ class Binary(Label):
         self.entropy     = self.entropy()
 
     def summary(self,sensitivity=None):
+        """
+        A binary label summary.
+
+        Grammatical Structure
+        <noun> <verb> <property>
+
+        The description is generated in accordance with the different language components.
+        If the value is zero, then the statement is negated using a method in the label superclass.
+        """
         if not sensitivity:
             sensitivity = self.sensitivity
         if self.entropy < sensitivity:

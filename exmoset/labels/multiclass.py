@@ -19,6 +19,12 @@ class Multiclass(Label):
         self.entropy     = self.entropy()
 
     def summary(self,sensitivity=None):
+        """
+        A multiclass label summary.
+
+        Grammatical Structure
+        <noun> <verb> <average> <name>
+        """
         if not sensitivity:
             sensitivity = self.sensitivity
         if self.entropy < sensitivity:

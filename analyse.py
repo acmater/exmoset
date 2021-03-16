@@ -7,7 +7,7 @@ from rdkit import Chem
 if __name__ == "__main__":
     fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
 
-    analysis = MolSet(molecules7,
+    analysis = MolSet(molecules6,
                     fingerprints = fingerprints,
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                     significance=0.1,
@@ -21,7 +21,8 @@ if __name__ == "__main__":
 
     import matplotlib.pyplot as plt
     fig = analysis.plot_entropy()
-    plt.savefig("Entropy_Analysis.png",dpi=300,transparent=True)
+    plt.savefig("Molecules6_Entropy.png",transparent=True,dpi=300)
+    #plt.show()
     print(analysis[analysis.get_outliers()])
     print(analysis & analysis2)
     print(analysis)

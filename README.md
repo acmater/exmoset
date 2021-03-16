@@ -66,3 +66,5 @@ All nouns are pluran
 
 ## TODO
 1. Could I add mutual information to examine subsets of the parent set? For example the subset formed by generate_outliers?
+2. Fix plotting so that it generates useful labels on the bottom.
+3. Possibly could add an extra intermediate object to label calculation that makes the data available to multiple calculators.
