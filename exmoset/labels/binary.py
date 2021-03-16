@@ -18,7 +18,7 @@ class Binary(Label):
         self.av          = np.round(np.mean(values))
         self.entropy     = self.entropy()
 
-    def summary(self,sensitivity=None):
+    def summary(self,sensitivity=None,unimportant_label=False):
         """
         A binary label summary.
 
@@ -33,3 +33,5 @@ class Binary(Label):
         if self.entropy < sensitivity:
             description = f"{self.noun} {self.verb} {self.property}"
             return description if self.av > 0.5 else self.neg(description)
+        elif unimportant_label:
+            return f"{self.property} not meaningful"

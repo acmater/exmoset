@@ -27,7 +27,7 @@ class TestMolecule(unittest.TestCase):
 
 class TestFingerprint(unittest.TestCase):
     def test_fingerprint(self):
-        assert Fingerprint(name="Contains C",
+        assert Fingerprint(property="Contains C",
                     context="molecule",
                     verb="are",
                     label_type="binary",
@@ -41,8 +41,8 @@ class TestBinaryLabel(unittest.TestCase):
         assert binary.av == 1, "Binary label averaging not working."
     def test_entropy(self):
         assert binary.entropy == 0, "Entropy testing for Binary labels not working."
-    def test_name(self):
-        assert binary.property == "binary", "Binary name not working properly."
+    def test_property(self):
+        assert binary.property == "binary", "Binary property (name) not working properly."
 
 class TestMulticlassLabel(unittest.TestCase):
     global multi
@@ -51,8 +51,8 @@ class TestMulticlassLabel(unittest.TestCase):
         assert multi.av == 4, "Multiclass label averaging not working."
     def test_entropy(self):
         assert multi.entropy != 0, "Entropy testing for Multiclass labels not working."
-    def test_name(self):
-        assert multi.name == "multi", "Multiclass label name not working properly."
+    def test_property(self):
+        assert multi.property == "multi", "Multiclass label property (name) not working properly."
 
 class TestContinuousclassLabel(unittest.TestCase):
     global cont
@@ -61,8 +61,8 @@ class TestContinuousclassLabel(unittest.TestCase):
         assert cont.av == 4.5, "Continuous label averaging not working."
     def test_entropy(self):
         assert cont.entropy != 0, "Entropy testing for Continuous labels not working."
-    def test_name(self):
-        assert cont.name == "cont", "Continuous label name not working properly."
+    def test_property(self):
+        assert cont.property == "cont", "Continuous label property not working properly."
 
 class TestMolSet(unittest.TestCase):
     global analysis

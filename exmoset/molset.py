@@ -134,7 +134,11 @@ class MolSet():
         label_dict_sorted    = {key : val for key, val in sorted(label_dict_sorted.items(), key=lambda item: item[1])}
         plt.style.use("exmoset/utils/matplotlibrc")
         plt.bar(range(len(label_dict_sorted)), [x[0] for x in label_dict_sorted.values()], align="center",alpha=0.5,color="r")
-        plt.xticks(range(len(label_dict_sorted)), list(label_dict_sorted.keys()), rotation=45, ha='right')
+        labels = [self.label_dict[key].summary(unimportant_label=True) for key in label_dict_sorted]
+        colors = ["#404040" if "not meaningful" in label else "#FFFFFF" for label in labels ]
+        plt.xticks(range(len(label_dict_sorted)), labels, rotation=45, ha='right')
+        for label, color in zip(plt.gca().get_xticklabels(),colors):
+            label.set_color(color)
         plt.ylabel("Entropy",fontsize=30)
         plt.plot(range(len(label_dict_sorted)), [x[1] for x in label_dict_sorted.values()], dashes=[6,2],color='w')
         plt.tight_layout()
