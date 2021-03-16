@@ -16,7 +16,7 @@ def contains(atom):
 atom_fingerprints = []
 
 for atom in atoms:
-    atom_fingerprints.append(Fingerprint(name=f"{atom}",
+    atom_fingerprints.append(Fingerprint(property=f"{atom}",
                 verb="contain",
                 context="Molecules",
                 label_type="binary",
@@ -36,7 +36,7 @@ def contains(bond):
 bond_fingerprints = []
 
 for bond in bonds:
-    bond_fingerprints.append(Fingerprint(name=f"{bond.lower()} bonds",
+    bond_fingerprints.append(Fingerprint(property=f"{bond.lower()} bonds",
                 verb="contain",
                 context="Molecules",
                 label_type="binary",
@@ -55,21 +55,21 @@ def num_rings(mol):
     return np.array([mol.GetRingInfo().NumRings()])
 
 
-general_fingerprints = [Fingerprint(name="Aromatic",
+general_fingerprints = [Fingerprint(property="Aromatic",
                                 context="Molecules",
                                 verb="are",
                                 label_type="binary",
                                 calculator=aromatic,
                                 mol_format="rd"),
 
-                    Fingerprint(name="Atoms",
+                    Fingerprint(property="Atoms",
                                 context="Molecules",
                                 verb="contain",
                                 label_type="multiclass",
                                 calculator=num_atoms,
                                 mol_format="rd"),
 
-                    Fingerprint(name="Rings",
+                    Fingerprint(property="Rings",
                                 context="Molecules",
                                 verb="contain",
                                 label_type="multiclass",
@@ -90,7 +90,7 @@ def contains(substructure):
 substructure_fingerprints = []
 
 for substructure in substructures:
-    substructure_fingerprints.append(Fingerprint(name=f"{substructure}",
+    substructure_fingerprints.append(Fingerprint(property=f"{substructure}",
                 verb="contain",
                 context="Molecules",
                 label_type="binary",

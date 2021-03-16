@@ -15,7 +15,7 @@ def contains(bond):
 bond_fingerprints = []
 
 for bond in bonds:
-    bond_fingerprints.append(Fingerprint(name=f"{bond.lower()} bonds",
+    bond_fingerprints.append(Fingerprint(property=f"{bond.lower()} bonds",
                 verb="contain",
                 context="Molecules",
                 label_type="binary",

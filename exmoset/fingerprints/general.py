@@ -19,28 +19,28 @@ def num_rings(mol):
     return np.array([mol.GetRingInfo().NumRings()])
 
 
-general_fingerprints = [Fingerprint(name="Aromatic",
+general_fingerprints = [Fingerprint(property="Aromatic",
                                 context="Molecules",
                                 verb="are",
                                 label_type="binary",
                                 calculator=aromatic,
                                 mol_format="rd"),
 
-                    Fingerprint(name="Atoms",
+                    Fingerprint(property="Atoms",
                                 context="Molecules",
                                 verb="contain",
                                 label_type="multiclass",
                                 calculator=num_atoms,
                                 mol_format="rd"),
 
-                    Fingerprint(name="Rings",
+                    Fingerprint(property="Rings",
                                 context="Molecules",
                                 verb="contain",
                                 label_type="multiclass",
                                 calculator=num_rings,
                                 mol_format="rd"),
 
-                    Fingerprint(name="Dipole Moment",
+                    Fingerprint(property="Dipole Moment",
                                 verb="",
                                 context="Molecules",
                                 label_type="continuous",
@@ -48,7 +48,7 @@ general_fingerprints = [Fingerprint(name="Aromatic",
                                 mol_format="smiles",
                                 file=True)]
 
-"""Fingerprint(name="Electronic Spatial Extent",
+"""Fingerprint(property="Electronic Spatial Extent",
             verb="",
             context="Molecules",
             label_type="continuous",

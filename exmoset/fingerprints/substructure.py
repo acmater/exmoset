@@ -16,7 +16,7 @@ def contains(substructure):
 substructure_fingerprints = []
 
 for substructure in substructures:
-    substructure_fingerprints.append(Fingerprint(name=f"{substructure}",
+    substructure_fingerprints.append(Fingerprint(property=f"{substructure}",
                 verb="contain",
                 context="Molecules",
                 label_type="binary",
