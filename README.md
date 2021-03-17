@@ -67,11 +67,17 @@ All nouns are pluran
 ## TODO
 The big task is to get mutual information working.
 
+I also need to decide on a clustering problem to sink this codebase's teeth into.
+
+Critically, MolSet has to be able to function in an entirely self-contained manner and as a sub-component of a molspace. It makes the most sense to precompute all label values in the molspace and then pass the information explicitly to the MolSets (either by passing them indexes or by copying the portions of the dataframe that are relevant).
+
 The following are the steps:
 1. Add MolSpace class that handles and entire dataset and offloads work to MolSet class
    1. This means that MolSet will need its index label so that it can specify which cluster it is referring to.
+   2. I might want to change MolSet back to Subspace in terms of class name, although Molset does make some sense.
 2. Estimating the mutual information for discrete labels is straightforward, basically adapts the Stanford NLP approach
 3. Estimating the mutual information in the continuous case in a open problem, but there is what looks like a good solution in the work of Krakov (https://arxiv.org/pdf/cond-mat/0305641.pdf)
+4. There is a github implementation of the Kraskov estimator (https://github.com/mutualinfo/mutual_info/blob/thismartian/mutual_info/mutual_info.py)
 
 1. Could I add mutual information to examine subsets of the parent set? For example the subset formed by generate_outliers?
 2. Possibly could add an extra intermediate object to label calculation that makes the data available to multiple calculators.

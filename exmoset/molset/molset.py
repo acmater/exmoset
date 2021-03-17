@@ -32,7 +32,10 @@ class MolSet():
     file : str, default=None
         An optional file (dataframe) that will be imported by pandas and can be accessed by the fingerprints.
 
-    label_tpyes : {str : <Label Class>}, default = {"binary" : Binary, "multiclass" : Multiclass, "continuous" : Continuous}
+    indexes : np.array(dtype=np.int), default=None
+        A numpy array of indexes which define the molset within the context of a larger molecular space.
+
+    label_types : {str : <Label Class>}, default = {"binary" : Binary, "multiclass" : Multiclass, "continuous" : Continuous}
         A dictionary of possible label types for indexing.
     """
     def __init__(self,molecules,
@@ -40,6 +43,7 @@ class MolSet():
                       mol_converters={},
                       significance=0.1,
                       file=None,
+                      indexes=None,
                       label_types = {"binary"     : Binary,
                                      "multiclass" : Multiclass,
                                      "continuous" : Continuous}):
@@ -50,6 +54,9 @@ class MolSet():
             formats = {key : mol_converters[key](mol) for key in mol_converters.keys()}
             self.Molecules.append(Molecule(mol, **formats))
         self.Molecules = np.array(self.Molecules)
+
+        if indexes:
+            self.indexes = indexes
 
         if file is not None:
             print(f"Importing {file}")
