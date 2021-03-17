@@ -41,43 +41,44 @@ class MolSet():
                                      "multiclass" : Multiclass,
                                      "continuous" : Continuous}):
 
-        if indices:
+        if indices is not None:
             self.indices = indices
-
-        if mol_converters:
-            self.Molecules = []
-            print("Converting Molecules")
-            for mol in tqdm.tqdm(molecules):
-                formats = {key : mol_converters[key](mol) for key in mol_converters.keys()}
-                self.Molecules.append(Molecule(mol, **formats))
-            # Step below is to allow array indexing.
-            self.Molecules = np.array(self.Molecules)
         else:
-            self.Molecules = molecules
+
+            if mol_converters:
+                self.Molecules = []
+                print("Converting Molecules")
+                for mol in tqdm.tqdm(molecules):
+                    formats = {key : mol_converters[key](mol) for key in mol_converters.keys()}
+                    self.Molecules.append(Molecule(mol, **formats))
+                # Step below is to allow array indexing.
+                self.Molecules = np.array(self.Molecules)
+            else:
+                self.Molecules = molecules
 
 
 
-        if file is not None:
-            print(f"Importing {file}")
-            df     = pd.read_csv(file,index_col="SMILES")
-            sub_df = df.loc[[mol.smiles for mol in self.Molecules]]
+            if file is not None:
+                print(f"Importing {file}")
+                df     = pd.read_csv(file,index_col="SMILES")
+                sub_df = df.loc[[mol.smiles for mol in self.Molecules]]
 
-        self.prop_values = np.zeros((len(fingerprints),len(self.Molecules)))
+            self.prop_values = np.zeros((len(fingerprints),len(self.Molecules)))
 
-        print("Calculating Properties")
-        for i,molecule in enumerate(tqdm.tqdm(self.Molecules)):
-            for j,fp in enumerate(fingerprints):
-                if fp.file is not None:
-                    self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format],file=sub_df)
-                else:
-                    self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format])
+            print("Calculating Properties")
+            for i,molecule in enumerate(tqdm.tqdm(self.Molecules)):
+                for j,fp in enumerate(fingerprints):
+                    if fp.file is not None:
+                        self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format],file=sub_df)
+                    else:
+                        self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format])
 
-        self.label_dict = {}
-        for i,fp in enumerate(fingerprints):
-            self.label_dict[fp.property] = label_types[fp.label_type](fp.property,self.prop_values[i],fp.verb,fp.context)
+            self.label_dict = {}
+            for i,fp in enumerate(fingerprints):
+                self.label_dict[fp.property] = label_types[fp.label_type](fp.property,self.prop_values[i],fp.verb,fp.context)
 
-        self.significance       = significance
-        self.vector,self.struct = self.calc_vector()
+            self.significance       = significance
+            self.vector,self.struct = self.calc_vector()
 
     def calc_vector(self):
         """

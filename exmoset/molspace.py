@@ -63,11 +63,13 @@ class MolSpace():
                                      "continuous" : Continuous}):
         assert  file is not None or molecules is not None, "Either a file or a list of molecules must be provided."
 
-        if file is not None and molecules is None:
-            assert index_col is not None, "An index column must be provided to determine what column of the file corresponds to the molecules."
+        if file is not None :
             print(f"Importing {file}")
-            df        = pd.read_csv(file)
-            molecules = df[index_col].to_numpy()
+            self.df        = pd.read_csv(file,index_col=index_col)
+            if molecules is None:
+                print("Using")
+                assert index_col is not None, "An index column must be provided to determine what column of the file corresponds to the molecules."
+                molecules = self.df.index.to_numpy()
 
         self.Molecules = []
         print("Converting Molecules")
@@ -76,27 +78,24 @@ class MolSpace():
             self.Molecules.append(Molecule(mol, **formats))
         self.Molecules = np.array(self.Molecules)
 
-        if file is not None:
-            print(f"Importing {file}")
-            df     = pd.read_csv(file,index_col="SMILES")
-            sub_df = df.loc[[mol.smiles for mol in self.Molecules]]
-
         self.prop_values = np.zeros((len(fingerprints),len(self.Molecules)))
 
         print("Calculating Properties")
         for i,molecule in enumerate(tqdm.tqdm(self.Molecules)):
             for j,fp in enumerate(fingerprints):
                 if fp.file is not None:
-                    self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format],file=sub_df)
+                    self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format],file=self.df)
+                    # I want to make sure that this isn't passing an entire copy of the dataframe, as that would suck
                 else:
                     self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format])
 
-        self.clusters = {key : gen_clusters(val) for key, val in clusters}
+        self.clusters = {key : self.gen_clusters(val) for key, val in clusters.items()}
 
     def gen_clusters(self,indices):
         clusters = []
         for val in np.unique(indices):
-            clusters.append(MolSet(indices=np.where(indices=val)[0]))
+            print(indices==val)
+            clusters.append(MolSet(indices=np.where(indices==val)[0]))
         return clusters
 
     def query(self):
