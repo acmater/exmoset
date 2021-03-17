@@ -7,7 +7,7 @@ from exmoset.data import *
 from exmoset.molecule import Molecule
 from fingerprints import *
 from exmoset.labels import *
-from exmoset import MolSet
+from exmoset.molset import MolSet
 
 test_mols = molecules4
 fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
