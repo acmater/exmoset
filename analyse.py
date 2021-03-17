@@ -30,8 +30,13 @@ if __name__ == "__main__":
     print(analysis)
 
     #### MolSpace testing
-    space = MolSpace(molecules3,
-                    fingerprints = fingerprints,
+    space = MolSpace(fingerprints = fingerprints,
+                    molecules=molecules3,
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                     significance=0.1,
                     file="exmoset/data/QM9_Data.csv")
+
+    space2 = MolSpace(fingerprints=fingerprints,
+                      file="exmoset/data/QM9_Data.csv",
+                      mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
+                      index_col="SMILES")

@@ -86,3 +86,4 @@ The following are the steps:
 5. Will also need a way to visualise the contingency matrix for discrete cases.
 6. I need to figure out how to deal with the calculation of mutual information when a particular class has 0 elements, using this as an example (https://nlp.stanford.edu/IR-book/html/htmledition/mutual-information-1.html).
 7. Need to resolve how to deal with the negative entropy values that are possible when using k-means clustering approaches.
+8. Add argsparse methods
