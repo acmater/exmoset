@@ -3,8 +3,9 @@ from rdkit import Chem
 import pandas as pd
 import tqdm
 
-from molset import MolSet
-from molecule import Molecule
+from .molset import MolSet
+from .molecule import Molecule
+from .labels import Binary, Multiclass, Continuous
 
 
 class MolSpace():
@@ -52,7 +53,7 @@ class MolSpace():
                       mol_converters={},
                       significance=0.1,
                       file=None,
-                      clusters={}
+                      clusters={},
                       label_types = {"binary"     : Binary,
                                      "multiclass" : Multiclass,
                                      "continuous" : Continuous}):
