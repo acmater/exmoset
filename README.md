@@ -72,13 +72,15 @@ I also need to decide on a clustering problem to sink this codebase's teeth into
 Critically, MolSet has to be able to function in an entirely self-contained manner and as a sub-component of a molspace. It makes the most sense to precompute all label values in the molspace and then pass the information explicitly to the MolSets (either by passing them indexes or by copying the portions of the dataframe that are relevant).
 
 The following are the steps:
-1. Add MolSpace class that handles and entire dataset and offloads work to MolSet class
+0. I need to work out exactly how to phrase the problem of mutual information and deal with what seems to be a disagreement between the Stanford NLP guide and the wikipage on mutual information regarding the meaning of the two terms.
+   1. I think that the resolution of the disagreement is in my own misunderstanding of independence. I assumed independence meant (in addition to its typical probability meaning) that the probability distributions were entirely separate in their outcome space, however there is no reason that the must be. Using the KLDiv definition and the fact that two distributions have a KLDiv of 0 only if they are identical mean that more positive values for mutual information indicate a greater degree of separation between the two distributions.
+1. Add MolSpace class that handles and entire dataset and offloads work to MolSet class.
    1. This means that MolSet will need its index label so that it can specify which cluster it is referring to.
    2. I might want to change MolSet back to Subspace in terms of class name, although Molset does make some sense.
-2. Estimating the mutual information for discrete labels is straightforward, basically adapts the Stanford NLP approach
-3. Estimating the mutual information in the continuous case in a open problem, but there is what looks like a good solution in the work of Krakov (https://arxiv.org/pdf/cond-mat/0305641.pdf)
-4. There is a github implementation of the Kraskov estimator (https://github.com/mutualinfo/mutual_info/blob/thismartian/mutual_info/mutual_info.py)
-
-1. Could I add mutual information to examine subsets of the parent set? For example the subset formed by generate_outliers?
-2. Possibly could add an extra intermediate object to label calculation that makes the data available to multiple calculators.
-   1. This could be hacked in simply by creating a new molecular representation that is in this form.
+2. Estimating the mutual information for discrete labels is straightforward, basically adapts the Stanford NLP approach.
+   1. The first goal should be to implement code which works for binary labels using the Stanford NLP approach (https://nlp.stanford.edu/IR-book/html/htmledition/mutual-information-1.html).
+3. Estimating the mutual information in the continuous case in a open problem, but there is what looks like a good solution in the work of Krakov (https://arxiv.org/pdf/cond-mat/0305641.pdf).
+4. There is a github implementation of the Kraskov estimator (https://github.com/mutualinfo/mutual_info/tree/main).
+5. Will also need a way to visualise the contingency matrix for discrete cases.
+6. I need to figure out how to deal with the calculation of mutual information when a particular class has 0 elements, using this as an example (https://nlp.stanford.edu/IR-book/html/htmledition/mutual-information-1.html).
+7. Need to resolve how to deal with the negative entropy values that are possible when using k-means clustering approaches.

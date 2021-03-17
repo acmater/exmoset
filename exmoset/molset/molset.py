@@ -19,21 +19,14 @@ class MolSet():
     properties : list
         A list of property fingerprints that will be calculated for each system
 
-    mol_converters : dict, default = {}
-        A list of molecule converters that will be passed as kwargs to the Molecule object
-
-        Example: {"rdkit" : Chem.MolFromSmiles}
-        This will then be provided as keyword arguments to Molecule and given the particular mol as an argument.
-        Molecule(mol, rdkit=Chem.MolFromSmiles(mol))
+    indexes : np.array(dtype=np.int), default=None
+        A numpy array of indexes which define the molset within the context of a larger molecular space.
 
     significance : float, default = 0.1
         The default signifiance threshold used when calculating whether or not a particular label is significant.
 
     file : str, default=None
         An optional file (dataframe) that will be imported by pandas and can be accessed by the fingerprints.
-
-    indexes : np.array(dtype=np.int), default=None
-        A numpy array of indexes which define the molset within the context of a larger molecular space.
 
     label_types : {str : <Label Class>}, default = {"binary" : Binary, "multiclass" : Multiclass, "continuous" : Continuous}
         A dictionary of possible label types for indexing.
@@ -48,12 +41,16 @@ class MolSet():
                                      "multiclass" : Multiclass,
                                      "continuous" : Continuous}):
 
-        self.Molecules = []
-        print("Converting Molecules")
-        for mol in tqdm.tqdm(molecules):
-            formats = {key : mol_converters[key](mol) for key in mol_converters.keys()}
-            self.Molecules.append(Molecule(mol, **formats))
-        self.Molecules = np.array(self.Molecules)
+        if mol_converters:
+            self.Molecules = []
+            print("Converting Molecules")
+            for mol in tqdm.tqdm(molecules):
+                formats = {key : mol_converters[key](mol) for key in mol_converters.keys()}
+                self.Molecules.append(Molecule(mol, **formats))
+            # Step below is to allow array indexing.
+            self.Molecules = np.array(self.Molecules)
+        else:
+            self.Molecules = molecules
 
         if indexes:
             self.indexes = indexes
