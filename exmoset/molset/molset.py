@@ -37,14 +37,22 @@ class MolSet():
                       significance=0.1,
                       file=None,
                       indices=None,
+                      context=None,
                       label_types = {"binary"     : Binary,
                                      "multiclass" : Multiclass,
                                      "continuous" : Continuous}):
 
         if indices is not None:
             self.indices = indices
-        else:
 
+            self.label_dict = {}
+            for i,fp in enumerate(fingerprints):
+                self.label_dict[fp.property] = label_types[fp.label_type](fp.property,context.prop_values[i,indices],fp.verb,fp.context)
+
+            self.significance       = significance
+            self.vector,self.struct = self.calc_vector()
+
+        else:
             if mol_converters:
                 self.Molecules = []
                 print("Converting Molecules")

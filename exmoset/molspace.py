@@ -89,12 +89,16 @@ class MolSpace():
                 else:
                     self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format])
 
-        self.clusters = {key : self.gen_clusters(val) for key, val in clusters.items()}
+        self.labels       = {fp : self.prop_values[j,:] for j,fp in enumerate(fingerprints)}
+        self.fingerprints = fingerprints
+        self.clusters     = {key : self.gen_clusters(val) for key, val in clusters.items()}
 
     def gen_clusters(self,indices):
         clusters = []
         for val in np.unique(indices):
-            clusters.append(MolSet(indices=np.where(indices==val)[0]))
+            clusters.append(MolSet(fingerprints=self.fingerprints,
+                                   indices=np.where(indices==val)[0],
+                                   context=self))
         return clusters
 
     def query(self):
