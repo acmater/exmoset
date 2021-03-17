@@ -1,6 +1,6 @@
 from exmoset.data import *
 from exmoset.fingerprints import *
-from exmoset import MolSet
+from exmoset.molset import MolSet
 
 from rdkit import Chem
 

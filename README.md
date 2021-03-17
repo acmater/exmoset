@@ -65,6 +65,14 @@ Internal operations utilize an information vector to describe the MolSet. This i
 All nouns are pluran
 
 ## TODO
+The big task is to get mutual information working.
+
+The following are the steps:
+1. Add MolSpace class that handles and entire dataset and offloads work to MolSet class
+   1. This means that MolSet will need its index label so that it can specify which cluster it is referring to.
+2. Estimating the mutual information for discrete labels is straightforward, basically adapts the Stanford NLP approach
+3. Estimating the mutual information in the continuous case in a open problem, but there is what looks like a good solution in the work of Krakov (https://arxiv.org/pdf/cond-mat/0305641.pdf)
+
 1. Could I add mutual information to examine subsets of the parent set? For example the subset formed by generate_outliers?
 2. Possibly could add an extra intermediate object to label calculation that makes the data available to multiple calculators.
    1. This could be hacked in simply by creating a new molecular representation that is in this form.

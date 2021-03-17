@@ -4,8 +4,8 @@ from rdkit import Chem
 import pandas as pd
 import tqdm
 
-from .molecule import Molecule
-from .labels import Binary, Multiclass, Continuous
+from ..molecule import Molecule
+from ..labels import Binary, Multiclass, Continuous
 
 class MolSet():
     """
