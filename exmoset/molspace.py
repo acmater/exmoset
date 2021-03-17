@@ -1,15 +1,28 @@
+import numpy as np
+from rdkit import Chem
+import pandas as pd
+import tqdm
+
+from molset import MolSet
+from molecule import Molecule
+
+
 class MolSpace():
     """
     A class that handles a set of chemical data and the associated MolSets. This method
     will delegate to the methods of those classes when determining things such as calculating
     mutual information for a given label.
 
+    The most intuitive way to think of MolSpace as is providing the context in which each
+    MolSet sits. If the MolSet is singular (for example an entire dataset), then MolSpace
+    will contain only a single MolSet object.
+
     Attributes
     ----------
     molecules : list
         A list of molecules that will be parsed into the Molecule class
 
-    properties : list
+    fingerprints : list
         A list of property fingerprints that will be calculated for each system
 
     mol_converters : dict, default = {}
@@ -23,10 +36,13 @@ class MolSpace():
         The default signifiance threshold used when calculating whether or not a particular label is significant.
 
     file : str, default=None
-        An optional file (dataframe) that will be imported by pandas and can be accessed by the fingerprints.
+        An optional file (.csv) that will be imported by pandas and can be accessed by the fingerprints.
 
-    clusters : np.array(dtype=np.int), default=None
-        A numpy array of indexes which will define each MolSet cluster given a particular clustering approach.
+        # TODO make this file import flexible so multiple type formats can be specified.
+
+    clusters : {str : np.array(dtype=np.int)}, default={}
+        A dictionary which stores cluster information. The str is used to define the name of the clustering approach
+        and the numpy array is the indices which will define each MolSet cluster given a particular clustering approach.
 
     label_types : {str : <Label Class>}, default = {"binary" : Binary, "multiclass" : Multiclass, "continuous" : Continuous}
         A dictionary of possible label types for indexing.
@@ -36,7 +52,7 @@ class MolSpace():
                       mol_converters={},
                       significance=0.1,
                       file=None,
-                      clusters=None
+                      clusters={}
                       label_types = {"binary"     : Binary,
                                      "multiclass" : Multiclass,
                                      "continuous" : Continuous}):
@@ -47,6 +63,28 @@ class MolSpace():
             self.Molecules.append(Molecule(mol, **formats))
         self.Molecules = np.array(self.Molecules)
 
+        if file is not None:
+            print(f"Importing {file}")
+            df     = pd.read_csv(file,index_col="SMILES")
+            sub_df = df.loc[[mol.smiles for mol in self.Molecules]]
+
+        self.prop_values = np.zeros((len(fingerprints),len(self.Molecules)))
+
+        print("Calculating Properties")
+        for i,molecule in enumerate(tqdm.tqdm(self.Molecules)):
+            for j,fp in enumerate(fingerprints):
+                if fp.file is not None:
+                    self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format],file=sub_df)
+                else:
+                    self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format])
+
+        self.clusters = {key : gen_clusters(val) for key, val in clusters}
+
+    def gen_clusters(self,indices):
+        clusters = []
+        for val in np.unique(indices):
+            clusters.append(MolSet(indices=np.where(indices=val)[0]))
+        return clusters
 
     def query(self):
         """

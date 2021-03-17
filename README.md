@@ -77,6 +77,8 @@ The following are the steps:
 1. Add MolSpace class that handles and entire dataset and offloads work to MolSet class.
    1. This means that MolSet will need its index label so that it can specify which cluster it is referring to.
    2. I might want to change MolSet back to Subspace in terms of class name, although Molset does make some sense.
+   3. I need to ensure that MolSet functions in an entirely self-contained manner.
+      1. Actually, maybe it shouldn't. You could achieve equivalent behaviour by calling MolSpace on whatever single set you're interested in and then just specify either no clusters, or a cluster where it is all one big cluster.
 2. Estimating the mutual information for discrete labels is straightforward, basically adapts the Stanford NLP approach.
    1. The first goal should be to implement code which works for binary labels using the Stanford NLP approach (https://nlp.stanford.edu/IR-book/html/htmledition/mutual-information-1.html).
 3. Estimating the mutual information in the continuous case in a open problem, but there is what looks like a good solution in the work of Krakov (https://arxiv.org/pdf/cond-mat/0305641.pdf).

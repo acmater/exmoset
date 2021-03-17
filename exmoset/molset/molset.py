@@ -19,7 +19,7 @@ class MolSet():
     properties : list
         A list of property fingerprints that will be calculated for each system
 
-    indexes : np.array(dtype=np.int), default=None
+    indices : np.array(dtype=np.int), default=None
         A numpy array of indexes which define the molset within the context of a larger molecular space.
 
     significance : float, default = 0.1
@@ -31,15 +31,18 @@ class MolSet():
     label_types : {str : <Label Class>}, default = {"binary" : Binary, "multiclass" : Multiclass, "continuous" : Continuous}
         A dictionary of possible label types for indexing.
     """
-    def __init__(self,molecules,
-                      fingerprints,
+    def __init__(self,molecules=None,
+                      fingerprints=None,
                       mol_converters={},
                       significance=0.1,
                       file=None,
-                      indexes=None,
+                      indices=None,
                       label_types = {"binary"     : Binary,
                                      "multiclass" : Multiclass,
                                      "continuous" : Continuous}):
+
+        if indices:
+            self.indices = indices
 
         if mol_converters:
             self.Molecules = []
@@ -52,8 +55,7 @@ class MolSet():
         else:
             self.Molecules = molecules
 
-        if indexes:
-            self.indexes = indexes
+
 
         if file is not None:
             print(f"Importing {file}")
@@ -167,7 +169,7 @@ class MolSet():
 
     def __and__(self, other):
         """
-        Overrides the boolean and operation to identify meaningful labels that are shared between two MolSets.
+        Overrides the boolean `and` operation to identify meaningful labels that are shared between two MolSets.
         """
         assert isinstance(other, MolSet)
         keys = []
