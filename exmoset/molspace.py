@@ -80,15 +80,15 @@ class MolSpace():
         self.prop_values = np.zeros((len(fingerprints),len(self.Molecules)))
 
         print("Calculating Properties")
-        for i,molecule in enumerate(tqdm.tqdm(self.Molecules)):
-            for j,fp in enumerate(fingerprints):
+        self.labels = {fp.property : np.zeros(len(self.Molecules)) for fp in fingerprints}
+        for i, molecule in enumerate(tqdm.tqdm(self.Molecules)):
+            for fp in fingerprints:
                 if fp.file is not None:
-                    self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format],file=self.df)
+                    self.labels[fp.property][i] = fp.calculator(molecule[fp.mol_format],file=self.df)
                     # I want to make sure that this isn't passing an entire copy of the dataframe, as that would suck
                 else:
-                    self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format])
+                    self.labels[fp.property][i] = fp.calculator(molecule[fp.mol_format])
 
-        self.labels       = {fp.property : self.prop_values[j,:] for j,fp in enumerate(fingerprints)}
         self.fingerprints = fingerprints
         self.clusters     = {key : self.gen_clusters(val) for key, val in clusters.items()}
 
