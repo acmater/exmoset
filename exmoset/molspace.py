@@ -67,7 +67,6 @@ class MolSpace():
             print(f"Importing {file}")
             self.df        = pd.read_csv(file,index_col=index_col)
             if molecules is None:
-                print("Using")
                 assert index_col is not None, "An index column must be provided to determine what column of the file corresponds to the molecules."
                 molecules = self.df.index.to_numpy()
 
@@ -89,14 +88,16 @@ class MolSpace():
                 else:
                     self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format])
 
-        self.labels       = {fp : self.prop_values[j,:] for j,fp in enumerate(fingerprints)}
+        self.labels       = {fp.property : self.prop_values[j,:] for j,fp in enumerate(fingerprints)}
         self.fingerprints = fingerprints
         self.clusters     = {key : self.gen_clusters(val) for key, val in clusters.items()}
 
-    def gen_clusters(self,indices):
+    def gen_clusters(self,indices,fingerprints=None):
+        if fingerprints is None:
+            fingerprints = self.fingerprints
         clusters = []
         for val in np.unique(indices):
-            clusters.append(MolSet(fingerprints=self.fingerprints,
+            clusters.append(MolSet(fingerprints=fingerprints,
                                    indices=np.where(indices==val)[0],
                                    context=self))
         return clusters
