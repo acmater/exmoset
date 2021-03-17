@@ -94,7 +94,6 @@ class MolSpace():
     def gen_clusters(self,indices):
         clusters = []
         for val in np.unique(indices):
-            print(indices==val)
             clusters.append(MolSet(indices=np.where(indices==val)[0]))
         return clusters
 

@@ -181,3 +181,10 @@ class MolSet():
 
     def __getitem__(self,idx):
         return self.Molecules[idx]
+
+    def __bool__(self):
+        # Need to update this bool method
+        if self.indices is not None:
+            return True
+        else:
+            return False

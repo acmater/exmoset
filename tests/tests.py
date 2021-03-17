@@ -8,6 +8,7 @@ from exmoset.molecule import Molecule
 from fingerprints import *
 from exmoset.labels import *
 from exmoset.molset import MolSet
+from exmoset import MolSpace
 
 test_mols = molecules4
 fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
@@ -67,14 +68,12 @@ class TestContinuousclassLabel(unittest.TestCase):
 class TestMolSet(unittest.TestCase):
     global analysis
     def test_molset_generation(self):
-        try:
             analysis = MolSet(molecules4,
                             fingerprints = fingerprints,
                             mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                             significance=0.1,
-                            file="data/QM9_Data.csv")
-        except Exception:
-            "Molset Class could not be created"
+                            file="exmoset/data/QM9_Data.csv")
+
 
 class TestGetOutliers(unittest.TestCase):
     def test_outlier_identification(self):
@@ -84,7 +83,24 @@ class TestGetOutliers(unittest.TestCase):
                         significance=0.1)
         assert analysis.get_outliers() == np.array([5]), "Outlier identification is not working correctly."
 
+class TestMolSpace(unittest.TestCase):
+    def test_molspace_gen(self):
+        space = MolSpace(fingerprints = fingerprints,
+                         molecules=molecules3,
+                         mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
+                         significance=0.1,
+                         file="exmoset/data/QM9_Data.csv",
+                         index_col="SMILES")
 
+class TestMolFileSpace(unittest.TestCase):
+    global filemolspace
+    filemolspace = MolSpace(fingerprints=fingerprints,
+                         file="exmoset/data/QM9_tiny.csv",
+                         mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
+                         index_col="SMILES",
+                         clusters={"Test" : np.array([0,0,0,0,1,1,1,1,1])})
+    def test_molspace_clusters(self):
+        assert filemolspace.clusters["Test"][0], "Clustering is not working"
 
 if __name__ == "__main__":
     unittest.main()
