@@ -97,12 +97,14 @@ class MolSpace():
                                              context=self)}
 
     def mutual_information(self,prop,cluster,comparison=None):
+        # Need to fix this calculator
         if comparison is None:
             comparison = np.setdiff1d(self.indices,cluster.indices)
-        contingency = np.array([np.unique(self.labels[prop].loc[cluster.indices],return_counts=True)[::-1],
-                                np.unique(self.labels[prop].loc[comparison],return_counts=True)])
+        contingency = np.array([np.unique(self.labels[prop].loc[cluster.indices],return_counts=True)[1],
+                                np.unique(self.labels[prop].loc[comparison],return_counts=True)[1]])
         print(contingency)
         print(self.mutual_contingency(contingency))
+        return self.mutual_contingency(contingency)
 
     @staticmethod
     def mutual_contingency(contingency):
@@ -115,7 +117,6 @@ class MolSpace():
                 else:
                     total += (contingency[i,j]/N)*np.log2((N*contingency[i,j])/(np.sum(contingency[i,:])*np.sum(contingency[:,j])))
         return total
-
 
     def gen_clusters(self,indices,fingerprints=None):
         if fingerprints is None:

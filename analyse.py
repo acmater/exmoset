@@ -40,7 +40,7 @@ if __name__ == "__main__":
                     clusters={"Full" : np.concatenate([np.zeros((200,)).reshape(-1,1),np.ones((382,)).reshape(-1,1)])})
     #space.clusters["Full"]["Atoms"].plot()
     #plt.show()
-    space.mutual_information("Aromatic",space.clusters["Full"][1])
+    space.mutual_information("[OH]",space.clusters["Full"][1])
     #print(space.mutual_contingency(np.array([[49,27652],[141,774106]])))
 
     del fingerprints[3] # Remove the Dipole Moment fingerprint
