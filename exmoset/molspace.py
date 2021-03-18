@@ -53,9 +53,9 @@ class MolSpace():
     """
     def __init__(self,fingerprints,
                       molecules=None,
+                      file=None,
                       mol_converters={},
                       significance=0.1,
-                      file=None,
                       index_col=None,
                       clusters={},
                       label_types = {"binary"     : Binary,
@@ -78,15 +78,16 @@ class MolSpace():
         self.Molecules = np.array(self.Molecules)
 
         print("Calculating Properties")
-        self.labels = {fp.property : np.zeros(len(self.Molecules)) for fp in fingerprints}
+        labels = {fp.property : np.zeros(len(self.Molecules)) for fp in fingerprints}
         for i, molecule in enumerate(tqdm.tqdm(self.Molecules)):
             for fp in fingerprints:
                 if fp.file is not None:
-                    self.labels[fp.property][i] = fp.calculator(molecule[fp.mol_format],file=self.df)
+                    labels[fp.property][i] = fp.calculator(molecule[fp.mol_format],file=self.df)
                     # I want to make sure that this isn't passing an entire copy of the dataframe, as that would suck
                 else:
-                    self.labels[fp.property][i] = fp.calculator(molecule[fp.mol_format])
+                    labels[fp.property][i] = fp.calculator(molecule[fp.mol_format])
 
+        self.labels = pd.DataFrame(labels)
         self.fingerprints = fingerprints
         if clusters:
             self.clusters     = {key : self.gen_clusters(val) for key, val in clusters.items()}
@@ -113,3 +114,6 @@ class MolSpace():
         This method is intended to allow to user to probe the dataset in question.
         """
         pass
+
+    def __getitem__(self,idx):
+        return self.Molecules[idx]

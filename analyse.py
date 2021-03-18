@@ -31,13 +31,13 @@ if __name__ == "__main__":
 
     #### MolSpace testing
     space = MolSpace(fingerprints = fingerprints,
-                    molecules=molecules3,
+                    molecules=molecules4,
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                     significance=0.1,
                     file="exmoset/data/QM9_Data.csv",
                     index_col="SMILES")
+    print(space[space.clusters["Full"].get_outliers()])
 
-    print(np.where(space.labels["Atoms"] > 7))
     del fingerprints[3] # Remove the Dipole Moment fingerprint
     space2 = MolSpace(fingerprints=fingerprints,
                       file="exmoset/data/FreeSolv.csv",

@@ -41,8 +41,9 @@ class MolSet():
 
             self.label_dict = {}
             for i,fp in enumerate(fingerprints):
-                self.label_dict[fp.property] = label_types[fp.label_type](fp.property,context.labels[fp.property][indices],fp.verb,fp.context)
+                self.label_dict[fp.property] = label_types[fp.label_type](fp.property,context.labels[fp.property].loc[indices].to_numpy(),fp.verb,fp.context)
 
+            self.context = context
             self.significance       = significance
             self.vector,self.struct = self.calc_vector()
 
@@ -76,7 +77,6 @@ class MolSet():
         return ma.array(vector, mask=mask), ma.array(struct, mask=tuple(mask))
 
     def get_outliers(self):
-        # This is clunky af
         """
         Function that compares the meaningul vector description of a class and identifiers species that are not correctly
         described by it and returns the indices of these species.
@@ -86,11 +86,7 @@ class MolSet():
         np.BooleanArray
             An array that can be used to index self.Molecules to return the outlier species.
         """
-        full_mask = np.zeros((len(self.vector.mask),len(self)))
-        for i in range(len(self)):
-            full_mask[:,i] = self.vector.mask
-        masked_vals = ma.array(self.prop_values,mask=full_mask)
-        return np.where(np.sum((self.vector.reshape(-1,1) - masked_vals),axis=0) != 0) # Need to update distance formulation
+        return np.where(np.sum((self.context.labels.loc[self.indices].to_numpy() - self.vector),axis=1) != 0) # Need to update distance formulation
 
     def plot_entropy(self):
         """
