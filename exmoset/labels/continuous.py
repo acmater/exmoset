@@ -1,6 +1,8 @@
 import numpy as np
 from . import Label
 from entropy_estimators import continuous
+from scipy import stats
+import matplotlib.pyplot as plt
 
 class Continuous(Label):
     """
@@ -17,6 +19,18 @@ class Continuous(Label):
         self.sensitivity = sensitivity
         self.av          = np.mean(values)
         self.entropy     = self.entropy()
+
+    def plot(self):
+        kernel = stats.gaussian_kde(self.values)
+        x = np.linspace(min(self.values),max(self.values),num=500)
+        y = kernel(x)
+        fig, ax = plt.subplots()
+        ax.plot(x,y)
+        ax.fill_between(x,y,0,alpha=0.1)
+
+        plt.title(self.property)
+        plt.tight_layout()
+        return plt.gcf()
 
     def entropy(self,k=10,norm="euclidean",min_dist=0.001):
         """

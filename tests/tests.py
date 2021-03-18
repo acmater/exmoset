@@ -10,6 +10,9 @@ from exmoset.labels import *
 from exmoset.molset import MolSet
 from exmoset import MolSpace
 
+import matplotlib
+import matplotlib.pyplot as plt
+
 test_mols = molecules4
 fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + substructure_fingerprints
 # Is there a better way to do the global portions of the code below? Intuitively I should be able
@@ -44,6 +47,9 @@ class TestBinaryLabel(unittest.TestCase):
         assert binary.entropy == 0, "Entropy testing for Binary labels not working."
     def test_property(self):
         assert binary.property == "binary", "Binary property (name) not working properly."
+    def test_plot(self):
+        fig = binary.plot()
+        assert isinstance(fig, matplotlib.figure.Figure), "Binary Figure plotting not working correctly."
 
 class TestMulticlassLabel(unittest.TestCase):
     global multi
@@ -54,6 +60,9 @@ class TestMulticlassLabel(unittest.TestCase):
         assert multi.entropy != 0, "Entropy testing for Multiclass labels not working."
     def test_property(self):
         assert multi.property == "multi", "Multiclass label property (name) not working properly."
+    def test_plot(self):
+        fig = multi.plot()
+        assert isinstance(fig, matplotlib.figure.Figure), "Multiclass Figure plotting not working correctly."
 
 class TestContinuousclassLabel(unittest.TestCase):
     global cont
@@ -64,6 +73,9 @@ class TestContinuousclassLabel(unittest.TestCase):
         assert cont.entropy != 0, "Entropy testing for Continuous labels not working."
     def test_property(self):
         assert cont.property == "cont", "Continuous label property not working properly."
+    def test_plot(self):
+        fig = cont.plot()
+        assert isinstance(fig, matplotlib.figure.Figure), "Continuous Figure plotting not working correctly."
 
 """class TestMolSet(unittest.TestCase):
     global analysis

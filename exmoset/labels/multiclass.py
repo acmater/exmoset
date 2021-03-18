@@ -1,5 +1,6 @@
 from . import Label
 import numpy as np
+import matplotlib.pyplot as plt
 
 class Multiclass(Label):
     """
@@ -17,6 +18,13 @@ class Multiclass(Label):
         self.sensitivity = sensitivity
         self.av          = np.int(np.mean(values))
         self.entropy     = self.entropy()
+
+    def plot(self):
+        plt.hist(self.values,width=1,alpha=0.5,align="mid",bins=len(np.unique(self.values)))
+        plt.title(self.property)
+        plt.xlim(min(self.values)+0.5,max(self.values)+0.5)
+        plt.tight_layout()
+        return plt.gcf()
 
     def summary(self,sensitivity=None,unimportant_label=False):
         """

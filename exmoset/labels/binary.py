@@ -1,5 +1,6 @@
 import numpy as np
 from . import Label
+import matplotlib.pyplot as plt
 
 class Binary(Label):
     """
@@ -17,6 +18,16 @@ class Binary(Label):
         self.sensitivity = sensitivity
         self.av          = np.round(np.mean(values))
         self.entropy     = self.entropy()
+
+    def plot(self):
+        plt.hist(self.values,width=1,alpha=0.5,align="mid",bins=2)
+        ax = plt.gca()
+        ax.set_xticks([0.5,1.5])
+        plt.xlim([0,2])
+        ax.set_xticklabels(["No (0)","Yes (1)"])
+        plt.title(self.property)
+        plt.tight_layout()
+        return plt.gcf()
 
     def summary(self,sensitivity=None,unimportant_label=False):
         """
