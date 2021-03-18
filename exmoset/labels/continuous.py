@@ -20,8 +20,20 @@ class Continuous(Label):
         self.av          = np.mean(values)
         self.entropy     = self.entropy()
 
-    def plot(self):
-        kernel = stats.gaussian_kde(self.values)
+    def plot(self,bw_method=None,weights=None):
+        """
+        Returns a matplotlib continuous plot for this particular property.
+        Density estimation is performed using the guassian_kde from scipy with default parameters.
+
+        Parameters
+        ----------
+        bw_method : str, scalar, or callable, optional
+            The method used to calculate the estimator bandwidth. See scipy.stats.gaussian_kde for more information.
+
+        weights : array_like, option
+            Weights of datapoints. See scipy.stats.gaussian_kde for more information.
+        """
+        kernel = stats.gaussian_kde(self.values,bw_method=bw_method,weights=weights)
         x = np.linspace(min(self.values),max(self.values),num=500)
         y = kernel(x)
         fig, ax = plt.subplots()

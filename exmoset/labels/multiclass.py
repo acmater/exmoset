@@ -20,7 +20,12 @@ class Multiclass(Label):
         self.entropy     = self.entropy()
 
     def plot(self):
-        plt.hist(self.values,width=1,alpha=0.5,align="mid",bins=len(np.unique(self.values)))
+        """
+        Plotting function that uses matplotlibs histogram to plot the frequency of each class label.
+
+        TODO Update plotting details
+        """
+        plt.hist(self.values,alpha=0.5,align="mid")
         plt.title(self.property)
         plt.xlim(min(self.values)+0.5,max(self.values)+0.5)
         plt.tight_layout()

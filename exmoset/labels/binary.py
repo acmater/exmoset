@@ -20,6 +20,9 @@ class Binary(Label):
         self.entropy     = self.entropy()
 
     def plot(self):
+        """
+        Uses a customized matplotlib histogram to plot the frequency of the two class labels.
+        """
         plt.hist(self.values,width=1,alpha=0.5,align="mid",bins=2)
         ax = plt.gca()
         ax.set_xticks([0.5,1.5])

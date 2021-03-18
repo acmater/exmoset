@@ -3,6 +3,7 @@ from exmoset.fingerprints import *
 from exmoset.molset import MolSet
 from exmoset import MolSpace
 
+import matplotlib.pyplot as plt
 import numpy as np
 from rdkit import Chem
 
@@ -31,12 +32,13 @@ if __name__ == "__main__":
 
     #### MolSpace testing
     space = MolSpace(fingerprints = fingerprints,
-                    molecules=molecules4,
+                    molecules=molecules6,
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                     significance=0.1,
                     file="exmoset/data/QM9_Data.csv",
                     index_col="SMILES")
-    print(space[space.clusters["Full"].get_outliers()])
+    space.clusters["Full"]["Atoms"].plot()
+    plt.show()
 
     del fingerprints[3] # Remove the Dipole Moment fingerprint
     space2 = MolSpace(fingerprints=fingerprints,
