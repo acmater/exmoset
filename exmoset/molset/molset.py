@@ -13,10 +13,7 @@ class MolSet():
 
     Attributes
     ----------
-    molecules : list
-        A list of molecules that will be parsed into the Molecule class
-
-    properties : list
+    fingerprints : list
         A list of property fingerprints that will be calculated for each system
 
     indices : np.array(dtype=np.int), default=None
@@ -31,9 +28,7 @@ class MolSet():
     label_types : {str : <Label Class>}, default = {"binary" : Binary, "multiclass" : Multiclass, "continuous" : Continuous}
         A dictionary of possible label types for indexing.
     """
-    def __init__(self,molecules=None,
-                      fingerprints=None,
-                      mol_converters={},
+    def __init__(self,fingerprints=None,
                       significance=0.1,
                       file=None,
                       indices=None,
@@ -42,48 +37,11 @@ class MolSet():
                                      "multiclass" : Multiclass,
                                      "continuous" : Continuous}):
 
-        if indices is not None:
             self.indices = indices
 
             self.label_dict = {}
             for i,fp in enumerate(fingerprints):
                 self.label_dict[fp.property] = label_types[fp.label_type](fp.property,context.labels[fp.property][indices],fp.verb,fp.context)
-
-            self.significance       = significance
-            self.vector,self.struct = self.calc_vector()
-
-        else:
-            if mol_converters:
-                self.Molecules = []
-                print("Converting Molecules")
-                for mol in tqdm.tqdm(molecules):
-                    formats = {key : mol_converters[key](mol) for key in mol_converters.keys()}
-                    self.Molecules.append(Molecule(mol, **formats))
-                # Step below is to allow array indexing.
-                self.Molecules = np.array(self.Molecules)
-            else:
-                self.Molecules = molecules
-
-
-
-            if file is not None:
-                print(f"Importing {file}")
-                df     = pd.read_csv(file,index_col="SMILES")
-                sub_df = df.loc[[mol.smiles for mol in self.Molecules]]
-
-            self.prop_values = np.zeros((len(fingerprints),len(self.Molecules)))
-
-            print("Calculating Properties")
-            for i,molecule in enumerate(tqdm.tqdm(self.Molecules)):
-                for j,fp in enumerate(fingerprints):
-                    if fp.file is not None:
-                        self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format],file=sub_df)
-                    else:
-                        self.prop_values[j,i] = fp.calculator(molecule[fp.mol_format])
-
-            self.label_dict = {}
-            for i,fp in enumerate(fingerprints):
-                self.label_dict[fp.property] = label_types[fp.label_type](fp.property,self.prop_values[i],fp.verb,fp.context)
 
             self.significance       = significance
             self.vector,self.struct = self.calc_vector()
@@ -163,7 +121,7 @@ class MolSet():
         """
         Helper function to determine length. Length is entirely determined by how many molecules are in the set.
         """
-        return len(self.Molecules)
+        return len(self.indices)
 
     def __str__(self):
         header  = ["Subset Description"]
