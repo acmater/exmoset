@@ -37,8 +37,12 @@ if __name__ == "__main__":
                     file="exmoset/data/QM9_Data.csv",
                     index_col="SMILES")
 
+    print(np.where(space.labels["Atoms"] > 7))
+    del fingerprints[3] # Remove the Dipole Moment fingerprint
     space2 = MolSpace(fingerprints=fingerprints,
-                      file="exmoset/data/QM9_tiny.csv",
+                      file="exmoset/data/FreeSolv.csv",
                       mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                       index_col="SMILES",
-                      clusters={"Test" : np.array([0,0,0,0,1,1,1,1,1])})
+                      clusters={})
+    import matplotlib.pyplot as plt
+    space2.clusters["Full"]["Atoms"].entropy

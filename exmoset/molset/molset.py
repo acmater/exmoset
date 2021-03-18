@@ -188,7 +188,7 @@ class MolSet():
         return keys
 
     def __getitem__(self,idx):
-        return self.Molecules[idx]
+        return self.label_dict[idx]
 
     def __bool__(self):
         # Need to update this bool method

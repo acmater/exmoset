@@ -61,23 +61,21 @@ class MolSpace():
                       label_types = {"binary"     : Binary,
                                      "multiclass" : Multiclass,
                                      "continuous" : Continuous}):
-        assert  file is not None or molecules is not None, "Either a file or a list of molecules must be provided."
+        assert file is not None or molecules is not None, "Either a file or a list of molecules must be provided."
 
         if file is not None :
+            assert index_col is not None, "An index column must be provided to determine what column of the file corresponds to the molecules."
             print(f"Importing {file}")
             self.df        = pd.read_csv(file,index_col=index_col)
             if molecules is None:
-                assert index_col is not None, "An index column must be provided to determine what column of the file corresponds to the molecules."
                 molecules = self.df.index.to_numpy()
 
-        self.Molecules = []
         print("Converting Molecules")
+        self.Molecules = []
         for mol in tqdm.tqdm(molecules):
             formats = {key : mol_converters[key](mol) for key in mol_converters.keys()}
             self.Molecules.append(Molecule(mol, **formats))
         self.Molecules = np.array(self.Molecules)
-
-        self.prop_values = np.zeros((len(fingerprints),len(self.Molecules)))
 
         print("Calculating Properties")
         self.labels = {fp.property : np.zeros(len(self.Molecules)) for fp in fingerprints}
@@ -90,7 +88,15 @@ class MolSpace():
                     self.labels[fp.property][i] = fp.calculator(molecule[fp.mol_format])
 
         self.fingerprints = fingerprints
-        self.clusters     = {key : self.gen_clusters(val) for key, val in clusters.items()}
+        if clusters:
+            self.clusters     = {key : self.gen_clusters(val) for key, val in clusters.items()}
+        else:
+            self.clusters = {"Full" : MolSet(fingerprints=self.fingerprints,
+                                             indices=np.arange(len(self.Molecules)),
+                                             context=self)}
+
+    def mutual_information(self):
+        pass
 
     def gen_clusters(self,indices,fingerprints=None):
         if fingerprints is None:
@@ -102,7 +108,7 @@ class MolSpace():
                                    context=self))
         return clusters
 
-    def query(self):
+    def query(self,label,condition):
         """
         This method is intended to allow to user to probe the dataset in question.
         """
