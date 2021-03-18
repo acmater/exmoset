@@ -7,7 +7,6 @@ from .molset import MolSet
 from .molecule import Molecule
 from .labels import Binary, Multiclass, Continuous
 
-
 class MolSpace():
     """
     A class that handles a set of chemical data and the associated MolSets. This method
@@ -87,7 +86,8 @@ class MolSpace():
                 else:
                     labels[fp.property][i] = fp.calculator(molecule[fp.mol_format])
 
-        self.labels = pd.DataFrame(labels)
+        self.labels       = pd.DataFrame(labels)
+        self.indices      = np.arange(len(self.labels))
         self.fingerprints = fingerprints
         if clusters:
             self.clusters     = {key : self.gen_clusters(val) for key, val in clusters.items()}
@@ -96,8 +96,26 @@ class MolSpace():
                                              indices=np.arange(len(self.Molecules)),
                                              context=self)}
 
-    def mutual_information(self):
-        pass
+    def mutual_information(self,prop,cluster,comparison=None):
+        if comparison is None:
+            comparison = np.setdiff1d(self.indices,cluster.indices)
+        contingency = np.array([np.unique(self.labels[prop].loc[cluster.indices],return_counts=True)[::-1],
+                                np.unique(self.labels[prop].loc[comparison],return_counts=True)])
+        print(contingency)
+        print(self.mutual_contingency(contingency))
+
+    @staticmethod
+    def mutual_contingency(contingency):
+        total = 0
+        N = np.sum(contingency)
+        for j in range(contingency.shape[0]):
+            for i in range(contingency.shape[1]):
+                if contingency[i,j] == 0:
+                    total += 0
+                else:
+                    total += (contingency[i,j]/N)*np.log2((N*contingency[i,j])/(np.sum(contingency[i,:])*np.sum(contingency[:,j])))
+        return total
+
 
     def gen_clusters(self,indices,fingerprints=None):
         if fingerprints is None:
