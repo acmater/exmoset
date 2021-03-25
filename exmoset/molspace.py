@@ -376,7 +376,8 @@ class MolSpace():
         np.BooleanArray
             An array that can be used to index self.Molecules to return the outlier species.
         """
-        return np.where(np.sum((self.data.loc[set].to_numpy() - self.calc_vector(set)[0]),axis=1) != 0) # Need to update distance formulation
+        print(self.calc_vector(set)[0])
+        return np.where(np.sum((self.data.loc[set].to_numpy() - self.calc_vector(set)[0]),axis=1) > 0.5) # Need to update distance formulation
 
 
     def gen_clusters(self,indices):
