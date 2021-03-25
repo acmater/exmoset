@@ -14,7 +14,7 @@ from collections import namedtuple
 from entropy_estimators import continuous
 
 import matplotlib.pyplot as plt
-plt.style.use("exmoset/utils/matplotlibrc")
+plt.style.use("exmoset/utils/light")
 from scipy.stats import gaussian_kde
 from sklearn.preprocessing import normalize
 from scipy.spatial import cKDTree
@@ -240,6 +240,49 @@ class MolSpace():
             ms.append(np.mean(digamma(m_i)))
         return digamma(N) + digamma(k) - np.mean(ms) - np.mean(Nxs)
 
+    def plot(self,set,prop,title=None):
+        """
+        Uses a customized matplotlib histogram to plot the frequency of the two class labels.
+
+        Parameters
+        ----------
+        prop : str
+            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
+
+        sets : [np.array(np.int)]
+            An iterable (typically a list) of numpy index arrays.
+        """
+        assert prop in self.fingerprints.keys(), "Not a valid property."
+
+        values = self.data[prop].loc[set]
+        label_type = self.fingerprints[prop].label_type
+
+        if label_type == "binary":
+            plt.hist(values,width=1,alpha=0.5,align="mid",bins=2)
+            ax = plt.gca()
+            ax.set_xticks([0.5,1.5])
+            plt.xlim([0,2])
+            ax.set_xticklabels(["No (0)","Yes (1)"])
+
+        elif label_type == "multiclass":
+            plt.hist(values,alpha=0.5,align="mid")
+            plt.xlim(min(values)+0.5,max(values)+0.5)
+
+        elif label_type == "continuous":
+            kernel = gaussian_kde(values)
+            x = np.linspace(min(values),max(values),num=500)
+            y = kernel(x)
+            fig, ax = plt.subplots()
+            ax.plot(x,y)
+            ax.fill_between(x,y,0,alpha=0.1)
+
+        if title is None:
+            title = prop
+        plt.title(title)
+        plt.tight_layout()
+        return plt.gcf()
+
+
     def plot_kdes(self,prop,sets):
         """
         Generates the density plots for a particular property given different integers sets.
@@ -290,7 +333,7 @@ class MolSpace():
 
         plt.bar(range(len(label_dict_sorted)), [x.entropy for x in label_dict_sorted.values()], align="center",alpha=0.5,color="r")
         labels = [self.fingerprints[key].summary(*label_dict_sorted[key],unimportant_label=True) for key in label_dict_sorted]
-        colors = ["#404040" if "not meaningful" in label else "#FFFFFF" for label in labels ]
+        colors = ["#404040" if "not meaningful" in label else "#3BB2E2" for label in labels ]
         plt.xticks(range(len(label_dict_sorted)), labels, rotation=45, ha='right')
         for label, color in zip(plt.gca().get_xticklabels(),colors):
             label.set_color(color)

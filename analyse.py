@@ -51,6 +51,9 @@ if __name__ == "__main__":
     print(space.calc_vector(np.array([0,1,2,3,4,5])))
     print(space.get_outliers(np.array([0,1,2,3,4,5])))
 
+    space.plot(np.array([0,1,2,3,4,5]),"Dipole Moment")
+    plt.show()
+
     del fingerprints[3] # Remove the Dipole Moment fingerprint
     space2 = MolSpace(fingerprints=fingerprints,
                       file="exmoset/data/FreeSolv.csv",
