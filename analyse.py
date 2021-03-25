@@ -42,6 +42,8 @@ if __name__ == "__main__":
     #plt.show()
     space.mutual_information("Rings",space.clusters["Full"][0],space.clusters["Full"][1])
     print(space.mutual_information_continuous("Dipole Moment",space.clusters["Full"][0],space.clusters["Full"][1]))
+    fig = space.plot_kdes("Dipole Moment",space.clusters["Full"][0],space.clusters["Full"][1])
+    plt.show()
     #print(space.mutual_contingency(np.array([[49,27652],[141,774106]])))
 
     del fingerprints[3] # Remove the Dipole Moment fingerprint

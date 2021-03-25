@@ -136,6 +136,17 @@ class MolSpace():
             ms.append(np.mean(digamma(m_i)))
         return digamma(N) + digamma(k) - np.mean(ms) - np.mean(Nxs)
 
+    def plot_kdes(self,prop,set1,set2):
+        x = self.data[prop].loc[set1].to_numpy()
+        y = self.data[prop].loc[set2].to_numpy()
+        kernel1 = gaussian_kde(x)
+        kernel2 = gaussian_kde(y)
+        positions = np.linspace(min(min(x),min(y)),max(max(x),max(y)),1000)
+        plt.plot(positions,kernel1(positions))
+        plt.fill_between(positions,kernel1(positions),alpha=0.3)
+        plt.plot(positions,kernel2(positions))
+        plt.fill_between(positions,kernel2(positions),alpha=0.3)
+        return plt.gcf()
 
     def gen_clusters(self,indices):
         if len(indices) == len(self.indices):
