@@ -108,9 +108,14 @@ class MolSpace():
                                              context=self)}
 
     @staticmethod
-    def continuous_entropy(values,k=10,norm="euclidean",min_dist=0.001):
+    def c_H(values,k=10,norm="euclidean",min_dist=0.001):
         """
-        Estimates the entropy of a continuous distribution.
+        Computes entropy of a continuous label distribution.
+
+        Parameters
+        ----------
+        values : np.ndarray
+            The array of label values.
         """
         ent = continuous.get_h(values,
                                k=k,
@@ -119,8 +124,8 @@ class MolSpace():
         return ent
 
     @staticmethod
-    def discrete_entropy(values,base=None):
-        """ Computes entropy of label distribution.
+    def d_H(values,base=None):
+        """ Computes entropy of a discrete label distribution.
 
         Parameters
         ----------
@@ -149,10 +154,23 @@ class MolSpace():
         return ent
 
     def entropy(self,prop,set):
+        """
+        Determines the entropy for a particular property and set.
+
+        Offloads the calculation to specific methods depending on the label type.
+
+        Parameters
+        ----------
+        prop : str
+            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
+
+        set : np.array(np.int)
+            A numpy array of indexes that is used to determine which values should be used to calculate the entropy.
+        """
         if self.fingerprints[prop].label_type == "continuous":
-            return self.continuous_entropy(self.data[prop].loc[set])
+            return self.c_H(self.data[prop].loc[set])
         else:
-            return self.discrete_entropy(self.data[prop].loc[set])
+            return self.d_H(self.data[prop].loc[set])
 
     def mi_dd(self,prop,sets):
         """
@@ -172,7 +190,7 @@ class MolSpace():
         if max_val < 1:
             max_val = 1
         contingency = np.array([np.bincount(self.data[prop].loc[set_],minlength=max_val+1) for set_ in sets])
-        print(contingency)
+
         total = 0
         N = np.sum(contingency)
         for x in range(contingency.shape[0]):
