@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     space.mutual_information("Rings",space.clusters["Full"][0],space.clusters["Full"][1])
     print(space.mutual_information_continuous("Dipole Moment",space.clusters["Full"][0],space.clusters["Full"][1]))
-    fig = space.plot_kdes("Dipole Moment",space.clusters["Full"][0],space.clusters["Full"][1])
+    fig = space.plot_kdes("Dipole Moment",[space.clusters["Full"][0],space.clusters["Full"][1],np.arange(200,300)])
     plt.show()
 
     print(space.entropy("Aromatic",np.array([0,1,2,3,4])))

@@ -7,6 +7,8 @@ from .molset import MolSet
 from .molecule import Molecule
 from .labels import Binary, Multiclass, Continuous
 
+from entropy_estimators import continuous
+
 import matplotlib.pyplot as plt
 from scipy.stats import gaussian_kde
 from sklearn.preprocessing import normalize
@@ -93,7 +95,7 @@ class MolSpace():
                     labels[fp.property][i] = fp.calculator(molecule[fp.mol_format])
 
         print("Generating sets of molecules")
-        self.data       = pd.DataFrame(labels)
+        self.data         = pd.DataFrame(labels)
         self.indices      = np.arange(len(self.data))
         self.fingerprints = {fp.property : fp for fp in fingerprints}
         if clusters:
@@ -109,7 +111,10 @@ class MolSpace():
         """
         Estimates the entropy of a continuous distribution.
         """
-        ent = continuous.get_h(values,k=k,norm=norm,min_dist=min_dist)
+        ent = continuous.get_h(values,
+                               k=k,
+                               norm=norm,
+                               min_dist=min_dist)
         return ent
 
     @staticmethod
@@ -180,16 +185,23 @@ class MolSpace():
             ms.append(np.mean(digamma(m_i)))
         return digamma(N) + digamma(k) - np.mean(ms) - np.mean(Nxs)
 
-    def plot_kdes(self,prop,set1,set2):
-        x = self.data[prop].loc[set1].to_numpy()
-        y = self.data[prop].loc[set2].to_numpy()
-        kernel1 = gaussian_kde(x)
-        kernel2 = gaussian_kde(y)
-        positions = np.linspace(min(min(x),min(y)),max(max(x),max(y)),1000)
-        plt.plot(positions,kernel1(positions))
-        plt.fill_between(positions,kernel1(positions),alpha=0.3)
-        plt.plot(positions,kernel2(positions))
-        plt.fill_between(positions,kernel2(positions),alpha=0.3)
+    def plot_kdes(self,prop,sets):
+        """
+        Generates the density plots for a particular property given different integers sets.
+
+        Parameters
+        ----------
+        prop : str
+            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
+        """
+        assert prop in self.fingerprints.keys(), "Not a valid prop, must be a fingerprint name."
+        data = [self.data[prop].loc[set_].to_numpy() for set_ in sets] #set_ to avoid shadowing set() method.
+        kernels = [gaussian_kde(datum) for datum in data]
+        positions = np.linspace(min([min(x) for x in data]),max([max(x) for x in data]),1000)
+        for kernel in kernels:
+            plt.plot(positions,kernel(positions))
+            plt.fill_between(positions,kernel(positions),alpha=0.3)
+
         return plt.gcf()
 
     def plot_entropy(self,indices,fingerprints=None):
@@ -219,6 +231,15 @@ class MolSpace():
         return plt.gcf()
 
     def gen_clusters(self,indices):
+        """
+        Uses an array of indexes to generate the clusters by either breaking them into individual
+        classes, or by creating the set and its complement.
+
+        Parameters
+        ----------
+        indices : np.array[np.int]
+            The numpy array of integer indexes that will be used to assign membership to different sets.
+        """
         if len(indices) == len(self.indices):
             return {val : np.where(indices==val)[0] for val in np.unique(indices)}
         elif len(indices) < len(self.indices):
@@ -233,6 +254,7 @@ class MolSpace():
         This method is intended to allow to user to probe the dataset in question.
         """
         pass
+
 
     def __getitem__(self,idx):
         return self.clusters[idx]

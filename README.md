@@ -73,9 +73,7 @@ Critically, MolSet has to be able to function in an entirely self-contained mann
 
 The following are the steps:
 
-2. Need to decide on a syntax for mutual information calculations - whether or not it is just passed indices or instead if it is passed two labels and then computes the mutual information between them. Labels makes the most sense from a code perspective, but it may require the instantiation of a new MolSet.
-3. Estimating the mutual information in the continuous case in a open problem, but there is what looks like a good solution in the work of Krakov (https://arxiv.org/pdf/cond-mat/0305641.pdf).
-4. There is a github implementation of the Kraskov estimator (https://github.com/mutualinfo/mutual_info/tree/main).
-5. Will also need a way to visualise the contingency matrix for discrete cases.
+1. Add udpate method.
+
 7. Need to resolve how to deal with the negative entropy values that are possible when using k-means clustering approaches.
 8. Add argsparse methods
