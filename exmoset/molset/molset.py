@@ -86,7 +86,7 @@ class MolSet():
         np.BooleanArray
             An array that can be used to index self.Molecules to return the outlier species.
         """
-        return np.where(np.sum((self.context.labels.loc[self.indices].to_numpy() - self.vector),axis=1) != 0) # Need to update distance formulation
+        return np.where(np.sum((self.context.data.loc[self.indices].to_numpy() - self.vector),axis=1) != 0) # Need to update distance formulation
 
     def plot_entropy(self):
         """

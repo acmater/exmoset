@@ -91,18 +91,17 @@ class MolSpace():
         self.indices      = np.arange(len(self.data))
         self.fingerprints = {fp.property : fp for fp in fingerprints}
         if clusters:
-            self.clusters     = {key : self.gen_clusters(val) for key, val in clusters.items()}
+            self.clusters     = {key : self.gen_clusters(value) for key, value in clusters.items()}
+
         else:
             self.clusters = {"Full" : MolSet(fingerprints=self.fingerprints.values(),
                                              indices=np.arange(len(self.Molecules)),
                                              context=self)}
 
-    def mutual_information(self,prop,cluster,comparison=None):
+    def mutual_information(self,prop,set,complement):
         # Need to fix this calculator
-        if comparison is None:
-            comparison = np.setdiff1d(self.indices,cluster.indices)
-        contingency = np.array([np.unique(self.data[prop].loc[cluster.indices],return_counts=True)[1],
-                                np.unique(self.data[prop].loc[comparison],return_counts=True)[1]])
+        contingency = np.array([np.unique(self.data[prop].loc[set],return_counts=True)[1],
+                                np.unique(self.data[prop].loc[complement],return_counts=True)[1]])
         print(contingency)
         print(self.mutual_contingency(contingency))
         return self.mutual_contingency(contingency)
@@ -119,14 +118,14 @@ class MolSpace():
                     total += (contingency[i,j]/N)*np.log2((N*contingency[i,j])/(np.sum(contingency[i,:])*np.sum(contingency[:,j])))
         return total
 
-    def gen_clusters(self,indices,fingerprints=None):
-        if fingerprints is None:
-            fingerprints = self.fingerprints
-        clusters = []
-        for val in np.unique(indices):
-            clusters.append(MolSet(fingerprints=fingerprints.values(),
-                                   indices=np.where(indices==val)[0],
-                                   context=self))
+    def gen_clusters(self,indices):
+        if len(indices) == len(self.indices):
+            return {val : np.where(indices==val)[0] for val in np.unique(indices)}
+        elif len(indices) < len(self.indices):
+            return {"Set" : indices, "Complement" : np.setdiff1d(self.indices,indices)}
+        else:
+            raise ValueError("Invalid index array.")
+
         return clusters
 
     def query(self,label,condition):

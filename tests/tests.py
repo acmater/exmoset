@@ -113,6 +113,7 @@ class TestMolFileSpace(unittest.TestCase):
                          index_col="SMILES",
                          clusters={"Test" : np.array([0,0,0,0,1,1,1,1,1])})
     def test_molspace_clusters(self):
+        print(filemolspace.clusters["Test"][0])
         assert filemolspace.clusters["Test"][0], "Clustering is not working"
 
 if __name__ == "__main__":
