@@ -17,7 +17,7 @@ atom_fingerprints = []
 for atom in atoms:
     atom_fingerprints.append(Fingerprint(property=f"{atom}",
                 verb="contain",
-                context="Molecules",
+                noun="Molecules",
                 label_type="binary",
                 calculator=contains(atom),
                 mol_format="smiles"))

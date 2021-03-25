@@ -7,6 +7,9 @@ from .molset import MolSet
 from .molecule import Molecule
 from .labels import Binary, Multiclass, Continuous
 
+from math import log, e
+from collections import namedtuple
+
 from entropy_estimators import continuous
 
 import matplotlib.pyplot as plt
@@ -168,7 +171,8 @@ class MolSpace():
             A numpy array of indexes that is used to determine which values should be used to calculate the entropy.
         """
         if self.fingerprints[prop].label_type == "continuous":
-            return self.c_H(self.data[prop].loc[set])
+            values = self.data[prop].loc[set].to_numpy().reshape(-1,1)
+            return self.c_H(values)
         else:
             return self.d_H(self.data[prop].loc[set])
 
@@ -258,29 +262,32 @@ class MolSpace():
             plt.fill_between(positions,kernel(positions),alpha=0.3)
         return plt.gcf()
 
-    def plot_entropy(self,indices,fingerprints=None):
+    def plot_entropy(self,set,props="all"):
         """
-        Helper function to plot the entropy (and its associated sensitivity) for each fingerprint within the code.
+        Helper function to plot the entropy (and its associated sensitivity) for each property of interest within the code.
 
         Returns
         -------
         plt.fig
             The matplotlib figure that can then be plotted using plt.show() on the subsequent line.
         """
-        if fingerprints is None:
-            fingerprints = self.fingerprints
+        if props == "all":
+            props = self.fingerprints.keys()
 
-        label_dict_sorted    = {key : (self.label_dict[key].entropy,self.label_dict[key].sensitivity) for key in self.label_dict}
-        label_dict_sorted    = {key : val for key, val in sorted(label_dict_sorted.items(), key=lambda item: item[1])}
+        Summary = namedtuple("Summary",["val","entropy","sensitivity"])
+        label_dict_sorted    = {key : Summary(np.mean(self.data[key].loc[set]),self.entropy(key,set),self.fingerprints[key].sensitivity) for key in self.fingerprints}
+        print(label_dict_sorted["Aromatic"])
+        label_dict_sorted    = {key : val for key, val in sorted(label_dict_sorted.items(), key=lambda item: item[1][1])}
         plt.style.use("exmoset/utils/matplotlibrc")
-        plt.bar(range(len(label_dict_sorted)), [x[0] for x in label_dict_sorted.values()], align="center",alpha=0.5,color="r")
-        labels = [self.label_dict[key].summary(unimportant_label=True) for key in label_dict_sorted]
+        plt.bar(range(len(label_dict_sorted)), [x.entropy for x in label_dict_sorted.values()], align="center",alpha=0.5,color="r")
+        labels = [self.fingerprints[key].summary(*label_dict_sorted[key],unimportant_label=True) for key in label_dict_sorted]
+        print(labels)
         colors = ["#404040" if "not meaningful" in label else "#FFFFFF" for label in labels ]
         plt.xticks(range(len(label_dict_sorted)), labels, rotation=45, ha='right')
         for label, color in zip(plt.gca().get_xticklabels(),colors):
             label.set_color(color)
         plt.ylabel("Entropy",fontsize=30)
-        plt.plot(range(len(label_dict_sorted)), [x[1] for x in label_dict_sorted.values()], dashes=[6,2],color='w')
+        plt.plot(range(len(label_dict_sorted)), [x[2] for x in label_dict_sorted.values()], dashes=[6,2],color='w')
         plt.tight_layout()
         return plt.gcf()
 
@@ -308,7 +315,6 @@ class MolSpace():
         This method is intended to allow to user to probe the dataset in question.
         """
         pass
-
 
     def __getitem__(self,idx):
         return self.clusters[idx]

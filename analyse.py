@@ -45,6 +45,8 @@ if __name__ == "__main__":
     #plt.show()
 
     print(space.entropy("Aromatic",np.array([0,1,2,3,4])))
+    space.plot_entropy(np.array([0,1,2,3,4]))
+    plt.savefig("Test.png",transparent=True)
 
     del fingerprints[3] # Remove the Dipole Moment fingerprint
     space2 = MolSpace(fingerprints=fingerprints,

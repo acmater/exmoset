@@ -17,7 +17,7 @@ bond_fingerprints = []
 for bond in bonds:
     bond_fingerprints.append(Fingerprint(property=f"{bond.lower()} bonds",
                 verb="contain",
-                context="Molecules",
+                noun="Molecules",
                 label_type="binary",
                 calculator=contains(bond),
                 mol_format="rd"))

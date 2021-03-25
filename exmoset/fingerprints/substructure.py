@@ -18,7 +18,7 @@ substructure_fingerprints = []
 for substructure in substructures:
     substructure_fingerprints.append(Fingerprint(property=f"{substructure}",
                 verb="contain",
-                context="Molecules",
+                noun="Molecules",
                 label_type="binary",
                 calculator=contains(substructure),
                 mol_format="rd"))
