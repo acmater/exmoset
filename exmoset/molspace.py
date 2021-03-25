@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.ma as ma
 from rdkit import Chem
 import pandas as pd
 import tqdm
@@ -266,6 +267,15 @@ class MolSpace():
         """
         Helper function to plot the entropy (and its associated sensitivity) for each property of interest within the code.
 
+        Parameters
+        ----------
+        sets : [np.array(np.int)]
+            An iterable (typically a list) of numpy index arrays.
+
+        prop : str, default="all"
+            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
+            If "all" is provided it will use every fingerprint in the code.
+
         Returns
         -------
         plt.fig
@@ -276,12 +286,10 @@ class MolSpace():
 
         Summary = namedtuple("Summary",["val","entropy","sensitivity"])
         label_dict_sorted    = {key : Summary(np.mean(self.data[key].loc[set]),self.entropy(key,set),self.fingerprints[key].sensitivity) for key in self.fingerprints}
-        print(label_dict_sorted["Aromatic"])
         label_dict_sorted    = {key : val for key, val in sorted(label_dict_sorted.items(), key=lambda item: item[1][1])}
-        plt.style.use("exmoset/utils/matplotlibrc")
+
         plt.bar(range(len(label_dict_sorted)), [x.entropy for x in label_dict_sorted.values()], align="center",alpha=0.5,color="r")
         labels = [self.fingerprints[key].summary(*label_dict_sorted[key],unimportant_label=True) for key in label_dict_sorted]
-        print(labels)
         colors = ["#404040" if "not meaningful" in label else "#FFFFFF" for label in labels ]
         plt.xticks(range(len(label_dict_sorted)), labels, rotation=45, ha='right')
         for label, color in zip(plt.gca().get_xticklabels(),colors):
@@ -290,6 +298,35 @@ class MolSpace():
         plt.plot(range(len(label_dict_sorted)), [x[2] for x in label_dict_sorted.values()], dashes=[6,2],color='w')
         plt.tight_layout()
         return plt.gcf()
+
+    def calc_vector(self,set):
+        """
+        Represents the meaningful properties as a vector. Uses numpy's masking feature to only include meaningful
+        values within it.
+
+        Returns
+        -------
+        np.MaskedArray
+            This array masks all non important values and uses the averages in other positions. Is used in
+            generate outliers to determine the distance for each label.
+
+        np.MaskedArray(Struct)
+            A masked struct that has each value accessible by the fingerprints assocaited name. Is used for various dunder methods
+            such as __and__.
+        """
+        data = self.data.loc[set]
+        vector = np.zeros((len(self.fingerprints),))
+        mask   = np.zeros((len(self.fingerprints),))
+        for i,prop in enumerate(self.fingerprints.keys()):
+            vector[i] = np.mean(data[prop])
+            if self.entropy(prop,set) < self.fingerprints[prop].sensitivity:
+                mask[i] = 0
+            else:
+                mask[i] = 1
+
+        struct = np.array(tuple(vector), dtype=[(key,"<f4") for key in self.fingerprints.keys()])
+
+        return ma.array(vector, mask=mask), ma.array(struct, mask=tuple(mask))
 
     def gen_clusters(self,indices):
         """
