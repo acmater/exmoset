@@ -7,6 +7,12 @@ from .molset import MolSet
 from .molecule import Molecule
 from .labels import Binary, Multiclass, Continuous
 
+import matplotlib.pyplot as plt
+from scipy.stats import gaussian_kde
+from sklearn.preprocessing import normalize
+from scipy.spatial import cKDTree
+from scipy.special import gamma, digamma
+
 class MolSpace():
     """
     A class that handles a set of chemical data and the associated MolSets. This method
@@ -102,10 +108,8 @@ class MolSpace():
         max_val = int(max(max(self.data[prop].loc[set1]),max(self.data[prop].loc[set2])))
         if max_val < 1:
             max_val = 1
-
         contingency = np.array([np.bincount(self.data[prop].loc[set1],minlength=max_val+1),
                                 np.bincount(self.data[prop].loc[set2],minlength=max_val+1)])
-
         total = 0
         N = np.sum(contingency)
         for x in range(contingency.shape[0]):
@@ -115,8 +119,22 @@ class MolSpace():
                 else:
                     total += (contingency[x,y]/N)*np.log2((N*contingency[x,y])/
                     (np.sum(contingency[x,:])*np.sum(contingency[:,y])))
-        print(total)
         return total
+
+    def mutual_information_continuous(self,prop,set1,set2,k=3):
+        N = len(self.data)
+        full = cKDTree(self.data[prop].to_numpy().reshape(-1,1))
+        Nxs = []
+        ms = []
+        for x in [0,1]:
+            label_data = self.data[prop].loc[set1].to_numpy().reshape(-1,1)
+            N_xi = len(label_data)
+            labeltree = cKDTree(label_data)
+            distances, _ = labeltree.query(label_data,k=k)
+            m_i = full.query_ball_point(label_data,distances[:,-1],return_length=True)
+            Nxs.append(digamma(N_xi))
+            ms.append(np.mean(digamma(m_i)))
+        return digamma(N) + digamma(k) - np.mean(ms) - np.mean(Nxs)
 
 
     def gen_clusters(self,indices):
