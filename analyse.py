@@ -1,6 +1,5 @@
 from exmoset.data import *
 from exmoset.fingerprints import *
-from exmoset.molset import MolSet
 from exmoset import MolSpace
 
 import matplotlib.pyplot as plt
@@ -45,14 +44,14 @@ if __name__ == "__main__":
     #plt.show()
 
     print(space.entropy("Aromatic",np.array([0,1,2,3,4])))
-    space.plot_entropy(np.array([0,1,2,3,4]))
-    plt.savefig("Test.png",transparent=True)
+    #space.plot_entropy(np.array([0,1,2,3,4]))
+    #plt.savefig("Test.png",transparent=True)
 
     print(space.calc_vector(np.array([0,1,2,3,4,5])))
     print(space.get_outliers(np.array([0,1,2,3,4,5])))
 
-    space.plot(np.array([0,1,2,3,4,5]),"Dipole Moment")
-    plt.show()
+    #space.plot(np.array([0,1,2,3,4,5]),"Dipole Moment")
+    #plt.show()
 
     del fingerprints[3] # Remove the Dipole Moment fingerprint
     space2 = MolSpace(fingerprints=fingerprints,
@@ -61,4 +60,4 @@ if __name__ == "__main__":
                       index_col="SMILES",
                       clusters={})
     import matplotlib.pyplot as plt
-    space2.clusters["Full"]["Atoms"].entropy
+    print(space2.entropy("Atoms",space2.clusters["Full"]))

@@ -4,9 +4,7 @@ from rdkit import Chem
 import pandas as pd
 import tqdm
 
-from .molset import MolSet
 from .molecule import Molecule
-from .labels import Binary, Multiclass, Continuous
 
 from math import log, e
 from collections import namedtuple
@@ -70,9 +68,8 @@ class MolSpace():
                       significance=0.1,
                       index_col=None,
                       clusters={},
-                      label_types = {"binary"     : Binary,
-                                     "multiclass" : Multiclass,
-                                     "continuous" : Continuous}):
+                      label_types = ["binary","multiclass","continuous"]):
+
         assert file is not None or molecules is not None, "Either a file or a list of molecules must be provided."
 
         if file is not None :
@@ -107,9 +104,7 @@ class MolSpace():
             self.clusters     = {key : self.gen_clusters(value) for key, value in clusters.items()}
 
         else:
-            self.clusters = {"Full" : MolSet(fingerprints=self.fingerprints.values(),
-                                             indices=np.arange(len(self.Molecules)),
-                                             context=self)}
+            self.clusters = {"Full" : np.arange(len(self.data))}
 
     @staticmethod
     def c_H(values,k=10,norm="euclidean",min_dist=0.001):
