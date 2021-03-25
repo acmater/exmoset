@@ -62,7 +62,7 @@ The continuous entropy estimator uses the Kozachenko and Leonenko (1987) estimat
 Internal operations utilize an information vector to describe the MolSet. This information vector is produced by the `calc_vector` method and returns a masked array showing the average meaningful (meaning it is rounded to an integer for binary and multiclass labels) label with values that exceed the entropy theshold masked. The comparison operations between sets are expedited through the use of these vector descriptions.
 
 ## Grammatical Structure
-All nouns are pluran
+All nouns are plural
 
 ## TODO
 The big task is to get mutual information working.

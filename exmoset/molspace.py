@@ -86,13 +86,14 @@ class MolSpace():
                 else:
                     labels[fp.property][i] = fp.calculator(molecule[fp.mol_format])
 
-        self.labels       = pd.DataFrame(labels)
-        self.indices      = np.arange(len(self.labels))
-        self.fingerprints = fingerprints
+        print("Generating sets of molecules")
+        self.data       = pd.DataFrame(labels)
+        self.indices      = np.arange(len(self.data))
+        self.fingerprints = {fp.property : fp for fp in fingerprints}
         if clusters:
             self.clusters     = {key : self.gen_clusters(val) for key, val in clusters.items()}
         else:
-            self.clusters = {"Full" : MolSet(fingerprints=self.fingerprints,
+            self.clusters = {"Full" : MolSet(fingerprints=self.fingerprints.values(),
                                              indices=np.arange(len(self.Molecules)),
                                              context=self)}
 
@@ -100,8 +101,8 @@ class MolSpace():
         # Need to fix this calculator
         if comparison is None:
             comparison = np.setdiff1d(self.indices,cluster.indices)
-        contingency = np.array([np.unique(self.labels[prop].loc[cluster.indices],return_counts=True)[1],
-                                np.unique(self.labels[prop].loc[comparison],return_counts=True)[1]])
+        contingency = np.array([np.unique(self.data[prop].loc[cluster.indices],return_counts=True)[1],
+                                np.unique(self.data[prop].loc[comparison],return_counts=True)[1]])
         print(contingency)
         print(self.mutual_contingency(contingency))
         return self.mutual_contingency(contingency)
@@ -123,7 +124,7 @@ class MolSpace():
             fingerprints = self.fingerprints
         clusters = []
         for val in np.unique(indices):
-            clusters.append(MolSet(fingerprints=fingerprints,
+            clusters.append(MolSet(fingerprints=fingerprints.values(),
                                    indices=np.where(indices==val)[0],
                                    context=self))
         return clusters
