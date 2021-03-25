@@ -49,6 +49,7 @@ if __name__ == "__main__":
     plt.savefig("Test.png",transparent=True)
 
     print(space.calc_vector(np.array([0,1,2,3,4,5])))
+    print(space.get_outliers(np.array([0,1,2,3,4,5])))
 
     del fingerprints[3] # Remove the Dipole Moment fingerprint
     space2 = MolSpace(fingerprints=fingerprints,
