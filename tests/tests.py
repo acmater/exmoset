@@ -32,7 +32,7 @@ class TestMolecule(unittest.TestCase):
 class TestFingerprint(unittest.TestCase):
     def test_fingerprint(self):
         assert Fingerprint(property="Contains C",
-                    context="molecule",
+                    noun="molecule",
                     verb="are",
                     label_type="binary",
                     calculator="add",

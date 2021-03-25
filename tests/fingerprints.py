@@ -18,7 +18,7 @@ atom_fingerprints = []
 for atom in atoms:
     atom_fingerprints.append(Fingerprint(property=f"{atom}",
                 verb="contain",
-                context="Molecules",
+                noun="Molecules",
                 label_type="binary",
                 calculator=contains(atom),
                 mol_format="smiles"))
@@ -38,7 +38,7 @@ bond_fingerprints = []
 for bond in bonds:
     bond_fingerprints.append(Fingerprint(property=f"{bond.lower()} bonds",
                 verb="contain",
-                context="Molecules",
+                noun="Molecules",
                 label_type="binary",
                 calculator=contains(bond),
                 mol_format="rd"))
@@ -56,21 +56,21 @@ def num_rings(mol):
 
 
 general_fingerprints = [Fingerprint(property="Aromatic",
-                                context="Molecules",
+                                noun="Molecules",
                                 verb="are",
                                 label_type="binary",
                                 calculator=aromatic,
                                 mol_format="rd"),
 
                     Fingerprint(property="Atoms",
-                                context="Molecules",
+                                noun="Molecules",
                                 verb="contain",
                                 label_type="multiclass",
                                 calculator=num_atoms,
                                 mol_format="rd"),
 
                     Fingerprint(property="Rings",
-                                context="Molecules",
+                                noun="Molecules",
                                 verb="contain",
                                 label_type="multiclass",
                                 calculator=num_rings,
@@ -92,7 +92,7 @@ substructure_fingerprints = []
 for substructure in substructures:
     substructure_fingerprints.append(Fingerprint(property=f"{substructure}",
                 verb="contain",
-                context="Molecules",
+                noun="Molecules",
                 label_type="binary",
                 calculator=contains(substructure),
                 mol_format="rd"))
