@@ -39,10 +39,10 @@ if __name__ == "__main__":
                     index_col="SMILES",
                     clusters={"Full" : np.concatenate([np.zeros((200,)).reshape(-1,1),np.ones((382,)).reshape(-1,1)])})
 
-    space.mutual_information("Rings",space.clusters["Full"][0],space.clusters["Full"][1])
-    print(space.mutual_information_continuous("Dipole Moment",[space.clusters["Full"][0],space.clusters["Full"][1]]))
-    fig = space.plot_kdes("Dipole Moment",[space.clusters["Full"][0],space.clusters["Full"][1],np.arange(200,300)])
-    plt.show()
+    print(space.mi_dd("Aromatic",space.clusters["Full"].values()))
+    print(space.mi_dc("Dipole Moment",space.clusters["Full"].values()))
+    #fig = space.plot_kdes("Dipole Moment",[space.clusters["Full"][0],space.clusters["Full"][1],np.arange(200,300)])
+    #plt.show()
 
     print(space.entropy("Aromatic",np.array([0,1,2,3,4])))
 

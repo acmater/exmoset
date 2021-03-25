@@ -154,12 +154,25 @@ class MolSpace():
         else:
             return self.discrete_entropy(self.data[prop].loc[set])
 
-    def mutual_information(self,prop,set1,set2):
-        max_val = int(max(max(self.data[prop].loc[set1]),max(self.data[prop].loc[set2])))
+    def mi_dd(self,prop,sets):
+        """
+        Mutual information for a discrete - discrete mixture.
+
+        Adapted from - TODO (Add citation)
+
+        Parameters
+        ----------
+        prop : str
+            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
+
+        sets : [np.array(np.int)]
+            An iterable (typically a list) of numpy index arrays.
+        """
+        max_val = int(max([max(self.data[prop].loc[set_]) for set_ in sets]))
         if max_val < 1:
             max_val = 1
-        contingency = np.array([np.bincount(self.data[prop].loc[set1],minlength=max_val+1),
-                                np.bincount(self.data[prop].loc[set2],minlength=max_val+1)])
+        contingency = np.array([np.bincount(self.data[prop].loc[set_],minlength=max_val+1) for set_ in sets])
+        print(contingency)
         total = 0
         N = np.sum(contingency)
         for x in range(contingency.shape[0]):
