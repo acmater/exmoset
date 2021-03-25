@@ -38,13 +38,13 @@ if __name__ == "__main__":
                     file="exmoset/data/QM9_Data.csv",
                     index_col="SMILES",
                     clusters={"Full" : np.concatenate([np.zeros((200,)).reshape(-1,1),np.ones((382,)).reshape(-1,1)])})
-    #space.clusters["Full"]["Atoms"].plot()
-    #plt.show()
+
     space.mutual_information("Rings",space.clusters["Full"][0],space.clusters["Full"][1])
     print(space.mutual_information_continuous("Dipole Moment",space.clusters["Full"][0],space.clusters["Full"][1]))
     fig = space.plot_kdes("Dipole Moment",space.clusters["Full"][0],space.clusters["Full"][1])
     plt.show()
-    #print(space.mutual_contingency(np.array([[49,27652],[141,774106]])))
+
+    print(space.entropy("Aromatic",np.array([0,1,2,3,4])))
 
     del fingerprints[3] # Remove the Dipole Moment fingerprint
     space2 = MolSpace(fingerprints=fingerprints,

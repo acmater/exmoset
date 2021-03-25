@@ -104,6 +104,50 @@ class MolSpace():
                                              indices=np.arange(len(self.Molecules)),
                                              context=self)}
 
+    @staticmethod
+    def continuous_entropy(values,k=10,norm="euclidean",min_dist=0.001):
+        """
+        Estimates the entropy of a continuous distribution.
+        """
+        ent = continuous.get_h(values,k=k,norm=norm,min_dist=min_dist)
+        return ent
+
+    @staticmethod
+    def discrete_entropy(values,base=None):
+        """ Computes entropy of label distribution.
+
+        Parameters
+        ----------
+        values : np.ndarray
+            The array of label values.
+
+        base: float
+            Floating number used as base for entropy calculation.
+        """
+        n_labels = len(values)
+
+        if n_labels <= 1:
+            return 0
+
+        value, counts = np.unique(values, return_counts=True)
+        probs = counts / n_labels
+        n_classes = np.count_nonzero(probs)
+        if n_classes <= 1:
+            return 0
+        ent = 0.
+        # Compute entropy
+        base = e if base is None else base
+        for i in probs:
+            ent -= i * log(i, base)
+
+        return ent
+
+    def entropy(self,prop,set):
+        if self.fingerprints[prop].label_type == "continuous":
+            return self.continuous_entropy(self.data[prop].loc[set])
+        else:
+            return self.discrete_entropy(self.data[prop].loc[set])
+
     def mutual_information(self,prop,set1,set2):
         max_val = int(max(max(self.data[prop].loc[set1]),max(self.data[prop].loc[set2])))
         if max_val < 1:
@@ -148,6 +192,32 @@ class MolSpace():
         plt.fill_between(positions,kernel2(positions),alpha=0.3)
         return plt.gcf()
 
+    def plot_entropy(self,indices,fingerprints=None):
+        """
+        Helper function to plot the entropy (and its associated sensitivity) for each fingerprint within the code.
+
+        Returns
+        -------
+        plt.fig
+            The matplotlib figure that can then be plotted using plt.show() on the subsequent line.
+        """
+        if fingerprints is None:
+            fingerprints = self.fingerprints
+
+        label_dict_sorted    = {key : (self.label_dict[key].entropy,self.label_dict[key].sensitivity) for key in self.label_dict}
+        label_dict_sorted    = {key : val for key, val in sorted(label_dict_sorted.items(), key=lambda item: item[1])}
+        plt.style.use("exmoset/utils/matplotlibrc")
+        plt.bar(range(len(label_dict_sorted)), [x[0] for x in label_dict_sorted.values()], align="center",alpha=0.5,color="r")
+        labels = [self.label_dict[key].summary(unimportant_label=True) for key in label_dict_sorted]
+        colors = ["#404040" if "not meaningful" in label else "#FFFFFF" for label in labels ]
+        plt.xticks(range(len(label_dict_sorted)), labels, rotation=45, ha='right')
+        for label, color in zip(plt.gca().get_xticklabels(),colors):
+            label.set_color(color)
+        plt.ylabel("Entropy",fontsize=30)
+        plt.plot(range(len(label_dict_sorted)), [x[1] for x in label_dict_sorted.values()], dashes=[6,2],color='w')
+        plt.tight_layout()
+        return plt.gcf()
+
     def gen_clusters(self,indices):
         if len(indices) == len(self.indices):
             return {val : np.where(indices==val)[0] for val in np.unique(indices)}
@@ -165,4 +235,4 @@ class MolSpace():
         pass
 
     def __getitem__(self,idx):
-        return self.Molecules[idx]
+        return self.clusters[idx]
