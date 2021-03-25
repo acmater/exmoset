@@ -10,6 +10,7 @@ from .labels import Binary, Multiclass, Continuous
 from entropy_estimators import continuous
 
 import matplotlib.pyplot as plt
+plt.style.use("exmoset/utils/matplotlibrc")
 from scipy.stats import gaussian_kde
 from sklearn.preprocessing import normalize
 from scipy.spatial import cKDTree
@@ -170,13 +171,31 @@ class MolSpace():
                     (np.sum(contingency[x,:])*np.sum(contingency[:,y])))
         return total
 
-    def mutual_information_continuous(self,prop,set1,set2,k=3):
+    def mi_dc(self,prop,sets,k=3):
+        """
+        Calculates the mutual information for a discrete number of sets and a continuous
+        label, hence mutual information - discrete continuous.
+
+        Method adapted from - TODO (Add citation).
+
+        Parameters
+        ----------
+        prop : str
+            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
+
+        sets : [np.array(np.int)]
+            An iterable (typically a list) of numpy index arrays.
+
+        k : int, default=3
+            The number of k nearest neighbours to consider for each point within the set.
+        """
+        assert prop in self.fingerprints.keys(), "Not a valid prop, must be a fingerprint name."
         N = len(self.data)
         full = cKDTree(self.data[prop].to_numpy().reshape(-1,1))
         Nxs = []
         ms = []
-        for x in [0,1]:
-            label_data = self.data[prop].loc[set1].to_numpy().reshape(-1,1)
+        for set_ in sets:
+            label_data = self.data[prop].loc[set_].to_numpy().reshape(-1,1)
             N_xi = len(label_data)
             labeltree = cKDTree(label_data)
             distances, _ = labeltree.query(label_data,k=k)
@@ -193,6 +212,11 @@ class MolSpace():
         ----------
         prop : str
             A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
+
+        sets : [np.array(np.int)]
+            An iterable (typically a list) of numpy index arrays.
+
+        TODO - Added legend to KDE plot.
         """
         assert prop in self.fingerprints.keys(), "Not a valid prop, must be a fingerprint name."
         data = [self.data[prop].loc[set_].to_numpy() for set_ in sets] #set_ to avoid shadowing set() method.
@@ -201,7 +225,6 @@ class MolSpace():
         for kernel in kernels:
             plt.plot(positions,kernel(positions))
             plt.fill_between(positions,kernel(positions),alpha=0.3)
-
         return plt.gcf()
 
     def plot_entropy(self,indices,fingerprints=None):
