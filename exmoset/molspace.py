@@ -98,25 +98,26 @@ class MolSpace():
                                              indices=np.arange(len(self.Molecules)),
                                              context=self)}
 
-    def mutual_information(self,prop,set,complement):
-        # Need to fix this calculator
-        contingency = np.array([np.unique(self.data[prop].loc[set],return_counts=True)[1],
-                                np.unique(self.data[prop].loc[complement],return_counts=True)[1]])
-        print(contingency)
-        print(self.mutual_contingency(contingency))
-        return self.mutual_contingency(contingency)
+    def mutual_information(self,prop,set1,set2):
+        max_val = int(max(max(self.data[prop].loc[set1]),max(self.data[prop].loc[set2])))
+        if max_val < 1:
+            max_val = 1
 
-    @staticmethod
-    def mutual_contingency(contingency):
+        contingency = np.array([np.bincount(self.data[prop].loc[set1],minlength=max_val+1),
+                                np.bincount(self.data[prop].loc[set2],minlength=max_val+1)])
+
         total = 0
         N = np.sum(contingency)
-        for j in range(contingency.shape[0]):
-            for i in range(contingency.shape[1]):
-                if contingency[i,j] == 0:
+        for x in range(contingency.shape[0]):
+            for y in range(contingency.shape[1]):
+                if contingency[x,y] == 0:
                     total += 0
                 else:
-                    total += (contingency[i,j]/N)*np.log2((N*contingency[i,j])/(np.sum(contingency[i,:])*np.sum(contingency[:,j])))
+                    total += (contingency[x,y]/N)*np.log2((N*contingency[x,y])/
+                    (np.sum(contingency[x,:])*np.sum(contingency[:,y])))
+        print(total)
         return total
+
 
     def gen_clusters(self,indices):
         if len(indices) == len(self.indices):
