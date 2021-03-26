@@ -86,6 +86,16 @@ class TestContinuousclassLabel(unittest.TestCase):
                             significance=0.1,
                             file="exmoset/data/QM9_Data.csv")"""
 
+class TestMolFileSpace(unittest.TestCase):
+    global filemolspace
+    filemolspace = MolSpace(fingerprints=fingerprints,
+                         file="exmoset/data/QM9_tiny.csv",
+                         mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
+                         index_col="SMILES",
+                         clusters={"Test" : np.array([0,0,0,0,1,1,1,1,1])})
+    def test_molspace_clusters(self):
+        assert any(filemolspace.clusters["Test"][0]), "Clustering is not working"
+
 
 class TestGetOutliers(unittest.TestCase):
     def test_outlier_identification(self):
@@ -93,8 +103,6 @@ class TestGetOutliers(unittest.TestCase):
                         fingerprints = fingerprints,
                         mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                         significance=0.1)
-        print(molspace.calc_vector(molspace["Full"]))
-        print(molspace.get_outliers(molspace.clusters["Full"]))
         assert molspace.get_outliers(molspace.clusters["Full"]) == np.array([5]), "Outlier identification is not working correctly."
 
 
@@ -107,15 +115,13 @@ class TestMolSpace(unittest.TestCase):
                          file="exmoset/data/QM9_Data.csv",
                          index_col="SMILES")
 
-class TestMolFileSpace(unittest.TestCase):
-    global filemolspace
-    filemolspace = MolSpace(fingerprints=fingerprints,
-                         file="exmoset/data/QM9_tiny.csv",
-                         mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
-                         index_col="SMILES",
-                         clusters={"Test" : np.array([0,0,0,0,1,1,1,1,1])})
-    def test_molspace_clusters(self):
-        assert any(filemolspace.clusters["Test"][0]), "Clustering is not working"
+class TestSpaceUpdating(unittest.TestCase):
+    def test_update_fp(self):
+        def conjugated(mol):
+            return 1 if any([b.GetIsConjugated() for b in mol.GetBonds()]) else 0
+        fp = Fingerprint(property="Conjugated",noun="Molecules",verb="are",label_type="binary",calculator=conjugated,mol_format="rd")
+        filemolspace.add_fingerprint(fp)
+        assert "Conjugated" in filemolspace.fingerprints.keys(), "Fingerprint no longer updating correctly."
 
 if __name__ == "__main__":
     unittest.main()
