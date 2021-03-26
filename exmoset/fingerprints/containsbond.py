@@ -9,7 +9,7 @@ bonds = ["SINGLE","DOUBLE","TRIPLE"]
 
 def contains(bond):
     def sub_contains(mol):
-         return 1 if bond in [b.GetBondType().__str__() for b in mol.GetBonds()] else 0
+         return 1 if bond in mol else 0
     return sub_contains
 
 bond_fingerprints = []
@@ -20,4 +20,4 @@ for bond in bonds:
                 noun="Molecules",
                 label_type="binary",
                 calculator=contains(bond),
-                mol_format="rd"))
+                mol_format="bonds"))

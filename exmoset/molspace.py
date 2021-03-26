@@ -101,10 +101,12 @@ class MolSpace():
         print("Calculating Properties")
         labels = {}
         for fp in tqdm.tqdm(fingerprints):
+            print(fp.property)
             self.data[fp.property] = self.map_fingerprint(fp.calculator,self.mol_iters[fp.mol_format])
 
         print("Generating sets of molecules")
         self.indices      = np.arange(len(self.data))
+        self.data         = self.data.set_index(self.indices)
         self.fingerprints = {**indexing_fingerprints, **{fp.property : fp for fp in fingerprints}}
         if clusters:
             self.clusters     = {key : self.gen_clusters(value) for key, value in clusters.items()}
@@ -419,12 +421,20 @@ class MolSpace():
 
         Parameters
         ----------
-        cluster : {str : np.array}
-            Takes in a dictionary with the string key denoting the clusters' name and the nd.array its associated indices.
+        cluster : (str, np.array)
+            Takes in a tuple with the string key denoting the clusters' name and the nd.array its associated indices.
         """
-        self.clusters[cluster.keys()] = self.gen_clusters(cluster.values())
+        self.clusters[cluster[0]] = self.gen_clusters(cluster[1])
 
     def add_fingerprint(self,fp):
+        """
+        Helper function to add a new fingerprint to the fingerprints object and map its values into self.data.
+
+        Parameters
+        ----------
+        fp : Fingerprint
+            The fingerprint that will be used, must be provided using the fingerprint API.
+        """
         self.fingerprints[fp.property] = fp
         self.data[fp.property] = list(self.map_fingerprint(fp.calculator, self.mol_iters[fp.mol_format]))
 
