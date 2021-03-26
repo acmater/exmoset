@@ -121,6 +121,39 @@ class TestSpaceUpdating(unittest.TestCase):
         fp = Fingerprint(property="Conjugated",noun="Molecules",verb="are",label_type="binary",calculator=conjugated,mol_format="rd")
         filemolspace.add_fingerprint(fp)
         assert "Conjugated" in filemolspace.fingerprints.keys(), "Fingerprint no longer updating correctly."
+    def test_update_cluster(self):
+        """
+        Tests the update cluster function.
+        """
+        filemolspace.add_cluster(("Random",np.random.randint(5,size=(3,))))
+        assert "Random" in filemolspace.clusters, "Cluster updating not working correctly."
+
+class TestPlottingFunctionality(unittest.TestCase):
+    def test_binary_property_plot(self):
+        fig = filemolspace.plot(filemolspace["Test"][0], "Aromatic")
+        ax = fig.gca()
+        p = ax.patches
+        assert p[1].get_height() == 4, "Data not plotting correctly for a binary label."
+        plt.close()
+
+    def test_multiclass_property_plot(self):
+        fig = filemolspace.plot(filemolspace["Test"][0], "Atoms")
+        ax = fig.gca()
+        p = ax.patches
+        assert p[0].get_height() == 3, "Data not plotting correctly for a multiclass label."
+        plt.close()
+
+        # TODO Finish
+    #def test_continuous_property_plot(self):
+    #    fig = filemolspace.plot(filemolspace["Test"][0], "Dipole Moment")
+        #plt.show()
+    #    print(dir(fig))
+        #p = ax.patches
+        #assert p[0].get_height() == 3, "Data not plotting correctly for a multiclass label."
+        #plt.close()
+
+
+
 
 if __name__ == "__main__":
     unittest.main()

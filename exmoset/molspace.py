@@ -272,7 +272,7 @@ class MolSpace():
 
         elif label_type == "multiclass":
             plt.hist(values,alpha=0.5,align="mid")
-            plt.xlim(min(values)+0.5,max(values)+0.5)
+            plt.xlim(min(values)-0.5,max(values)+0.5)
 
         elif label_type == "continuous":
             kernel = gaussian_kde(values)

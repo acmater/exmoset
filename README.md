@@ -67,4 +67,5 @@ All nouns are plural
 ## TODO
 The following are the steps:
 
+1. Fix visual glitches in plot function
 9. Update README.md to reflect changes to codebase.

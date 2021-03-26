@@ -48,11 +48,11 @@ General molecular fingerprints
 """
 
 def aromatic(mol):
-    return np.array([bool(mol.GetAromaticAtoms())],dtype=np.int)
+    return 1 if bool(mol.GetAromaticAtoms()) else 0
 def num_atoms(mol):
-    return np.array([len(mol.GetAtoms())])
+    return len(mol.GetAtoms())
 def num_rings(mol):
-    return np.array([mol.GetRingInfo().NumRings()])
+    return mol.GetRingInfo().NumRings()
 
 
 general_fingerprints = [Fingerprint(property="Aromatic",
