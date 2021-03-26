@@ -59,5 +59,5 @@ if __name__ == "__main__":
                       mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                       index_col="SMILES",
                       clusters={})
-    import matplotlib.pyplot as plt
+
     print(space2.entropy("Atoms",space2.clusters["Full"]))

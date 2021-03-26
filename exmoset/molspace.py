@@ -13,6 +13,7 @@ from entropy_estimators import continuous
 
 import matplotlib.pyplot as plt
 plt.style.use("exmoset/utils/light")
+
 from scipy.stats import gaussian_kde
 from sklearn.preprocessing import normalize
 from scipy.spatial import cKDTree
@@ -49,7 +50,8 @@ class MolSpace():
     file : str, default=None
         An optional file (.csv) that will be imported by pandas and can be accessed by the fingerprints.
 
-        # TODO make this file import flexible so multiple type formats can be specified.
+    pandas_func : function , default=pd.read_csv
+        The pandas function that will be used to read the data file in.
 
     index_col : str, default=None
         The column name for which column in the file contains the base molecule representation that will then be assigned to self.Molecules
@@ -64,6 +66,7 @@ class MolSpace():
     def __init__(self,fingerprints,
                       molecules=None,
                       file=None,
+                      pandas_func=pd.read_csv,
                       mol_converters={},
                       significance=0.1,
                       index_col=None,
@@ -75,7 +78,7 @@ class MolSpace():
         if file is not None :
             assert index_col is not None, "An index column must be provided to determine what column of the file corresponds to the molecules."
             print(f"Importing {file}")
-            self.df        = pd.read_csv(file,index_col=index_col)
+            self.df        = pandas_func(file,index_col=index_col)
             if molecules is None:
                 molecules = self.df.index.to_numpy()
 
@@ -403,6 +406,12 @@ class MolSpace():
         """
         This method is intended to allow to user to probe the dataset in question.
         """
+        pass
+
+    def add_cluster(self,cluster):
+        self.clusters[cluster.keys()] = self.gen_clusters(cluster.values())
+
+    def add_fingerprint(self,fp):
         pass
 
     def __getitem__(self,idx):
