@@ -67,7 +67,6 @@ All nouns are plural
 ## TODO
 The following are the steps:
 
-1. Add udpate method.
 2. Add the ability to incorporate all of the loaded pandas dataframe as properties (not by default though).
 3. Add necessary dunder methods.
 7. Need to resolve how to deal with the negative entropy values that are possible when using k-means clustering approaches.

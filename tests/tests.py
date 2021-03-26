@@ -36,7 +36,7 @@ class TestFingerprint(unittest.TestCase):
                     calculator="add",
                     mol_format="smiles"), "Fingerprint generation did not work properly"
 
-
+"""
 class TestBinaryProperty(unittest.TestCase):
     global binary
     binary = Binary("binary",np.ones((100,1)))
@@ -76,7 +76,7 @@ class TestContinuousclassLabel(unittest.TestCase):
         fig = cont.plot()
         assert isinstance(fig, matplotlib.figure.Figure), "Continuous Figure plotting not working correctly."
 
-
+"""
 """class TestMolSet(unittest.TestCase):
     global analysis
     def test_molset_generation(self):

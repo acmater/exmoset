@@ -93,11 +93,8 @@ class MolSpace():
 
         print("Calculating Properties")
         labels = {}
-
         for fp in tqdm.tqdm(fingerprints):
-                labels[fp.property] = self.map_fingerprint(fp)
-
-        print(list(self.map_fingerprint(fingerprints[7])))
+            labels[fp.property] = self.map_fingerprint(fp.calculator,self.mol_iters[fp.mol_format])
 
         print("Generating sets of molecules")
         self.data         = pd.DataFrame(labels)
@@ -109,13 +106,9 @@ class MolSpace():
         else:
             self.clusters = {"Full" : np.arange(len(self.data))}
 
-    def map_fingerprint(self,fp):
-        if fp.file is not None:
-            from functools import partial
-            mapfunc = partial(fp.calculator, file=self.df)
-            return map(mapfunc,self.mol_iters[fp.mol_format])
-        else:
-            return map(fp.calculator,self.mol_iters[fp.mol_format])
+    @staticmethod
+    def map_fingerprint(func,mol_iter):
+        return map(func,mol_iter)
 
     @staticmethod
     def c_H(values,k=10,norm="euclidean",min_dist=0.001):
@@ -428,10 +421,11 @@ class MolSpace():
         self.clusters[cluster.keys()] = self.gen_clusters(cluster.values())
 
     def add_fingerprint(self,fp):
-        space.fingerprints[fp.name] = fp
+        self.fingerprints[fp.property] = fp
+        self.data[fp.property] = list(self.map_fingerprint(fp.calculator, self.mol_iters[fp.mol_format]))
 
-    def __repr__():
-        return self.data
+    def __repr__(self):
+        return self.data.__repr__()
 
     def __getitem__(self,idx):
         return self.clusters[idx]

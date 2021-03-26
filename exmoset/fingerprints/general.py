@@ -38,15 +38,8 @@ general_fingerprints = [Fingerprint(property="Aromatic",
                                 verb="contain",
                                 label_type="multiclass",
                                 calculator=num_rings,
-                                mol_format="rd"),
+                                mol_format="rd")]
 
-                    Fingerprint(property="Dipole Moment",
-                                verb="",
-                                noun="Molecules",
-                                label_type="continuous",
-                                calculator=Dipole_Moment,
-                                mol_format="smiles",
-                                file=True)]
 
 """Fingerprint(property="Electronic Spatial Extent",
             verb="",

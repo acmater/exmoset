@@ -38,26 +38,26 @@ if __name__ == "__main__":
                     index_col="SMILES",
                     clusters={"Full" : np.concatenate([np.zeros((200,)).reshape(-1,1),np.ones((382,)).reshape(-1,1)])})
 
-    print(space.mi_dd("Aromatic",space.clusters["Full"].values()))
-    print(space.mi_dc("Dipole Moment",space.clusters["Full"].values()))
+    #print(space.mi_dd("Aromatic",space.clusters["Full"].values()))
+    #print(space.mi_dc("Dipole Moment",space.clusters["Full"].values()))
     #fig = space.plot_kdes("Dipole Moment",[space.clusters["Full"][0],space.clusters["Full"][1],np.arange(200,300)])
     #plt.show()
 
-    print(space.entropy("Aromatic",np.array([0,1,2,3,4])))
+    #print(space.entropy("Aromatic",np.array([0,1,2,3,4])))
     #space.plot_entropy(np.array([0,1,2,3,4]))
     #plt.savefig("Test.png",transparent=True)
 
-    print(space.calc_vector(np.array([0,1,2,3,4,5])))
-    print(space.get_outliers(np.array([0,1,2,3,4,5])))
+    #print(space.calc_vector(np.array([0,1,2,3,4,5])))
+    #print(space.get_outliers(np.array([0,1,2,3,4,5])))
 
     #space.plot(np.array([0,1,2,3,4,5]),"Dipole Moment")
     #plt.show()
 
-    del fingerprints[3] # Remove the Dipole Moment fingerprint
+"""    del fingerprints[3] # Remove the Dipole Moment fingerprint
     space2 = MolSpace(fingerprints=fingerprints,
                       file="exmoset/data/FreeSolv.csv",
                       mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                       index_col="SMILES",
-                      clusters={})
+                      clusters={})"""
 
-    print(space2.entropy("Atoms",space2.clusters["Full"]))
+    #print(space2.entropy("Atoms",space2.clusters["Full"]))
