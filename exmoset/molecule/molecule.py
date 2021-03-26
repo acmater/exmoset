@@ -9,12 +9,12 @@ class Molecule():
 
     Parameters
     ----------
-    rep :
-
+    rep : ?
         The only required argument. Is used to calculate length.
     """
     def __init__(self,rep,**kwargs):
-        self.rep = rep
+        self.rep   = rep
+        self.types = [x for x in kwargs.keys()] 
         for key, value in kwargs.items():
             setattr(self, key, value)
 

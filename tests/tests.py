@@ -36,6 +36,47 @@ class TestFingerprint(unittest.TestCase):
                     calculator="add",
                     mol_format="smiles"), "Fingerprint generation did not work properly"
 
+
+class TestBinaryProperty(unittest.TestCase):
+    global binary
+    binary = Binary("binary",np.ones((100,1)))
+    def test_av(self):
+        assert binary.av == 1, "Binary label averaging not working."
+    def test_entropy(self):
+        assert binary.entropy == 0, "Entropy testing for Binary labels not working."
+    def test_property(self):
+        assert binary.property == "binary", "Binary property (name) not working properly."
+    def test_plot(self):
+        fig = binary.plot()
+        assert isinstance(fig, matplotlib.figure.Figure), "Binary Figure plotting not working correctly."
+
+class TestMulticlassLabel(unittest.TestCase):
+    global multi
+    multi = Multiclass("multi",np.arange(10))
+    def test_av(self):
+        assert multi.av == 4, "Multiclass label averaging not working."
+    def test_entropy(self):
+        assert multi.entropy != 0, "Entropy testing for Multiclass labels not working."
+    def test_property(self):
+        assert multi.property == "multi", "Multiclass label property (name) not working properly."
+    def test_plot(self):
+        fig = multi.plot()
+        assert isinstance(fig, matplotlib.figure.Figure), "Multiclass Figure plotting not working correctly."
+
+class TestContinuousclassLabel(unittest.TestCase):
+    global cont
+    cont = Continuous("cont",np.arange(10))
+    def test_av(self):
+        assert cont.av == 4.5, "Continuous label averaging not working."
+    def test_entropy(self):
+        assert cont.entropy != 0, "Entropy testing for Continuous labels not working."
+    def test_property(self):
+        assert cont.property == "cont", "Continuous label property not working properly."
+    def test_plot(self):
+        fig = cont.plot()
+        assert isinstance(fig, matplotlib.figure.Figure), "Continuous Figure plotting not working correctly."
+
+
 """class TestMolSet(unittest.TestCase):
     global analysis
     def test_molset_generation(self):

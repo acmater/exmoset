@@ -43,14 +43,14 @@ class Fingerprint():
         self.file        = file
 
     def __repr__(self):
-        return f"Fingerprint({self.property},{self.verb},{self.noun},{self.label_type},{self.calculator},{self.mol_format})"
+        return f"Fingerprint({self.property},{self.verb},{self.noun},{self.label_type},{self.calculator},{self.mol_format},{self.sensitivity},{self.file})"
 
     def __str__(self):
         return f"Fingerprint\n\t" + "\n\t".join([f"Property : {self.property:^11}",
                                                  f"Verb : {self.verb:^24}",
                                                  f"Noun: {self.noun:^18}",
                                                  f"Label Type: {self.label_type:^11}",
-                                                 f"Calculator : {self.calculator:^5}",
+                                                 f"Calculator : {self.calculator}",
                                                  f"Mol Format : {self.mol_format:^8}"])
 
     def summary(self,val,entropy,sensitivity=None,unimportant_label=False):

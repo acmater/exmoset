@@ -65,15 +65,11 @@ Internal operations utilize an information vector to describe the MolSet. This i
 All nouns are plural
 
 ## TODO
-The big task is to get mutual information working.
-
-I also need to decide on a clustering problem to sink this codebase's teeth into.
-
-Critically, MolSet has to be able to function in an entirely self-contained manner and as a sub-component of a molspace. It makes the most sense to precompute all label values in the molspace and then pass the information explicitly to the MolSets (either by passing them indexes or by copying the portions of the dataframe that are relevant).
-
 The following are the steps:
 
 1. Add udpate method.
-
+2. Add the ability to incorporate all of the loaded pandas dataframe as properties (not by default though).
+3. Add necessary dunder methods.
 7. Need to resolve how to deal with the negative entropy values that are possible when using k-means clustering approaches.
 8. Add argsparse methods
+9. Update README.md to reflect changes to codebase.

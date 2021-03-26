@@ -3,6 +3,7 @@ import numpy.ma as ma
 from rdkit import Chem
 import pandas as pd
 import tqdm
+import multiprocessing as mp
 
 from .molecule import Molecule
 
@@ -88,16 +89,15 @@ class MolSpace():
             formats = {key : mol_converters[key](mol) for key in mol_converters.keys()}
             self.Molecules.append(Molecule(mol, **formats))
         self.Molecules = np.array(self.Molecules)
+        self.mol_iters = {mol_type : [mol[mol_type] for mol in self.Molecules] for mol_type in self.Molecules[0].types}
 
         print("Calculating Properties")
-        labels = {fp.property : np.zeros(len(self.Molecules)) for fp in fingerprints}
-        for i, molecule in enumerate(tqdm.tqdm(self.Molecules)):
-            for fp in fingerprints:
-                if fp.file is not None:
-                    labels[fp.property][i] = fp.calculator(molecule[fp.mol_format],file=self.df)
-                    # I want to make sure that this isn't passing an entire copy of the dataframe, as that would suck
-                else:
-                    labels[fp.property][i] = fp.calculator(molecule[fp.mol_format])
+        labels = {}
+
+        for fp in tqdm.tqdm(fingerprints):
+                labels[fp.property] = self.map_fingerprint(fp)
+
+        print(list(self.map_fingerprint(fingerprints[7])))
 
         print("Generating sets of molecules")
         self.data         = pd.DataFrame(labels)
@@ -108,6 +108,14 @@ class MolSpace():
 
         else:
             self.clusters = {"Full" : np.arange(len(self.data))}
+
+    def map_fingerprint(self,fp):
+        if fp.file is not None:
+            from functools import partial
+            mapfunc = partial(fp.calculator, file=self.df)
+            return map(mapfunc,self.mol_iters[fp.mol_format])
+        else:
+            return map(fp.calculator,self.mol_iters[fp.mol_format])
 
     @staticmethod
     def c_H(values,k=10,norm="euclidean",min_dist=0.001):
@@ -409,10 +417,21 @@ class MolSpace():
         pass
 
     def add_cluster(self,cluster):
+        """
+        Helper function to update the clusters.
+
+        Parameters
+        ----------
+        cluster : {str : np.array}
+            Takes in a dictionary with the string key denoting the clusters' name and the nd.array its associated indices.
+        """
         self.clusters[cluster.keys()] = self.gen_clusters(cluster.values())
 
     def add_fingerprint(self,fp):
-        pass
+        space.fingerprints[fp.name] = fp
+
+    def __repr__():
+        return self.data
 
     def __getitem__(self,idx):
         return self.clusters[idx]
