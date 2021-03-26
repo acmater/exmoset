@@ -20,9 +20,6 @@ class Fingerprint():
 
     mol_format : str
         Which molecular format will be accessed from the Molecule object.
-
-    file : str, default=None
-        A file that can be optionally indexed by the fingerprint method.
     """
     def __init__(self,property,
                       verb,
@@ -30,8 +27,7 @@ class Fingerprint():
                       label_type,
                       calculator,
                       mol_format,
-                      sensitivity=0.1,
-                      file=None):
+                      sensitivity=0.1):
         assert label_type in ["binary", "multiclass","continuous"], "Not a valid label type."
         self.property    = property
         self.verb        = verb
@@ -40,10 +36,9 @@ class Fingerprint():
         self.calculator  = calculator
         self.mol_format  = mol_format
         self.sensitivity = sensitivity
-        self.file        = file
 
     def __repr__(self):
-        return f"Fingerprint({self.property},{self.verb},{self.noun},{self.label_type},{self.calculator},{self.mol_format},{self.sensitivity},{self.file})"
+        return f"Fingerprint({self.property},{self.verb},{self.noun},{self.label_type},{self.calculator},{self.mol_format},{self.sensitivity})"
 
     def __str__(self):
         return f"Fingerprint\n\t" + "\n\t".join([f"Property : {self.property:^11}",

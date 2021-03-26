@@ -6,6 +6,7 @@ import tqdm
 import multiprocessing as mp
 
 from .molecule import Molecule
+from .fingerprints import gen_fp
 
 from math import log, e
 from collections import namedtuple
@@ -79,36 +80,39 @@ class MolSpace():
         if file is not None :
             assert index_col is not None, "An index column must be provided to determine what column of the file corresponds to the molecules."
             print(f"Importing {file}")
-            self.df        = pandas_func(file,index_col=index_col)
+            self.data     = pandas_func(file,index_col=index_col)
             if molecules is None:
-                molecules = self.df.index.to_numpy()
+                molecules = self.data.index.to_numpy()
+            indexing_fingerprints = {prop : gen_fp(prop) for prop in list(self.data)}
+        else:
+            self.data = pd.DataFrame()
 
         print("Converting Molecules")
-        self.Molecules = []
+        mols = []
         for mol in tqdm.tqdm(molecules):
             formats = {key : mol_converters[key](mol) for key in mol_converters.keys()}
-            self.Molecules.append(Molecule(mol, **formats))
-        self.Molecules = np.array(self.Molecules)
+            mols.append(Molecule(mol, **formats))
+        # I may want to replace this section with a pandas dataframe or something.
+        self.Molecules = np.array(mols)
+        # Generates the necessary iters for the fingerprint methods ahead of time and caches them.
         self.mol_iters = {mol_type : [mol[mol_type] for mol in self.Molecules] for mol_type in self.Molecules[0].types}
 
         print("Calculating Properties")
         labels = {}
         for fp in tqdm.tqdm(fingerprints):
-            labels[fp.property] = self.map_fingerprint(fp.calculator,self.mol_iters[fp.mol_format])
+            self.data[fp.property] = self.map_fingerprint(fp.calculator,self.mol_iters[fp.mol_format])
 
         print("Generating sets of molecules")
-        self.data         = pd.DataFrame(labels)
         self.indices      = np.arange(len(self.data))
-        self.fingerprints = {fp.property : fp for fp in fingerprints}
+        self.fingerprints = {**indexing_fingerprints, **{fp.property : fp for fp in fingerprints}}
         if clusters:
             self.clusters     = {key : self.gen_clusters(value) for key, value in clusters.items()}
-
         else:
             self.clusters = {"Full" : np.arange(len(self.data))}
 
     @staticmethod
     def map_fingerprint(func,mol_iter):
-        return map(func,mol_iter)
+        return list(map(func,mol_iter))
 
     @staticmethod
     def c_H(values,k=10,norm="euclidean",min_dist=0.001):

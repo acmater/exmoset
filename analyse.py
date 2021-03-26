@@ -34,7 +34,6 @@ if __name__ == "__main__":
                     molecules=molecules3,
                     mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                     significance=0.1,
-                    file="exmoset/data/QM9_Data.csv",
                     index_col="SMILES",
                     clusters={"Full" : np.concatenate([np.zeros((200,)).reshape(-1,1),np.ones((382,)).reshape(-1,1)])})
 
