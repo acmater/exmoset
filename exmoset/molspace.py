@@ -122,11 +122,15 @@ class MolSpace():
         """
         Computes entropy of a continuous label distribution.
 
+        There are additional precautions taken to assure that values that are negative or
+
         Parameters
         ----------
         values : np.ndarray
             The array of label values.
         """
+        if np.mean(values) < 1:
+            values *= 5
         ent = continuous.get_h(values,
                                k=k,
                                norm=norm,
@@ -288,8 +292,7 @@ class MolSpace():
         plt.tight_layout()
         return plt.gcf()
 
-
-    def plot_kdes(self,prop,sets):
+    def plot_kdes(self,prop,sets,*args,bins=None):
         """
         Generates the density plots for a particular property given different integers sets.
 
@@ -305,11 +308,16 @@ class MolSpace():
         """
         assert prop in self.fingerprints.keys(), "Not a valid prop, must be a fingerprint name."
         data = [self.data[prop].loc[set_].to_numpy() for set_ in sets] #set_ to avoid shadowing set() method.
-        kernels = [gaussian_kde(datum) for datum in data]
-        positions = np.linspace(min([min(x) for x in data]),max([max(x) for x in data]),1000)
-        for kernel in kernels:
-            plt.plot(positions,kernel(positions))
-            plt.fill_between(positions,kernel(positions),alpha=0.3)
+        print(bins)
+        if bins is None:
+            kernels = [gaussian_kde(datum) for datum in data]
+            positions = np.linspace(min([min(x) for x in data]),max([max(x) for x in data]),1000)
+            for kernel in kernels:
+                plt.plot(positions,kernel(positions))
+                plt.fill_between(positions,kernel(positions),alpha=0.3)
+        else:
+            for datum in data:
+                plt.hist(datum,bins=bins)
         return plt.gcf()
 
     def plot_entropy(self,set,props="all"):
@@ -339,7 +347,7 @@ class MolSpace():
 
         plt.bar(range(len(label_dict_sorted)), [x.entropy for x in label_dict_sorted.values()], align="center",alpha=0.5,color="r")
         labels = [self.fingerprints[key].summary(*label_dict_sorted[key],unimportant_label=True) for key in label_dict_sorted]
-        colors = ["#404040" if "not meaningful" in label else "#3BB2E2" for label in labels ]
+        colors = ["#808080" if "not meaningful" in label else "#3BB2E2" for label in labels ]
         plt.xticks(range(len(label_dict_sorted)), labels, rotation=45, ha='right')
         for label, color in zip(plt.gca().get_xticklabels(),colors):
             label.set_color(color)
@@ -389,7 +397,6 @@ class MolSpace():
         """
         return np.where(np.sum((self.data.loc[set].to_numpy() - self.calc_vector(set)[0]),axis=1) > 0.5) # Need to update distance formulation
 
-
     def gen_clusters(self,indices):
         """
         Uses an array of indexes to generate the clusters by either breaking them into individual
@@ -408,12 +415,6 @@ class MolSpace():
             raise ValueError("Invalid index array.")
 
         return clusters
-
-    def query(self,label,condition):
-        """
-        This method is intended to allow to user to probe the dataset in question.
-        """
-        pass
 
     def add_cluster(self,cluster):
         """

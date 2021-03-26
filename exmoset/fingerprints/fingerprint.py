@@ -58,7 +58,6 @@ class Fingerprint():
         The description is generated in accordance with the different language components.
         If the value is zero, then the statement is negated using a method in the label superclass.
         """
-        print(val,entropy,sensitivity)
         if not sensitivity:
             sensitivity = self.sensitivity
         if entropy < sensitivity:
