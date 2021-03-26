@@ -112,7 +112,6 @@ class TestMolSpace(unittest.TestCase):
                          molecules=molecules3,
                          mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                          significance=0.1,
-                         file="exmoset/data/QM9_Data.csv",
                          index_col="SMILES")
 
 class TestSpaceUpdating(unittest.TestCase):

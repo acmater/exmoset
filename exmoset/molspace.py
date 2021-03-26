@@ -86,6 +86,7 @@ class MolSpace():
             indexing_fingerprints = {prop : gen_fp(prop) for prop in list(self.data)}
         else:
             self.data = pd.DataFrame()
+            indexing_fingerprints = {}
 
         print("Converting Molecules")
         mols = []
