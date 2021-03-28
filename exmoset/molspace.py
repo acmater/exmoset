@@ -166,7 +166,7 @@ class MolSpace():
 
         return ent
 
-    def entropy(self,prop,set):
+    def entropy(self,set_idxs,prop):
         """
         Determines the entropy for a particular property and set.
 
@@ -177,14 +177,14 @@ class MolSpace():
         prop : str
             A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
 
-        set : np.array(np.int)
+        set_idxs : np.array(np.int)
             A numpy array of indexes that is used to determine which values should be used to calculate the entropy.
         """
         if self.fingerprints[prop].label_type == "continuous":
-            values = self.data[prop].loc[set].to_numpy().reshape(-1,1)
+            values = self.data[prop].loc[set_idxs].to_numpy().reshape(-1,1)
             return self.c_H(values)
         else:
-            return self.d_H(self.data[prop].loc[set])
+            return self.d_H(self.data[prop].loc[set_idxs])
 
     def mi_dd(self,prop,sets):
         """
@@ -362,8 +362,8 @@ class MolSpace():
         label_dict_sorted    = {key : val for key, val in sorted(label_dict_sorted.items(), key=lambda item: item[1][1])}
 
         entropies = [x.entropy for x in label_dict_sorted.values()]
-        entropies = [x  for x in entropies]
-        
+        entropies = [x if x != np.inf else 1 for x in entropies]
+
         plt.bar(range(len(label_dict_sorted)), entropies, align="center",alpha=0.5,color="r")
         labels = [self.fingerprints[key].summary(*label_dict_sorted[key],unimportant_label=True) for key in label_dict_sorted]
         colors = ["#808080" if "not meaningful" in label else "#3BB2E2" for label in labels ]
@@ -376,7 +376,7 @@ class MolSpace():
         plt.title(f"Entropy Analysis for {set_} with value {set_val}")
         return plt.gcf()
 
-    def calc_vector(self,set):
+    def calc_vector(self,set_,set_val=True):
         """
         Represents the meaningful properties as a vector. Uses numpy's masking feature to only include meaningful
         values within it.
@@ -391,12 +391,12 @@ class MolSpace():
             A masked struct that has each value accessible by the fingerprints assocaited name. Is used for various dunder methods
             such as __and__.
         """
-        data = self.data.loc[set]
+        data = self.data.loc[self[set_][set_val]]
         vector = np.zeros((len(self.fingerprints),))
         mask   = np.zeros((len(self.fingerprints),))
         for i,prop in enumerate(self.fingerprints.keys()):
             vector[i] = np.mean(data[prop])
-            if self.entropy(prop,set) < self.fingerprints[prop].sensitivity:
+            if self.entropy(prop,self[set_][set_val]) < self.fingerprints[prop].sensitivity:
                 mask[i] = 0
             else:
                 mask[i] = 1
@@ -405,7 +405,7 @@ class MolSpace():
 
         return ma.array(vector, mask=mask), ma.array(struct, mask=tuple(mask))
 
-    def get_outliers(self,set):
+    def get_outliers(self,set_):
         """
         Function that compares the meaningul vector description of a class and identifiers species that are not correctly
         described by it and returns the indices of these species.
@@ -415,7 +415,7 @@ class MolSpace():
         np.BooleanArray
             An array that can be used to index self.Molecules to return the outlier species.
         """
-        return np.where(np.sum((self.data.loc[set].to_numpy() - self.calc_vector(set)[0]),axis=1) > 0.5) # Need to update distance formulation
+        return np.where(np.sum((self.data.loc[set_].to_numpy() - self.calc_vector(set_)[0]),axis=1) > 0.5) # Need to update distance formulation
 
     def gen_clusters(self,indices):
         """
