@@ -68,4 +68,5 @@ All nouns are plural
 The following are the steps:
 
 1. Fix visual glitches in plot function
+2. Make set syntax consistent in terms of plotting.
 9. Update README.md to reflect changes to codebase.

@@ -30,8 +30,8 @@ if __name__ == "__main__":
     print(analysis)"""
 
 
-def bond_converter(smiles):
-    return [b.GetBondType().__str__() for b in Chem.MolFromSmiles(smiles).GetBonds()]
+    def bond_converter(smiles):
+        return [b.GetBondType().__str__() for b in Chem.MolFromSmiles(smiles).GetBonds()]
 
 
     #### MolSpace testing
@@ -41,6 +41,14 @@ def bond_converter(smiles):
                     significance=0.1,
                     index_col="SMILES",
                     clusters={"Full" : np.concatenate([np.zeros((200,)).reshape(-1,1),np.ones((382,)).reshape(-1,1)])})
+
+    big = MolSpace(fingerprints=fingerprints,
+                      file="exmoset/data/QM9_Data.csv",
+                      mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str, "bonds" : bond_converter},
+                      index_col="SMILES",
+                      clusters={})
+                      
+    big.add_cluster(("Random",np.random.randint(100000,size=(1000,))))
 
     #print(space.mi_dd("Aromatic",space.clusters["Full"].values()))
     #print(space.mi_dc("Dipole Moment",space.clusters["Full"].values()))
@@ -65,10 +73,3 @@ def bond_converter(smiles):
                       clusters={})"""
 
     #print(space2.entropy("Atoms",space2.clusters["Full"]))
-
-    big = MolSpace(fingerprints=fingerprints,
-                      file="exmoset/data/QM9_Data.csv",
-                      mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str, "bonds" : bond_converter},
-                      index_col="SMILES",
-                      clusters={})
-    big.add_cluster(("Random",np.random.randint(100000,size=(1000,))))

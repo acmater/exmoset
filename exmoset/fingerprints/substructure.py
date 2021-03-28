@@ -10,7 +10,7 @@ substructures = ["[CC]","[OH]","[NH2]"]
 
 def contains(substructure):
     def sub_contains(mol):
-        return np.array([mol.HasSubstructMatch(Chem.MolFromSmarts(substructure))],dtype=np.int)
+        return int(mol.HasSubstructMatch(Chem.MolFromSmarts(substructure)))
     return sub_contains
 
 substructure_fingerprints = []

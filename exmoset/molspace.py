@@ -101,7 +101,6 @@ class MolSpace():
         print("Calculating Properties")
         labels = {}
         for fp in tqdm.tqdm(fingerprints):
-            print(fp.property)
             self.data[fp.property] = self.map_fingerprint(fp.calculator,self.mol_iters[fp.mol_format])
 
         print("Generating sets of molecules")
@@ -288,6 +287,7 @@ class MolSpace():
 
         if title is None:
             title = prop
+        plt.xlabel(prop)
         plt.title(title)
         plt.tight_layout()
         return plt.gcf()
@@ -308,7 +308,6 @@ class MolSpace():
         """
         assert prop in self.fingerprints.keys(), "Not a valid prop, must be a fingerprint name."
         data = [self.data[prop].loc[set_].to_numpy() for set_ in sets] #set_ to avoid shadowing set() method.
-        print(bins)
         if bins is None:
             kernels = [gaussian_kde(datum) for datum in data]
             positions = np.linspace(min([min(x) for x in data]),max([max(x) for x in data]),1000)
@@ -318,6 +317,9 @@ class MolSpace():
         else:
             for datum in data:
                 plt.hist(datum,bins=bins)
+
+        plt.title(prop)
+        plt.xlabel(prop)
         return plt.gcf()
 
     def plot_entropy(self,set,props="all"):
@@ -326,7 +328,7 @@ class MolSpace():
 
         Parameters
         ----------
-        sets : [np.array(np.int)]
+        set : np.array(np.int)
             An iterable (typically a list) of numpy index arrays.
 
         prop : str, default="all"
@@ -354,6 +356,7 @@ class MolSpace():
         plt.ylabel("Entropy",fontsize=30)
         plt.plot(range(len(label_dict_sorted)), [x[2] for x in label_dict_sorted.values()], dashes=[6,2],color='w')
         plt.tight_layout()
+        plt.title(f"Entropy Analysis for {set}")
         return plt.gcf()
 
     def calc_vector(self,set):
