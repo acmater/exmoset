@@ -330,21 +330,22 @@ class MolSpace():
         plt.xlabel(prop)
         return plt.gcf()
 
-    def plot_entropy(self,set,props="all",set_name=None):
+    def plot_entropy(self,set_ ,props="all",set_val=True):
         """
         Helper function to plot the entropy (and its associated sensitivity) for each property of interest within the code.
 
         Parameters
         ----------
-        set : np.array(np.int)
-            An iterable (typically a list) of numpy index arrays.
+        set_ : str
+            A string to identify the cluster of interest.
 
         prop : str, default="all"
             A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
             If "all" is provided it will use every fingerprint in the code.
 
-        set_name : str, default=None
-            A description for the set that is being considered.
+        set_val : str, default=None
+            The specific value for the set that you want to consider, defaults to True, i.e consider the set and not its complement.
+            Note that for sets with multiple integers this is equivalent to defaulting to 1.
 
         Returns
         -------
@@ -354,22 +355,25 @@ class MolSpace():
         if props == "all":
             props = self.fingerprints.keys()
 
+        idxs = self[set_][set_val]
+
         Summary = namedtuple("Summary",["val","entropy","sensitivity"])
-        label_dict_sorted    = {key : Summary(np.mean(self.data[key].loc[set]),self.entropy(key,set),self.fingerprints[key].sensitivity) for key in self.fingerprints}
+        label_dict_sorted    = {key : Summary(np.mean(self.data[key].loc[idxs]),self.entropy(key,idxs),self.fingerprints[key].sensitivity) for key in self.fingerprints}
         label_dict_sorted    = {key : val for key, val in sorted(label_dict_sorted.items(), key=lambda item: item[1][1])}
 
-        plt.bar(range(len(label_dict_sorted)), [x.entropy for x in label_dict_sorted.values()], align="center",alpha=0.5,color="r")
+        entropies = [x.entropy for x in label_dict_sorted.values()]
+        entropies = [x  for x in entropies]
+        
+        plt.bar(range(len(label_dict_sorted)), entropies, align="center",alpha=0.5,color="r")
         labels = [self.fingerprints[key].summary(*label_dict_sorted[key],unimportant_label=True) for key in label_dict_sorted]
         colors = ["#808080" if "not meaningful" in label else "#3BB2E2" for label in labels ]
         plt.xticks(range(len(label_dict_sorted)), labels, rotation=45, ha='right')
         for label, color in zip(plt.gca().get_xticklabels(),colors):
             label.set_color(color)
         plt.ylabel("Entropy",fontsize=30)
-        plt.plot(range(len(label_dict_sorted)), [x[2] for x in label_dict_sorted.values()], dashes=[6,2],color='w')
+        plt.plot(range(len(label_dict_sorted)), [x[2] for x in label_dict_sorted.values()], dashes=[6,2],color='k')
         plt.tight_layout()
-        if set_name is None:
-            set_name = "Unknown Set"
-        plt.title(f"Entropy Analysis for {set_name}")
+        plt.title(f"Entropy Analysis for {set_} with value {set_val}")
         return plt.gcf()
 
     def calc_vector(self,set):
