@@ -103,7 +103,7 @@ class TestGetOutliers(unittest.TestCase):
                         fingerprints = fingerprints,
                         mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
                         significance=0.1)
-        assert molspace.get_outliers(molspace.clusters["Full"]) == np.array([5]), "Outlier identification is not working correctly."
+        assert molspace.get_outliers(set_="Full") == np.array([5]), "Outlier identification is not working correctly."
 
 
 class TestMolSpace(unittest.TestCase):

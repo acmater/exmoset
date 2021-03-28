@@ -110,7 +110,7 @@ class MolSpace():
         if clusters:
             self.clusters     = {key : self.gen_clusters(value) for key, value in clusters.items()}
         else:
-            self.clusters = {"Full" : np.arange(len(self.data))}
+            self.clusters = {"Full" : {True : np.arange(len(self.data))}}
 
     @staticmethod
     def map_fingerprint(func,mol_iter):
@@ -396,7 +396,7 @@ class MolSpace():
         mask   = np.zeros((len(self.fingerprints),))
         for i,prop in enumerate(self.fingerprints.keys()):
             vector[i] = np.mean(data[prop])
-            if self.entropy(prop,self[set_][set_val]) < self.fingerprints[prop].sensitivity:
+            if self.entropy(self[set_][set_val],prop) < self.fingerprints[prop].sensitivity:
                 mask[i] = 0
             else:
                 mask[i] = 1
@@ -405,7 +405,7 @@ class MolSpace():
 
         return ma.array(vector, mask=mask), ma.array(struct, mask=tuple(mask))
 
-    def get_outliers(self,set_):
+    def get_outliers(self,set_,set_val=True):
         """
         Function that compares the meaningul vector description of a class and identifiers species that are not correctly
         described by it and returns the indices of these species.
@@ -415,7 +415,12 @@ class MolSpace():
         np.BooleanArray
             An array that can be used to index self.Molecules to return the outlier species.
         """
-        return np.where(np.sum((self.data.loc[set_].to_numpy() - self.calc_vector(set_)[0]),axis=1) > 0.5) # Need to update distance formulation
+        print(set_)
+        print(set_val)
+        print(self[set_])
+        print(self[set_][set_val])
+        print(self.data.loc[self[set_][set_val]].to_numpy())
+        return np.where(np.sum((self.data.loc[self[set_][set_val]].to_numpy() - self.calc_vector(set_)[0]),axis=1) > 0.5) # Need to update distance formulation
 
     def gen_clusters(self,indices):
         """
