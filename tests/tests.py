@@ -121,6 +121,7 @@ class TestSpaceUpdating(unittest.TestCase):
         fp = Fingerprint(property="Conjugated",noun="Molecules",verb="are",label_type="binary",calculator=conjugated,mol_format="rd")
         filemolspace.add_fingerprint(fp)
         assert "Conjugated" in filemolspace.fingerprints.keys(), "Fingerprint no longer updating correctly."
+        
     def test_update_cluster(self):
         """
         Tests the update cluster function.

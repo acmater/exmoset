@@ -21,6 +21,10 @@ from sklearn.preprocessing import normalize
 from scipy.spatial import cKDTree
 from scipy.special import gamma, digamma
 
+# Colour Configuration
+meaningful = "#3BB2E2"
+not_meaningful = "#808080"
+
 class MolSpace():
     """
     A class that handles a set of chemical data and the associated MolSets. This method
@@ -39,6 +43,12 @@ class MolSpace():
     molecules : list, default=None
         A list of molecules that will be parsed into the Molecule class
 
+    file : str, default=None
+        An optional file (.csv) that will be imported by pandas and can be accessed by the fingerprints.
+
+    pandas_func : function , default=pd.read_csv
+        The pandas function that will be used to read the data file in.
+
     mol_converters : dict, default = {}
         A list of molecule converters that will be passed as kwargs to the Molecule object
 
@@ -48,12 +58,6 @@ class MolSpace():
 
     significance : float, default = 0.1
         The default signifiance threshold used when calculating whether or not a particular label is significant.
-
-    file : str, default=None
-        An optional file (.csv) that will be imported by pandas and can be accessed by the fingerprints.
-
-    pandas_func : function , default=pd.read_csv
-        The pandas function that will be used to read the data file in.
 
     index_col : str, default=None
         The column name for which column in the file contains the base molecule representation that will then be assigned to self.Molecules
@@ -93,6 +97,7 @@ class MolSpace():
         for mol in tqdm.tqdm(molecules):
             formats = {key : mol_converters[key](mol) for key in mol_converters.keys()}
             mols.append(Molecule(mol, **formats))
+
         # I may want to replace this section with a pandas dataframe or something.
         self.Molecules = np.array(mols)
         # Generates the necessary iters for the fingerprint methods ahead of time and caches them.
@@ -186,7 +191,7 @@ class MolSpace():
         else:
             return self.d_H(self.data[prop].loc[set_idxs])
 
-    def mi_dd(self,prop,sets):
+    def mi_dd(self,sets,prop,return_contingency=False):
         """
         Mutual information for a discrete - discrete mixture.
 
@@ -214,9 +219,13 @@ class MolSpace():
                 else:
                     total += (contingency[x,y]/N)*np.log2((N*contingency[x,y])/
                     (np.sum(contingency[x,:])*np.sum(contingency[:,y])))
-        return total
 
-    def mi_dc(self,prop,sets,k=3):
+        if return_contingency:
+            return total, contingency
+        else:
+            return total
+
+    def mi_dc(self,sets,prop,k=3):
         """
         Calculates the mutual information for a discrete number of sets and a continuous
         label, hence mutual information - discrete continuous.
@@ -232,9 +241,10 @@ class MolSpace():
             An iterable (typically a list) of numpy index arrays.
 
         k : int, default=3
-            The number of k nearest neighbours to consider for each point within the set.
+            The number of k nearest neighbours to consider for each point within the set.\
+
+        # Check that there are no errors in this plot.
         """
-        assert prop in self.fingerprints.keys(), "Not a valid prop, must be a fingerprint name."
         N = len(self.data)
         full = cKDTree(self.data[prop].to_numpy().reshape(-1,1))
         Nxs = []
@@ -248,6 +258,18 @@ class MolSpace():
             Nxs.append(digamma(N_xi))
             ms.append(np.mean(digamma(m_i)))
         return digamma(N) + digamma(k) - np.mean(ms) - np.mean(Nxs)
+
+    def mi(self,set_, prop,k=3):
+        """
+        Helper function that calculates mutual information using the available methods
+        depending on information available in the fingerprint.
+        """
+        assert prop in self.fingerprints.keys(), "Not a valid prop, must be a fingerprint name."
+
+        if self.fingerprints[prop].label_type == "continuous":
+            return self.mi_dc(self[set_].values(),prop)
+        else:
+            return self.mi_dd(self[set_].values(),prop)
 
     def plot(self,set_,prop,set_val=0,title=None):
         """
@@ -330,6 +352,48 @@ class MolSpace():
         plt.xlabel(prop)
         return plt.gcf()
 
+    def plot_mi(self,set_, props="all"):
+        """
+        Helper function to plot the mutual information (and its associated sensitivity) for each property of interest within the code.
+
+        Parameters
+        ----------
+        set_ : str
+            A string to identify the cluster of interest.
+
+        prop : str, default="all"
+            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
+            If "all" is provided it will use every fingerprint in the code.
+
+        Returns
+        -------
+        plt.fig
+            The matplotlib figure that can then be plotted using plt.show() on the subsequent line.
+        """
+        if props == "all":
+            props = self.fingerprints.keys()
+
+        Summary = namedtuple("Summary",["mi","sensitivity"])
+
+        label_dict_sorted    = {key : Summary(self.mi(set_,key),self.fingerprints[key].sensitivity) for key in props}
+        label_dict_sorted    = {key : val for key, val in sorted(label_dict_sorted.items(), key=lambda item: item[1][0])}
+
+        mis = [x.mi for x in label_dict_sorted.values()]
+        mis = [x if x != np.inf else 1 for x in mis]
+
+        plt.bar(range(len(label_dict_sorted)), mis, align="center",alpha=0.5,color="r")
+        labels = [key for key in label_dict_sorted]
+        colors = [not_meaningful if label_dict_sorted[label].sensitivity > label_dict_sorted[label].mi else meaningful for label in labels ]
+        plt.xticks(range(len(label_dict_sorted)), labels, rotation=45, ha='right')
+        for label, color in zip(plt.gca().get_xticklabels(),colors):
+            label.set_color(color)
+        plt.ylabel("Mutual Information",fontsize=30)
+        plt.plot(range(len(label_dict_sorted)), [x[1] for x in label_dict_sorted.values()], dashes=[6,2],color='k',label="Sensitivity")
+        plt.legend()
+        plt.tight_layout()
+        plt.title(f"Mutual Information Analysis for {set_} Set")
+        return plt.gcf()
+
     def plot_entropy(self,set_ ,props="all",set_val=True):
         """
         Helper function to plot the entropy (and its associated sensitivity) for each property of interest within the code.
@@ -358,7 +422,7 @@ class MolSpace():
         idxs = self[set_][set_val]
 
         Summary = namedtuple("Summary",["val","entropy","sensitivity"])
-        label_dict_sorted    = {key : Summary(np.mean(self.data[key].loc[idxs]),self.entropy(key,idxs),self.fingerprints[key].sensitivity) for key in self.fingerprints}
+        label_dict_sorted    = {key : Summary(np.mean(self.data[key].loc[idxs]),self.entropy(idxs,key),self.fingerprints[key].sensitivity) for key in props}
         label_dict_sorted    = {key : val for key, val in sorted(label_dict_sorted.items(), key=lambda item: item[1][1])}
 
         entropies = [x.entropy for x in label_dict_sorted.values()]
@@ -366,12 +430,13 @@ class MolSpace():
 
         plt.bar(range(len(label_dict_sorted)), entropies, align="center",alpha=0.5,color="r")
         labels = [self.fingerprints[key].summary(*label_dict_sorted[key],unimportant_label=True) for key in label_dict_sorted]
-        colors = ["#808080" if "not meaningful" in label else "#3BB2E2" for label in labels ]
+        colors = [not_meaningful if label_dict_sorted[label].sensitivity < label_dict_sorted[label].entropy else meaningful for label in labels ]
         plt.xticks(range(len(label_dict_sorted)), labels, rotation=45, ha='right')
         for label, color in zip(plt.gca().get_xticklabels(),colors):
             label.set_color(color)
         plt.ylabel("Entropy",fontsize=30)
-        plt.plot(range(len(label_dict_sorted)), [x[2] for x in label_dict_sorted.values()], dashes=[6,2],color='k')
+        plt.plot(range(len(label_dict_sorted)), [x[2] for x in label_dict_sorted.values()], dashes=[6,2],color='k',label="Sensitivity")
+        plt.legend()
         plt.tight_layout()
         plt.title(f"Entropy Analysis for {set_} with value {set_val}")
         return plt.gcf()
@@ -415,11 +480,6 @@ class MolSpace():
         np.BooleanArray
             An array that can be used to index self.Molecules to return the outlier species.
         """
-        print(set_)
-        print(set_val)
-        print(self[set_])
-        print(self[set_][set_val])
-        print(self.data.loc[self[set_][set_val]].to_numpy())
         return np.where(np.sum((self.data.loc[self[set_][set_val]].to_numpy() - self.calc_vector(set_)[0]),axis=1) > 0.5) # Need to update distance formulation
 
     def gen_clusters(self,indices):

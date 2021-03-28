@@ -515,7 +515,7 @@ legend.frameon:       False     # if True, draw the legend on a background patch
 #legend.numpoints:     1        # the number of marker points in the legend line
 #legend.scatterpoints: 1        # number of scatter points
 #legend.markerscale:   1.0      # the relative size of legend markers vs. original
-#legend.fontsize:      medium
+legend.fontsize:      16
 #legend.title_fontsize: None    # None sets to the same as the default axes.
 
 ## Dimensions as fraction of fontsize:
