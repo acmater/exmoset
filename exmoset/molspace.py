@@ -249,21 +249,27 @@ class MolSpace():
             ms.append(np.mean(digamma(m_i)))
         return digamma(N) + digamma(k) - np.mean(ms) - np.mean(Nxs)
 
-    def plot(self,set,prop,title=None):
+    def plot(self,set_,prop,set_val=0,title=None):
         """
         Uses a customized matplotlib histogram to plot the frequency of the two class labels.
 
         Parameters
         ----------
+        set_ : str
+            A string to identify the cluster of interest.
+
+        set_val : int, default = 0 (False)
+            The value of the set to be isolated, either an integer to multiclass sets (i.e multiple clusters),
+            or a numeric bool (0 for False, 1 for True)
+
         prop : str
             A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
 
-        sets : [np.array(np.int)]
-            An iterable (typically a list) of numpy index arrays.
         """
         assert prop in self.fingerprints.keys(), "Not a valid property."
 
-        values = self.data[prop].loc[set]
+        idxs = space[set_][set_val]
+        values = self.data[prop].loc[idxs]
         label_type = self.fingerprints[prop].label_type
 
         if label_type == "binary":
@@ -286,13 +292,13 @@ class MolSpace():
             ax.fill_between(x,y,0,alpha=0.1)
 
         if title is None:
-            title = prop
+            title = f"{set_} ({set_val})"
         plt.xlabel(prop)
         plt.title(title)
         plt.tight_layout()
         return plt.gcf()
 
-    def plot_kdes(self,prop,sets,*args,bins=None):
+    def plot_kdes(self,prop,sets,title=None,*args,bins=None):
         """
         Generates the density plots for a particular property given different integers sets.
 
@@ -318,11 +324,13 @@ class MolSpace():
             for datum in data:
                 plt.hist(datum,bins=bins)
 
-        plt.title(prop)
+        if title is None:
+            title = prop
+        plt.title(title)
         plt.xlabel(prop)
         return plt.gcf()
 
-    def plot_entropy(self,set,props="all"):
+    def plot_entropy(self,set,props="all",set_name=None):
         """
         Helper function to plot the entropy (and its associated sensitivity) for each property of interest within the code.
 
@@ -334,6 +342,9 @@ class MolSpace():
         prop : str, default="all"
             A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
             If "all" is provided it will use every fingerprint in the code.
+
+        set_name : str, default=None
+            A description for the set that is being considered.
 
         Returns
         -------
@@ -356,7 +367,9 @@ class MolSpace():
         plt.ylabel("Entropy",fontsize=30)
         plt.plot(range(len(label_dict_sorted)), [x[2] for x in label_dict_sorted.values()], dashes=[6,2],color='w')
         plt.tight_layout()
-        plt.title(f"Entropy Analysis for {set}")
+        if set_name is None:
+            set_name = "Unknown Set"
+        plt.title(f"Entropy Analysis for {set_name}")
         return plt.gcf()
 
     def calc_vector(self,set):
@@ -410,10 +423,11 @@ class MolSpace():
         indices : np.array[np.int]
             The numpy array of integer indexes that will be used to assign membership to different sets.
         """
+
         if len(indices) == len(self.indices):
             return {val : np.where(indices==val)[0] for val in np.unique(indices)}
         elif len(indices) < len(self.indices):
-            return {"Set" : indices, "Complement" : np.setdiff1d(self.indices,indices)}
+            return {True : indices, False : np.setdiff1d(self.indices,indices)}
         else:
             raise ValueError("Invalid index array.")
 
