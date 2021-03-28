@@ -130,14 +130,14 @@ class TestSpaceUpdating(unittest.TestCase):
 
 class TestPlottingFunctionality(unittest.TestCase):
     def test_binary_property_plot(self):
-        fig = filemolspace.plot(filemolspace["Test"][0], "Aromatic")
+        fig = filemolspace.plot("Test", "Aromatic")
         ax = fig.gca()
         p = ax.patches
         assert p[1].get_height() == 4, "Data not plotting correctly for a binary label."
         plt.close()
 
     def test_multiclass_property_plot(self):
-        fig = filemolspace.plot(filemolspace["Test"][0], "Atoms")
+        fig = filemolspace.plot("Test", "Atoms")
         ax = fig.gca()
         p = ax.patches
         assert p[0].get_height() == 3, "Data not plotting correctly for a multiclass label."

@@ -268,7 +268,7 @@ class MolSpace():
         """
         assert prop in self.fingerprints.keys(), "Not a valid property."
 
-        idxs = space[set_][set_val]
+        idxs = self[set_][set_val]
         values = self.data[prop].loc[idxs]
         label_type = self.fingerprints[prop].label_type
 
