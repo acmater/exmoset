@@ -264,7 +264,6 @@ class MolSpace():
 
         prop : str
             A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
-
         """
         assert prop in self.fingerprints.keys(), "Not a valid property."
 
@@ -298,34 +297,35 @@ class MolSpace():
         plt.tight_layout()
         return plt.gcf()
 
-    def plot_kdes(self,prop,sets,title=None,*args,bins=None):
+    def plot_kdes(self,set_,prop,title=None,*args,bins=None):
         """
         Generates the density plots for a particular property given different integers sets.
 
         Parameters
         ----------
+        set_ : str
+            A string to identify the cluster of interest.
+
         prop : str
             A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
-
-        sets : [np.array(np.int)]
-            An iterable (typically a list) of numpy index arrays.
-
-        TODO - Added legend to KDE plot.
         """
         assert prop in self.fingerprints.keys(), "Not a valid prop, must be a fingerprint name."
-        data = [self.data[prop].loc[set_].to_numpy() for set_ in sets] #set_ to avoid shadowing set() method.
+        sets = {set_val : self.data[prop].loc[idxs] for set_val,idxs in self[set_].items()} #set_ to avoid shadowing set() method.
         if bins is None:
-            kernels = [gaussian_kde(datum) for datum in data]
-            positions = np.linspace(min([min(x) for x in data]),max([max(x) for x in data]),1000)
-            for kernel in kernels:
-                plt.plot(positions,kernel(positions))
+            kernels = []
+            positions = np.linspace(min([min(x) for x in sets.values()]),max([max(x) for x in sets.values()]),1000)
+            for set_val in sets.keys():
+                kernel = gaussian_kde(sets[set_val])
+                plt.plot(positions,kernel(positions),label=set_val)
                 plt.fill_between(positions,kernel(positions),alpha=0.3)
+                kernels.append(kernel)
         else:
             for datum in data:
                 plt.hist(datum,bins=bins)
 
         if title is None:
-            title = prop
+            title = f"{prop} Values for {set_} Sets"
+        plt.legend()
         plt.title(title)
         plt.xlabel(prop)
         return plt.gcf()
