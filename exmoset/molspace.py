@@ -56,8 +56,8 @@ class MolSpace():
         This will then be provided as keyword arguments to Molecule and given the particular mol as an argument.
         Molecule(mol, rdkit=Chem.MolFromSmiles(mol))
 
-    significance : float, default = 0.1
-        The default signifiance threshold used when calculating whether or not a particular label is significant.
+    sensitivity : float, default = 0.1
+        The default sensitivity threshold used when calculating whether or not a particular label is meaningful.
 
     index_col : str, default=None
         The column name for which column in the file contains the base molecule representation that will then be assigned to self.Molecules
@@ -74,7 +74,7 @@ class MolSpace():
                       file=None,
                       pandas_func=pd.read_csv,
                       mol_converters={},
-                      significance=0.1,
+                      sensitivity=0.1,
                       index_col=None,
                       clusters={},
                       label_types = ["binary","multiclass","continuous"]):
@@ -108,8 +108,9 @@ class MolSpace():
         for fp in tqdm.tqdm(fingerprints):
             self.data[fp.property] = self.map_fingerprint(fp.calculator,self.mol_iters[fp.mol_format])
 
-        print("Generating sets of molecules")
+        print("Generating Clusters")
         self.indices      = np.arange(len(self.data))
+        self.sensitivity  = sensitivity
         self.data         = self.data.set_index(self.indices)
         self.fingerprints = {**indexing_fingerprints, **{fp.property : fp for fp in fingerprints}}
         if clusters:
@@ -388,7 +389,12 @@ class MolSpace():
         for label, color in zip(plt.gca().get_xticklabels(),colors):
             label.set_color(color)
         plt.ylabel("Mutual Information",fontsize=30)
-        plt.plot(range(len(label_dict_sorted)), [x[1] for x in label_dict_sorted.values()], dashes=[6,2],color='k',label="Sensitivity")
+        #plt.plot(np.linspace(-0.5,len(label_dict_sorted)+0.5,num=100), [x[1] for x in label_dict_sorted.values()], dashes=[6,2],color='k',label="Sensitivity")
+        #plt.axhline(self.sensitivity,dashes=[6,2],color="k",label="Sensitivity")
+        y = [x.sensitivity for x in label_dict_sorted.values()]
+        xmin = [x-0.4 for x in range(len(label_dict_sorted))]
+        xmax = [x+0.4 for x in range(len(label_dict_sorted))]
+        plt.hlines(y,xmin,xmax,label="Sensitivity",color=meaningful)
         plt.legend()
         plt.tight_layout()
         plt.title(f"Mutual Information Analysis for {set_} Set")
@@ -430,12 +436,17 @@ class MolSpace():
 
         plt.bar(range(len(label_dict_sorted)), entropies, align="center",alpha=0.5,color="r")
         labels = [self.fingerprints[key].summary(*label_dict_sorted[key],unimportant_label=True) for key in label_dict_sorted]
-        colors = [not_meaningful if label_dict_sorted[label].sensitivity < label_dict_sorted[label].entropy else meaningful for label in labels ]
+        colors = [not_meaningful if label_dict_sorted[key].sensitivity < label_dict_sorted[key].entropy else meaningful for key in label_dict_sorted]
         plt.xticks(range(len(label_dict_sorted)), labels, rotation=45, ha='right')
         for label, color in zip(plt.gca().get_xticklabels(),colors):
             label.set_color(color)
         plt.ylabel("Entropy",fontsize=30)
-        plt.plot(range(len(label_dict_sorted)), [x[2] for x in label_dict_sorted.values()], dashes=[6,2],color='k',label="Sensitivity")
+        #plt.plot(np.linspace(-0.5,len(label_dict_sorted)+0.5,num=100), [x[2] for x in label_dict_sorted.values()], dashes=[6,2],color='k',label="Sensitivity")
+        y = [x[2] for x in label_dict_sorted.values()]
+        xmin = [x-0.4 for x in range(len(label_dict_sorted))]
+        xmax = [x+0.4 for x in range(len(label_dict_sorted))]
+        plt.hlines(y,xmin,xmax,label="Sensitivity",color=meaningful)
+        #plt.axhline(self.sensitivity,dashes=[6,2],color="k",label="Sensitivity")
         plt.legend()
         plt.tight_layout()
         plt.title(f"Entropy Analysis for {set_} with value {set_val}")
