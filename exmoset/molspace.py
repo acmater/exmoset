@@ -19,7 +19,7 @@ plt.style.use("exmoset/utils/light")
 from scipy.stats import gaussian_kde
 from sklearn.preprocessing import normalize
 from scipy.spatial import cKDTree
-from scipy.special import gamma, digamma
+from scipy.special import gamma, digamma, kl_div
 
 # Colour Configuration
 meaningful = "#3BB2E2"
@@ -355,6 +355,33 @@ class MolSpace():
         ax.legend()
         ax.set_xlabel(prop)
         return ax
+
+    def kl_div(self,set_,prop,symmetrised=True):
+        """
+        Calculates the kullbach Leibler divergence between two a set and its surrounding context for a particular property.
+
+        Parameters
+        ----------
+        set_ : str
+            A string to identify the cluster of interest.
+
+        prop : str
+            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
+        """
+        assert prop in self.fingerprints.keys(), "Not a valid prop, must be a fingerprint name."
+
+        x = self.data[prop].loc[self[set_][True]]
+        y = self.data[prop].loc[self[set_][False]]
+
+        kernel1 = gaussian_kde(x)
+        kernel2 = gaussian_kde(y)
+
+        positions = np.linspace(min(min(x),min(y)),10,1000)
+
+        if symmetrised:
+            return 0.5 * np.sum(kl_div(kernel1(positions),kernel2(positions))) + 0.5 * np.sum(kl_div(kernel2(positions),kernel1(positions)))
+        else:
+            return kl_div(kernel1(positions),kernel2(positions))
 
     def plot_mi(self,set_, props="all",ax=None):
         """
