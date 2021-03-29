@@ -83,7 +83,7 @@ class TestContinuousclassLabel(unittest.TestCase):
             analysis = MolSet(molecules4,
                             fingerprints = fingerprints,
                             mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
-                            significance=0.1,
+                            sensitivity=0.1,
                             file="exmoset/data/QM9_Data.csv")"""
 
 class TestMolFileSpace(unittest.TestCase):
@@ -102,7 +102,7 @@ class TestGetOutliers(unittest.TestCase):
         molspace = MolSpace(molecules=molecules2,
                         fingerprints = fingerprints,
                         mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
-                        significance=0.1)
+                        sensitivity=0.1)
         assert molspace.get_outliers(set_="Full") == np.array([5]), "Outlier identification is not working correctly."
 
 
@@ -111,7 +111,7 @@ class TestMolSpace(unittest.TestCase):
         space = MolSpace(fingerprints = fingerprints,
                          molecules=molecules3,
                          mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
-                         significance=0.1,
+                         sensitivity=0.1,
                          index_col="SMILES")
 
 class TestSpaceUpdating(unittest.TestCase):
@@ -121,7 +121,7 @@ class TestSpaceUpdating(unittest.TestCase):
         fp = Fingerprint(property="Conjugated",noun="Molecules",verb="are",label_type="binary",calculator=conjugated,mol_format="rd")
         filemolspace.add_fingerprint(fp)
         assert "Conjugated" in filemolspace.fingerprints.keys(), "Fingerprint no longer updating correctly."
-        
+
     def test_update_cluster(self):
         """
         Tests the update cluster function.
