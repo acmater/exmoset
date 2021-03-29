@@ -353,7 +353,7 @@ class MolSpace():
         plt.xlabel(prop)
         return plt.gcf()
 
-    def plot_mi(self,set_, props="all"):
+    def plot_mi(self,set_, props="all",ax=None):
         """
         Helper function to plot the mutual information (and its associated sensitivity) for each property of interest within the code.
 
@@ -382,25 +382,26 @@ class MolSpace():
         mis = [x.mi for x in label_dict_sorted.values()]
         mis = [x if x != np.inf else 1 for x in mis]
 
-        plt.bar(range(len(label_dict_sorted)), mis, align="center",alpha=0.5,color="r")
+        if ax is None:
+            ax = plt.gca()
+
+        ax.bar(range(len(label_dict_sorted)), mis, align="center",alpha=0.5,color="r")
         labels = [key for key in label_dict_sorted]
         colors = [not_meaningful if label_dict_sorted[label].sensitivity > label_dict_sorted[label].mi else meaningful for label in labels ]
-        plt.xticks(range(len(label_dict_sorted)), labels, rotation=45, ha='right')
-        for label, color in zip(plt.gca().get_xticklabels(),colors):
-            label.set_color(color)
-        plt.ylabel("Mutual Information",fontsize=30)
+        ax.set_xticks(range(len(label_dict_sorted)))
+        ax.set_xticklabels(labels,rotation=45, ha='right',color=colors)
+        ax.set_ylabel("Mutual Information",fontsize=30)
         #plt.plot(np.linspace(-0.5,len(label_dict_sorted)+0.5,num=100), [x[1] for x in label_dict_sorted.values()], dashes=[6,2],color='k',label="Sensitivity")
         #plt.axhline(self.sensitivity,dashes=[6,2],color="k",label="Sensitivity")
         y = [x.sensitivity for x in label_dict_sorted.values()]
         xmin = [x-0.4 for x in range(len(label_dict_sorted))]
         xmax = [x+0.4 for x in range(len(label_dict_sorted))]
-        plt.hlines(y,xmin,xmax,label="Sensitivity",color=meaningful)
-        plt.legend()
-        plt.tight_layout()
-        plt.title(f"Mutual Information Analysis for {set_} Set")
-        return plt.gcf()
+        ax.hlines(y,xmin,xmax,label="Sensitivity",color=meaningful)
+        ax.legend()
+        #ax.title(f"Mutual Information Analysis for {set_} Set")
+        return ax
 
-    def plot_entropy(self,set_ ,props="all",set_val=True):
+    def plot_entropy(self,set_ ,props="all",set_val=True,ax=None):
         """
         Helper function to plot the entropy (and its associated sensitivity) for each property of interest within the code.
 
@@ -425,6 +426,9 @@ class MolSpace():
         if props == "all":
             props = self.fingerprints.keys()
 
+        if ax is None:
+            ax = plt.gca()
+
         idxs = self[set_][set_val]
 
         Summary = namedtuple("Summary",["val","entropy","sensitivity"])
@@ -434,23 +438,21 @@ class MolSpace():
         entropies = [x.entropy for x in label_dict_sorted.values()]
         entropies = [x if x != np.inf else 1 for x in entropies]
 
-        plt.bar(range(len(label_dict_sorted)), entropies, align="center",alpha=0.5,color="r")
+        ax.bar(range(len(label_dict_sorted)), entropies, align="center",alpha=0.5,color="r")
         labels = [self.fingerprints[key].summary(*label_dict_sorted[key],unimportant_label=True) for key in label_dict_sorted]
         colors = [not_meaningful if label_dict_sorted[key].sensitivity < label_dict_sorted[key].entropy else meaningful for key in label_dict_sorted]
-        plt.xticks(range(len(label_dict_sorted)), labels, rotation=45, ha='right')
-        for label, color in zip(plt.gca().get_xticklabels(),colors):
-            label.set_color(color)
-        plt.ylabel("Entropy",fontsize=30)
+        ax.set_xticks(range(len(label_dict_sorted)))
+        ax.set_xticklabels(labels,rotation=45, ha='right',color=colors)
+        ax.set_ylabel("Entropy",fontsize=30)
         #plt.plot(np.linspace(-0.5,len(label_dict_sorted)+0.5,num=100), [x[2] for x in label_dict_sorted.values()], dashes=[6,2],color='k',label="Sensitivity")
         y = [x[2] for x in label_dict_sorted.values()]
         xmin = [x-0.4 for x in range(len(label_dict_sorted))]
         xmax = [x+0.4 for x in range(len(label_dict_sorted))]
-        plt.hlines(y,xmin,xmax,label="Sensitivity",color=meaningful)
+        ax.hlines(y,xmin,xmax,label="Sensitivity",color=meaningful)
         #plt.axhline(self.sensitivity,dashes=[6,2],color="k",label="Sensitivity")
-        plt.legend()
-        plt.tight_layout()
-        plt.title(f"Entropy Analysis for {set_} with value {set_val}")
-        return plt.gcf()
+        ax.legend()
+        #plt.title(f"Entropy Analysis for {set_} with value {set_val}")
+        return ax
 
     def calc_vector(self,set_,set_val=True):
         """
