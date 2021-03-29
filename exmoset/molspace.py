@@ -320,7 +320,7 @@ class MolSpace():
         plt.tight_layout()
         return plt.gcf()
 
-    def plot_kdes(self,set_,prop,title=None,*args,bins=None):
+    def plot_kdes(self,set_,prop,title=False,ax=None,*args,bins=None):
         """
         Generates the density plots for a particular property given different integers sets.
 
@@ -333,25 +333,28 @@ class MolSpace():
             A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
         """
         assert prop in self.fingerprints.keys(), "Not a valid prop, must be a fingerprint name."
+
+        if ax is None:
+            ax = plt.gca()
+
         sets = {set_val : self.data[prop].loc[idxs] for set_val,idxs in self[set_].items()} #set_ to avoid shadowing set() method.
         if bins is None:
             kernels = []
             positions = np.linspace(min([min(x) for x in sets.values()]),max([max(x) for x in sets.values()]),1000)
             for set_val in sets.keys():
                 kernel = gaussian_kde(sets[set_val])
-                plt.plot(positions,kernel(positions),label=set_val)
-                plt.fill_between(positions,kernel(positions),alpha=0.3)
+                ax.plot(positions,kernel(positions),label=self.fingerprints[set_].summary(val=set_val,entropy=0))
+                ax.fill_between(positions,kernel(positions),alpha=0.3)
                 kernels.append(kernel)
         else:
             for datum in data:
-                plt.hist(datum,bins=bins)
+                ax.hist(datum,bins=bins)
 
-        if title is None:
-            title = f"{prop} Values for {set_} Sets"
-        plt.legend()
-        plt.title(title)
-        plt.xlabel(prop)
-        return plt.gcf()
+        if title:
+            ax.title = f"{prop} Values for {set_} Sets"
+        ax.legend()
+        ax.set_xlabel(prop)
+        return ax
 
     def plot_mi(self,set_, props="all",ax=None):
         """
@@ -390,6 +393,8 @@ class MolSpace():
         colors = [not_meaningful if label_dict_sorted[label].sensitivity > label_dict_sorted[label].mi else meaningful for label in labels ]
         ax.set_xticks(range(len(label_dict_sorted)))
         ax.set_xticklabels(labels,rotation=45, ha='right',color=colors)
+        for label, color in zip(ax.get_xticklabels(),colors):
+            label.set_color(color)
         ax.set_ylabel("Mutual Information",fontsize=30)
         #plt.plot(np.linspace(-0.5,len(label_dict_sorted)+0.5,num=100), [x[1] for x in label_dict_sorted.values()], dashes=[6,2],color='k',label="Sensitivity")
         #plt.axhline(self.sensitivity,dashes=[6,2],color="k",label="Sensitivity")
@@ -397,7 +402,7 @@ class MolSpace():
         xmin = [x-0.4 for x in range(len(label_dict_sorted))]
         xmax = [x+0.4 for x in range(len(label_dict_sorted))]
         ax.hlines(y,xmin,xmax,label="Sensitivity",color=meaningful)
-        ax.legend()
+        #ax.legend()
         #ax.title(f"Mutual Information Analysis for {set_} Set")
         return ax
 
@@ -443,6 +448,8 @@ class MolSpace():
         colors = [not_meaningful if label_dict_sorted[key].sensitivity < label_dict_sorted[key].entropy else meaningful for key in label_dict_sorted]
         ax.set_xticks(range(len(label_dict_sorted)))
         ax.set_xticklabels(labels,rotation=45, ha='right',color=colors)
+        for label, color in zip(ax.get_xticklabels(),colors):
+            label.set_color(color)
         ax.set_ylabel("Entropy",fontsize=30)
         #plt.plot(np.linspace(-0.5,len(label_dict_sorted)+0.5,num=100), [x[2] for x in label_dict_sorted.values()], dashes=[6,2],color='k',label="Sensitivity")
         y = [x[2] for x in label_dict_sorted.values()]
