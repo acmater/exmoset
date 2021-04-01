@@ -6,5 +6,12 @@ template_fp = {"verb" : None,
                "calculator" : None,
                "mol_format" : "smiles"}
 
-def gen_fp(prop):
-    return Fingerprint(property=prop, **template_fp)
+mof_template = {"verb" : None,
+               "noun" :"MOFs",
+               "label_type" : "continuous",
+               "calculator" : None,
+               "mol_format" : "mofid"}
+
+
+def gen_fp(prop,template=template_fp):
+    return Fingerprint(property=prop, **template)

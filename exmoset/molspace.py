@@ -6,7 +6,7 @@ import tqdm
 import multiprocessing as mp
 
 from .molecule import Molecule
-from .fingerprints import gen_fp
+from .fingerprints import gen_fp, template_fp
 
 from math import log, e
 from collections import namedtuple
@@ -77,6 +77,7 @@ class MolSpace():
                       sensitivity=0.1,
                       index_col=None,
                       clusters={},
+                      template_fp=template_fp,
                       label_types = ["binary","multiclass","continuous"]):
 
         assert file is not None or molecules is not None, "Either a file or a list of molecules must be provided."
@@ -260,7 +261,7 @@ class MolSpace():
             ms.append(np.mean(digamma(m_i)))
         return digamma(N) + digamma(k) - np.mean(ms) - np.mean(Nxs)
 
-    def mi(self,set_, prop,k=3):
+    def mi(self,set_, prop,k=3,*args,**kwargs):
         """
         Helper function that calculates mutual information using the available methods
         depending on information available in the fingerprint.
@@ -268,9 +269,9 @@ class MolSpace():
         assert prop in self.fingerprints.keys(), "Not a valid prop, must be a fingerprint name."
 
         if self.fingerprints[prop].label_type == "continuous":
-            return self.mi_dc(self[set_].values(),prop)
+            return self.mi_dc(self[set_].values(),prop,k=k,*args,**kwargs)
         else:
-            return self.mi_dd(self[set_].values(),prop)
+            return self.mi_dd(self[set_].values(),prop,*args,**kwargs)
 
     def plot(self,set_,prop,set_val=0,title=None):
         """
