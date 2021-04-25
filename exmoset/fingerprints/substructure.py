@@ -6,7 +6,7 @@ import numpy as np
 from .fingerprint import Fingerprint
 from rdkit import Chem
 
-substructures = ["[CC]","[OH]","[NH2]"]
+substructures = ["[CC]","[OH]","[NH2]","*=O","*O*"]
 
 def contains(substructure):
     def sub_contains(mol):

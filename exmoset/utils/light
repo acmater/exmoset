@@ -108,7 +108,7 @@
 ## ***************************************************************************
 ## See https://matplotlib.org/api/artist_api.html#module-matplotlib.lines
 ## for more information on line properties.
-#lines.linewidth: 1.5               # line width in points
+#lines.linewidth: 2               # line width in points
 #lines.linestyle: -                 # solid line
 #lines.color:     C0                # has no affect on plot(); see axes.prop_cycle
 #lines.marker:          None        # the default marker
@@ -352,7 +352,7 @@
 ## https://matplotlib.org/api/axes_api.html#module-matplotlib.axes
 #axes.facecolor:     white   # axes background color
 axes.edgecolor:     black   # axes edge color
-#axes.linewidth:     0.8     # edge linewidth
+axes.linewidth:     1.5     # edge linewidth
 #axes.grid:          False   # display grid or not
 #axes.grid.axis:     both    # which axis the grid should apply to
 #axes.grid.which:    major   # gridlines at {major, minor, both} ticks
@@ -462,7 +462,7 @@ axes.spines.right:  False
 #xtick.major.pad:     3.5     # distance to major tick label in points
 #xtick.minor.pad:     3.4     # distance to the minor tick label in points
 xtick.color:         black   # color of the tick labels
-xtick.labelsize:     16 # fontsize of the tick labels
+xtick.labelsize:     20 # fontsize of the tick labels
 #xtick.direction:     out     # direction: {in, out, inout}
 #xtick.minor.visible: False   # visibility of minor ticks on x-axis
 #xtick.major.top:     True    # draw x axis top major ticks
@@ -482,7 +482,7 @@ xtick.labelsize:     16 # fontsize of the tick labels
 #ytick.major.pad:     3.5     # distance to major tick label in points
 #ytick.minor.pad:     3.4     # distance to the minor tick label in points
 ytick.color:         black   # color of the tick labels
-ytick.labelsize:     16  # fontsize of the tick labels
+ytick.labelsize:     20  # fontsize of the tick labels
 #ytick.direction:     out     # direction: {in, out, inout}
 #ytick.minor.visible: False   # visibility of minor ticks on y-axis
 #ytick.major.left:    True    # draw y axis left major ticks

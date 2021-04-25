@@ -68,5 +68,7 @@ All nouns are plural
 The following are the steps:
 
 1. Fix visual glitches in histogram plot functions
-2. Maybe add a mutual information sensititivity tolerance?
+2. I need a way to apply boolean logic to labels
+3. I also need a way to convert multiclass and continuous labels to boolean ones through relations (i.e < and >)
+4. Once I have done this I can comfortably produce composite labels that should resolve a lot of the problems I am battling.
 9. Update README.md to reflect changes to codebase.

@@ -102,7 +102,7 @@ class MolSpace():
         # I may want to replace this section with a pandas dataframe or something.
         self.Molecules = np.array(mols)
         # Generates the necessary iters for the fingerprint methods ahead of time and caches them.
-        self.mol_iters = {mol_type : [mol[mol_type] for mol in self.Molecules] for mol_type in self.Molecules[0].types}
+        self.mol_iters = {mol_type : np.array([mol[mol_type] for mol in self.Molecules]) for mol_type in self.Molecules[0].types}
 
         print("Calculating Properties")
         labels = {}
@@ -261,17 +261,21 @@ class MolSpace():
             ms.append(np.mean(digamma(m_i)))
         return digamma(N) + digamma(k) - np.mean(ms) - np.mean(Nxs)
 
-    def mi(self,set_, prop,k=3,*args,**kwargs):
+    def mi(self,set_, prop,set_val=0,k=3,*args,**kwargs):
         """
         Helper function that calculates mutual information using the available methods
         depending on information available in the fingerprint.
         """
         assert prop in self.fingerprints.keys(), "Not a valid prop, must be a fingerprint name."
 
+        idxs = self[set_][set_val]
+        complement = np.setdiff1d(self.indices,idxs)
+        set_complement = [idxs,complement]
+
         if self.fingerprints[prop].label_type == "continuous":
-            return self.mi_dc(self[set_].values(),prop,k=k,*args,**kwargs)
+            return self.mi_dc(set_complement,prop,k=k,*args,**kwargs)
         else:
-            return self.mi_dd(self[set_].values(),prop,*args,**kwargs)
+            return self.mi_dd(set_complement,prop,*args,**kwargs)
 
     def plot(self,set_,prop,set_val=0,title=None):
         """
@@ -325,6 +329,8 @@ class MolSpace():
         """
         Generates the density plots for a particular property given different integers sets.
 
+        # TODO Need to fix the summary generation so that new clusters can be used.
+
         Parameters
         ----------
         set_ : str
@@ -348,7 +354,7 @@ class MolSpace():
                 ax.fill_between(positions,kernel(positions),alpha=0.3)
                 kernels.append(kernel)
         else:
-            for datum in data:
+            for datum in sets.values():
                 ax.hist(datum,bins=bins)
 
         if title:
@@ -384,7 +390,7 @@ class MolSpace():
         else:
             return kl_div(kernel1(positions),kernel2(positions))
 
-    def plot_mi(self,set_, props="all",ax=None):
+    def plot_mi(self,set_, props="all",ax=None,set_val=0):
         """
         Helper function to plot the mutual information (and its associated sensitivity) for each property of interest within the code.
 
@@ -407,7 +413,7 @@ class MolSpace():
 
         Summary = namedtuple("Summary",["mi","sensitivity"])
 
-        label_dict_sorted    = {key : Summary(self.mi(set_,key),self.fingerprints[key].sensitivity) for key in props}
+        label_dict_sorted    = {key : Summary(self.mi(set_,key,set_val=set_val),self.fingerprints[key].sensitivity) for key in props}
         label_dict_sorted    = {key : val for key, val in sorted(label_dict_sorted.items(), key=lambda item: item[1][0])}
 
         mis = [x.mi for x in label_dict_sorted.values()]
