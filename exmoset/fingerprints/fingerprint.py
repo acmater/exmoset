@@ -80,10 +80,5 @@ class Fingerprint():
         elif "contain" in string:
             return string.replace("contain", "do not contain")
 
-if __name__ == "__main__":
-    a = Fingerprint(property="Contains C",
-                    noun="molecule",
-                    label_type="binary",
-                    calculator="add",
-                    mol_format="smiles")
-    print(a)
+    def to_binary(self,val,comp="<"):
+        return f"{self.noun} have a {self.property} {dictionary[comp]} {val}"
