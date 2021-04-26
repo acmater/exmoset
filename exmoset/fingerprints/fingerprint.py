@@ -50,7 +50,7 @@ class Fingerprint():
 
     def summary(self,val,entropy,sensitivity=None,unimportant_label=False):
         """
-        A binary label summary.
+        A label summary.
 
         Grammatical Structure
         <noun> <verb> <property>

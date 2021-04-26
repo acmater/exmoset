@@ -121,7 +121,8 @@ class MolSpace():
 
     @staticmethod
     def map_fingerprint(func,mol_iter):
-        return list(map(func,mol_iter))
+        """ Helper function that maps a fingerprint across its associated mol_iter """
+        return list(map(func,tqdm.tqdm(mol_iter)))
 
     @staticmethod
     def c_H(values,k=10,norm="euclidean",min_dist=0.001):
@@ -231,7 +232,7 @@ class MolSpace():
         """
         if labels is None:
             labels = self.data[prop]
-        max_val = int(max([max(labels[set_]) for set_ in sets]))
+        max_val = int(np.max([np.max(labels[set_]) for set_ in sets]))
         if max_val < 1:
             max_val = 1
         contingency = np.array([np.bincount(labels[set_],minlength=max_val+1) for set_ in sets])
@@ -251,7 +252,7 @@ class MolSpace():
         else:
             return total
 
-    def mi_dc(self,sets,prop,k=3):
+    def mi_dc(self,sets,prop,labels=None,k=3):
         """
         Calculates the mutual information for a discrete number of sets and a continuous
         label, hence mutual information - discrete continuous.
@@ -271,6 +272,9 @@ class MolSpace():
 
         # Check that there are no errors in this plot.
         """
+        if labels is not None:
+            return self.mi_dd(sets,prop,labels)
+
         N = len(self.data)
         full = cKDTree(self.data[prop].to_numpy().reshape(-1,1))
         Nxs = []
