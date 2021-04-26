@@ -193,7 +193,23 @@ class MolSpace():
         else:
             return self.d_H(self.data[prop].loc[set_idxs])
 
-    def mi_dd(self,sets,prop,return_contingency=False):
+    def mi(self,set_, prop,set_val=0,k=3,*args,**kwargs):
+        """
+        Helper function that calculates mutual information using the available methods
+        depending on information available in the fingerprint.
+        """
+        assert prop in self.fingerprints.keys(), "Not a valid prop, must be a fingerprint name."
+
+        idxs = self[set_][set_val]
+        complement = np.setdiff1d(self.indices,idxs)
+        set_complement = [idxs,complement]
+
+        if self.fingerprints[prop].label_type == "continuous":
+            return self.mi_dc(set_complement,prop,k=k,*args,**kwargs)
+        else:
+            return self.mi_dd(set_complement,prop,*args,**kwargs)
+
+    def mi_dd(self,sets,prop,labels=None,return_contingency=False):
         """
         Mutual information for a discrete - discrete mixture.
 
@@ -206,11 +222,19 @@ class MolSpace():
 
         sets : [np.array(np.int)]
             An iterable (typically a list) of numpy index arrays.
+
+        labels : np.array, default=None
+            A custom label array to use when calculating the mutual information.
+
+        return_contingency : bool, default=False
+            Whether or not to return the contingency matrix.
         """
-        max_val = int(max([max(self.data[prop].loc[set_]) for set_ in sets]))
+        if labels is None:
+            labels = self.data[prop]
+        max_val = int(max([max(labels[set_]) for set_ in sets]))
         if max_val < 1:
             max_val = 1
-        contingency = np.array([np.bincount(self.data[prop].loc[set_],minlength=max_val+1) for set_ in sets])
+        contingency = np.array([np.bincount(labels[set_],minlength=max_val+1) for set_ in sets])
 
         total = 0
         N = np.sum(contingency)
@@ -260,22 +284,6 @@ class MolSpace():
             Nxs.append(digamma(N_xi))
             ms.append(np.mean(digamma(m_i)))
         return digamma(N) + digamma(k) - np.mean(ms) - np.mean(Nxs)
-
-    def mi(self,set_, prop,set_val=0,k=3,*args,**kwargs):
-        """
-        Helper function that calculates mutual information using the available methods
-        depending on information available in the fingerprint.
-        """
-        assert prop in self.fingerprints.keys(), "Not a valid prop, must be a fingerprint name."
-
-        idxs = self[set_][set_val]
-        complement = np.setdiff1d(self.indices,idxs)
-        set_complement = [idxs,complement]
-
-        if self.fingerprints[prop].label_type == "continuous":
-            return self.mi_dc(set_complement,prop,k=k,*args,**kwargs)
-        else:
-            return self.mi_dd(set_complement,prop,*args,**kwargs)
 
     def plot(self,set_,prop,set_val=0,title=None):
         """
