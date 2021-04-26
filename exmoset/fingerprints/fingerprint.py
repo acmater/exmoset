@@ -75,6 +75,8 @@ class Fingerprint():
                 return f"{self.noun} share a similar {self.property} centred around {val:.4f}"
         elif unimportant_label:
             return f"{self.property} not meaningful"
+        else:
+            return f"{self.property} not conisdered"
 
     @staticmethod
     def neg(string):
@@ -82,6 +84,10 @@ class Fingerprint():
             return string.replace("are", "are not")
         elif "contain" in string:
             return string.replace("contain", "do not contain")
+        elif "has a" in string:
+            return string.replace("has a", "does not have a")
+        else:
+            raise ValueError("The verb to be substituted is not currently implemented, please add.")
 
     def to_binary(self,val,comp="<"):
         """
