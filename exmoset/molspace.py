@@ -122,7 +122,7 @@ class MolSpace():
     @staticmethod
     def map_fingerprint(func,mol_iter):
         """ Helper function that maps a fingerprint across its associated mol_iter """
-        return list(map(func,tqdm.tqdm(mol_iter)))
+        return list(map(func,mol_iter))
 
     @staticmethod
     def c_H(values,k=10,norm="euclidean",min_dist=0.001):

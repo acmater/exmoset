@@ -1,3 +1,6 @@
+dictionary = {"<" : "less than",
+              ">" : "greater than"}
+
 class Fingerprint():
     """
     Fingerprint that describes a particular property in accordance with a set of properties
