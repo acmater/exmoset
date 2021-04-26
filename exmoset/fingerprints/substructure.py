@@ -9,8 +9,9 @@ from rdkit import Chem
 substructures = ["[CC]","[OH]","[NH2]","*=O","*O*"]
 
 def contains(substructure):
+    match = Chem.MolFromSmarts(substructure)
     def sub_contains(mol):
-        return int(mol.HasSubstructMatch(Chem.MolFromSmarts(substructure)))
+        return int(mol.HasSubstructMatch(Chem.MolFromSmarts(match)))
     return sub_contains
 
 substructure_fingerprints = []

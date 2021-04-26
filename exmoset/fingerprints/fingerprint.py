@@ -1,5 +1,6 @@
 dictionary = {"<" : "less than",
-              ">" : "greater than"}
+              ">" : "greater than",
+              ">=" : "greater or equal than"}
 
 class Fingerprint():
     """
@@ -26,10 +27,10 @@ class Fingerprint():
     """
     def __init__(self,property,
                       verb,
-                      noun,
                       label_type,
                       calculator,
                       mol_format,
+                      noun="Molecules",
                       sensitivity=0.1):
         assert label_type in ["binary", "multiclass","continuous"], "Not a valid label type."
         self.property    = property
@@ -64,12 +65,11 @@ class Fingerprint():
         if not sensitivity:
             sensitivity = self.sensitivity
         if entropy < sensitivity:
-
             if self.label_type == "binary":
                 description = f"{self.noun} {self.verb} {self.property}"
                 return description if val > 0.5 else self.neg(description)
             elif self.label_type == "multiclass":
-                description = f"{self.noun} {self.verb} {val} {self.property}"
+                description = f"{self.noun} {self.verb} {int(val)} {self.property}"
                 return description
             else:
                 return f"{self.noun} share a similar {self.property} centred around {val:.4f}"
@@ -84,4 +84,7 @@ class Fingerprint():
             return string.replace("contain", "do not contain")
 
     def to_binary(self,val,comp="<"):
-        return f"{self.noun} have a {self.property} {dictionary[comp]} {val}"
+        """
+        Converts a non-binary label to a binary one by using a comparison decision boundary, defaults to <.
+        """
+        return f"{self.noun} {self.verb} {self.property} {dictionary[comp]} {val}"

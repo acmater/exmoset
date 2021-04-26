@@ -20,6 +20,7 @@ from scipy.stats import gaussian_kde
 from sklearn.preprocessing import normalize
 from scipy.spatial import cKDTree
 from scipy.special import gamma, digamma, kl_div
+from scipy.optimize import dual_annealing
 
 # Colour Configuration
 meaningful = "#3BB2E2"
@@ -100,7 +101,7 @@ class MolSpace():
             mols.append(Molecule(mol, **formats))
 
         # I may want to replace this section with a pandas dataframe or something.
-        self.Molecules = np.array(mols)
+        self.Molecules = np.array(mols,dtype=np.object)
         # Generates the necessary iters for the fingerprint methods ahead of time and caches them.
         self.mol_iters = {mol_type : np.array([mol[mol_type] for mol in self.Molecules]) for mol_type in self.Molecules[0].types}
 
@@ -548,6 +549,63 @@ class MolSpace():
         """
         return np.where(np.sum((self.data.loc[self[set_][set_val]].to_numpy() - self.calc_vector(set_)[0]),axis=1) > 0.5) # Need to update distance formulation
 
+    def cost_generator(self,set_,prop,set_val,func="mi"):
+        """
+        Helper function that returns a function that can be used to optimise the information split.
+
+        Parameters
+        ----------
+        set_ : str
+            A string to identify the cluster of interest.
+
+        prop : str, default="all"
+            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
+            If "all" is provided it will use every fingerprint in the code.
+
+        set_val : str, default=None
+            The specific value for the set that you want to consider, defaults to True, i.e consider the set and not its complement.
+            Note that for sets with multiple integers this is equivalent to defaulting to 1.
+
+        func : function, default=self.mi
+            The function that the arguments will be passed to when calculating the cost (usually mutual information).
+        """
+        if func == "mi":
+            return np.vectorize(lambda x: -self.mi(set_, prop, set_val, labels=np.array(self.data[prop] >= float(x))))
+        else:
+            return np.vectorize(lambda x: -self.ent(set_, prop, set_val, labels=np.array(self.data[prop] >= float(x))))
+
+    def gen_labels(self,cluster):
+        """
+        Method that generates labels for every subcluster within a particular clustering of the data
+
+        Parameters
+        ----------
+        cluster : str
+            The string identifier for a particular clustering of the space.
+        """
+        for set_val,idxs in self[cluster].items():
+            mis  = np.zeros((len(self[set_]),len(self.fingerprints)))
+            ents = np.zeros_like(mis)
+            """for fp in self.fingerprints.values():
+                idxs = self[set_][set_val]
+                mi = self.mi(set_,fp.property,set_val=set_val)
+                ent = self.entropy(idxs,fp.property)
+                labels = self.data[fp.property].loc[idxs]
+                if mi > 0.05:
+                    if ent < (fp.sensitivity+0.1):
+                        print(fp.summary(int(np.mean(labels)),ent,fp.sensitivity+0.1))
+                    else:
+                        if fp.label_type == "binary":
+                            print(fp.summary(np.mean(labels),ent,sensitivity=1))
+                        elif fp.label_type == "continuous":
+                            split = float(dual_annealing(cost_generator(self,set_,fp.property,set_val=set_val),bounds=np.array([[0,40]]),maxiter=250)["x"])
+                            print(fp.to_binary(split,"<" if split > np.mean(self.data.loc[self[set_][set_val]][fp.property]) else ">"))
+                        else:
+                            iterable = np.array(range(*bounds))
+                            split = iterable[np.argmin(np.apply_along_axis(cost_generator(self,set_,fp.property,set_val=set_val), 0, iterable))]
+                            print(fp.to_binary(split,"<" if split > np.mean(self.data.loc[self[set_][set_val]][fp.property]) else ">"))"""
+
+
     def gen_clusters(self,indices):
         """
         Uses an array of indexes to generate the clusters by either breaking them into individual
@@ -596,3 +654,6 @@ class MolSpace():
 
     def __getitem__(self,idx):
         return self.clusters[idx]
+
+    def __len__(self):
+        return len(self.Molecules)
