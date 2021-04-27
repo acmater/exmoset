@@ -9,6 +9,7 @@ from .molecule import Molecule
 from .fingerprints import gen_fp, template_fp
 
 from math import log, e
+import operator
 from collections import namedtuple
 from functools import reduce
 from itertools import combinations
@@ -551,31 +552,6 @@ class MolSpace():
         """
         return np.where(np.sum((self.data.loc[self[set_][set_val]].to_numpy() - self.calc_vector(set_)[0]),axis=1) > 0.5) # Need to update distance formulation
 
-    def cost_generator(self,set_,prop,set_val,func="mi"):
-        """
-        Helper function that returns a function that can be used to optimise the information split.
-
-        Parameters
-        ----------
-        set_ : str
-            A string to identify the cluster of interest.
-
-        prop : str, default="all"
-            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
-            If "all" is provided it will use every fingerprint in the code.
-
-        set_val : str, default=None
-            The specific value for the set that you want to consider, defaults to True, i.e consider the set and not its complement.
-            Note that for sets with multiple integers this is equivalent to defaulting to 1.
-
-        func : function, default=self.mi
-            The function that the arguments will be passed to when calculating the cost (usually mutual information).
-        """
-        if func == "mi":
-            return np.vectorize(lambda x: -self.mi(set_, prop, set_val, labels=np.array(self.data[prop] >= float(x))))
-        else:
-            return np.vectorize(lambda x: -self.ent(set_, prop, set_val, labels=np.array(self.data[prop] >= float(x))))
-
     def gen_labels(self,set_,mi_cutoff=0.005):
         """
         Method that generates labels for every subcluster within a particular clustering of the data
@@ -653,9 +629,39 @@ class MolSpace():
 
         return summaries
 
-# Import operator and use that
-    def cost_generator(self, set_, prop, set_val):
-        return np.vectorize(lambda x: -self.mi(set_, prop, set_val=set_val, labels=np.array(self.data[prop] >= float(x))))
+    def cost_generator(self,set_,prop,set_val,func="mi",op=operator.ge):
+        """
+        Helper function that returns a function that can be used to optimise the information split.
+        The cost functions return a lambda function that calculates the mutual information of a new label vector
+        produced by comparing the label vector (self.data[prop]) to a cutoff point (x) that is going to be optimized.
+
+        The floating value x determines the binary split through the multiclass or continuous label, transforming it
+        into a dichotomous formulation. These lambda functions are then used to optimize the position of this split
+        either by brute force (multiclass) or simulated annealing (continuous).
+
+        Parameters
+        ----------
+        set_ : str
+            A string to identify the cluster of interest.
+
+        prop : str, default="all"
+            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
+            If "all" is provided it will use every fingerprint in the code.
+
+        set_val : str, default=None
+            The specific value for the set that you want to consider, defaults to True, i.e consider the set and not its complement.
+            Note that for sets with multiple integers this is equivalent to defaulting to 1.
+
+        func : str, ["mi", "ent", "entropy"], default="mi"
+            The function that the arguments will be passed to when calculating the cost (usually mutual information).
+
+        op : function _operator, default=operator.ge
+            The operator that will be used to compare the decision boundary (float value) and the numpy label array.
+        """
+        if func == "mi":
+            return np.vectorize(lambda x: -self.mi(set_, prop, set_val, labels=np.array(op(self.data[prop],float(x)))))
+        else:
+            return np.vectorize(lambda x: -self.ent(set_, prop, set_val, labels=np.array(op(self.data[prop],float(x)))))
 
     def gen_clusters(self,indices):
         """
