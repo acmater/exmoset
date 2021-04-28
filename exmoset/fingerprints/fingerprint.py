@@ -2,6 +2,10 @@ dictionary = {"<" : "less than",
               ">" : "greater than",
               ">=" : "greater or equal than"}
 
+structure_dictionary = {"*=O"   : "Carbonyls",
+                        "[NH2]" : "Primary Amines",
+                        "*O*"   : "Ether"}
+
 class Fingerprint():
     """
     Fingerprint that describes a particular property in accordance with a set of properties

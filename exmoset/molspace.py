@@ -703,6 +703,14 @@ class MolSpace():
         """
         self.clusters[cluster[0]] = self.gen_clusters(cluster[1])
 
+    def mol_sample(self,set_,set_val=0,num_mols=16):
+        """
+        Function that randomly generates a sample of molecules from a particular cluster.
+        """
+        total_mols = len(self[set_][set_val])
+        mols = self.mol_iters["rd"][self[set_][set_val]][np.random.randint(0,total_mols,size=(num_mols,))]
+        return Chem.Draw.MolsToGridImage(mols,molsPerRow=4,subImgSize=(200,200))#,legends=[x.GetProp("_Name") for x in subms])
+
     def add_fingerprint(self,fp):
         """
         Helper function to add a new fingerprint to the fingerprints object and map its values into self.data.
