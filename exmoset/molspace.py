@@ -9,12 +9,15 @@ from .molecule import Molecule
 from .fingerprints import gen_fp, template_fp
 
 from math import log, e
+import operator
 from collections import namedtuple
+from functools import reduce
+from itertools import combinations
 
 from entropy_estimators import continuous
 
 import matplotlib.pyplot as plt
-plt.style.use("exmoset/utils/light")
+#plt.style.use("exmoset/utils/light")
 
 from scipy.stats import gaussian_kde
 from sklearn.preprocessing import normalize
@@ -549,9 +552,101 @@ class MolSpace():
         """
         return np.where(np.sum((self.data.loc[self[set_][set_val]].to_numpy() - self.calc_vector(set_)[0]),axis=1) > 0.5) # Need to update distance formulation
 
-    def cost_generator(self,set_,prop,set_val,func="mi"):
+    def gen_labels(self,set_,mi_cutoff=0.005):
+        """
+        Method that generates labels for every subcluster within a particular clustering of the data
+
+        Parameters
+        ----------
+        set_ : str
+            The string identifier for a particular clustering of the space.
+        """
+        summaries = {}
+        for set_val,idxs in tqdm.tqdm(self[set_].items()):
+            fingerprints = []
+            binary_labels = []
+            mis = np.zeros((len(self.fingerprints,)))
+            ents = np.zeros_like(mis)
+            for i,fp in enumerate(self.fingerprints.values()):
+                mis[i] = self.mi(set_,fp.property,set_val=set_val)
+                ents[i] = self.entropy(idxs,fp.property)
+                labels = self.data[fp.property].loc[idxs]
+                bounds = (np.min(labels),np.max(labels))
+                mi = self.mi(set_,fp.property,set_val=set_val)
+                ent = self.entropy(idxs,fp.property)
+
+                if mi > mi_cutoff:
+                    if ent < (fp.sensitivity):
+                        if fp.label_type == "continuous":
+                            u = np.mean(labels)
+                            var = np.variance(labels)
+                            binary_labels.append(((u - 0.1*var) < self.data[fp.property] < (u + 0.1*var)).to_numpy())
+                            fingerprints.append(fp.summary(u,entropy=ent))
+                        else:
+                            binary_labels.append((self.data[fp.property] == round(np.mean(labels))).to_numpy())
+                            fingerprints.append(fp.summary(round(np.mean(labels)),ent,fp.sensitivity+0.1))
+                    else:
+                        if fp.label_type == "binary":
+                            binary_labels.append((self.data[fp.property] == round(np.mean(labels))).to_numpy())
+                            fingerprints.append(fp.summary(np.mean(labels),ent,sensitivity=1))
+                            continue
+
+                        elif fp.label_type == "continuous":
+                            split = float(dual_annealing(self.cost_generator(set_,fp.property,set_val=set_val),bounds=np.array([*bounds]),maxiter=250)["x"])
+                        else:
+                            iterable = np.array(range(*bounds))
+                            split = iterable[np.argmin(np.apply_along_axis(self.cost_generator(set_,fp.property,set_val=set_val), 0, iterable))]
+
+                        if split > np.mean(self.data.loc[idxs][fp.property]):
+                            fingerprints.append(fp.to_binary(split,"<"))
+                            binary_labels.append((self.data[fp.property] < split).to_numpy())
+                        else:
+                            fingerprints.append(fp.to_binary(split,">"))
+                            binary_labels.append((self.data[fp.property] >= split).to_numpy())
+
+            # To do - alter this optimizer so that it doesn't brute force it.
+            if len(binary_labels) > 1:
+                num_options = len(binary_labels)
+                binary_labels = np.array(binary_labels)
+
+                idxs = []
+                for i in range(1,num_options+1):
+                    idxs.append(list(combinations(list(range(num_options)),i))) # Generate all possible permutations
+                idxs = [item for sublist in idxs for item in sublist] # Flatten the list of lists
+                mut_infs = []
+                for idx in idxs: # Iterate over possible label combinations
+                    current_label = reduce(np.logical_and, binary_labels[tuple([idx])])
+                    mut_infs.append(self.mi(set_,"Rings",set_val=set_val,labels=current_label))
+
+                summary = [fingerprints[x] for x in idxs[np.argmax(mut_infs)]] # Isolate the fingerprint summaries for each index is the argmax collection
+                summaries[set_val] = "\n\t".join(summary) + (f"\n\tMutual Information {np.max(mut_infs)}")
+
+            elif len(binary_labels) == 1:
+                summaries[set_val] = "".join(fingerprints) + (f"\n\tMutual Information {np.max(mis)}") # Don't try and iterate over label comnbinations if there is only one.
+
+            else:
+                summaries[set_val] = ("No Meaningful Label")
+
+        return summaries
+
+    def label_summary(self,set_,*args):
+        """
+        Helper function that prints out the summary labels generated by gen_labels.
+        """
+        summaries = self.gen_labels(set_, *args)
+        for set_val,summary in enumerate(summaries.items()):
+            print(f"Cluster {set_val}: \n\t{summary}")
+        return None
+
+    def cost_generator(self,set_,prop,set_val,func="mi",op=operator.ge):
         """
         Helper function that returns a function that can be used to optimise the information split.
+        The cost functions return a lambda function that calculates the mutual information of a new label vector
+        produced by comparing the label vector (self.data[prop]) to a cutoff point (x) that is going to be optimized.
+
+        The floating value x determines the binary split through the multiclass or continuous label, transforming it
+        into a dichotomous formulation. These lambda functions are then used to optimize the position of this split
+        either by brute force (multiclass) or simulated annealing (continuous).
 
         Parameters
         ----------
@@ -566,45 +661,16 @@ class MolSpace():
             The specific value for the set that you want to consider, defaults to True, i.e consider the set and not its complement.
             Note that for sets with multiple integers this is equivalent to defaulting to 1.
 
-        func : function, default=self.mi
+        func : str, ["mi", "ent", "entropy"], default="mi"
             The function that the arguments will be passed to when calculating the cost (usually mutual information).
+
+        op : function _operator, default=operator.ge
+            The operator that will be used to compare the decision boundary (float value) and the numpy label array.
         """
         if func == "mi":
-            return np.vectorize(lambda x: -self.mi(set_, prop, set_val, labels=np.array(self.data[prop] >= float(x))))
+            return np.vectorize(lambda x: -self.mi(set_, prop, set_val, labels=np.array(op(self.data[prop],float(x)))))
         else:
-            return np.vectorize(lambda x: -self.ent(set_, prop, set_val, labels=np.array(self.data[prop] >= float(x))))
-
-    def gen_labels(self,cluster):
-        """
-        Method that generates labels for every subcluster within a particular clustering of the data
-
-        Parameters
-        ----------
-        cluster : str
-            The string identifier for a particular clustering of the space.
-        """
-        for set_val,idxs in self[cluster].items():
-            mis  = np.zeros((len(self[set_]),len(self.fingerprints)))
-            ents = np.zeros_like(mis)
-            """for fp in self.fingerprints.values():
-                idxs = self[set_][set_val]
-                mi = self.mi(set_,fp.property,set_val=set_val)
-                ent = self.entropy(idxs,fp.property)
-                labels = self.data[fp.property].loc[idxs]
-                if mi > 0.05:
-                    if ent < (fp.sensitivity+0.1):
-                        print(fp.summary(int(np.mean(labels)),ent,fp.sensitivity+0.1))
-                    else:
-                        if fp.label_type == "binary":
-                            print(fp.summary(np.mean(labels),ent,sensitivity=1))
-                        elif fp.label_type == "continuous":
-                            split = float(dual_annealing(cost_generator(self,set_,fp.property,set_val=set_val),bounds=np.array([[0,40]]),maxiter=250)["x"])
-                            print(fp.to_binary(split,"<" if split > np.mean(self.data.loc[self[set_][set_val]][fp.property]) else ">"))
-                        else:
-                            iterable = np.array(range(*bounds))
-                            split = iterable[np.argmin(np.apply_along_axis(cost_generator(self,set_,fp.property,set_val=set_val), 0, iterable))]
-                            print(fp.to_binary(split,"<" if split > np.mean(self.data.loc[self[set_][set_val]][fp.property]) else ">"))"""
-
+            return np.vectorize(lambda x: -self.ent(set_, prop, set_val, labels=np.array(op(self.data[prop],float(x)))))
 
     def gen_clusters(self,indices):
         """
