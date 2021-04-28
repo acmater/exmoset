@@ -93,4 +93,7 @@ class Fingerprint():
         """
         Converts a non-binary label to a binary one by using a comparison decision boundary, defaults to <.
         """
-        return f"{self.noun} {self.verb} {self.property} {dictionary[comp]} {val}"
+        if self.label_type == "multiclass":
+            return f"{self.noun} {self.verb} {dictionary[comp]} {val}  {self.property}"
+        else:
+            return f"{self.noun} {self.verb} {self.property} {dictionary[comp]} {val}"
