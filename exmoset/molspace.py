@@ -571,7 +571,7 @@ class MolSpace():
                 mis[i] = self.mi(set_,fp.property,set_val=set_val)
                 ents[i] = self.entropy(idxs,fp.property)
                 labels = self.data[fp.property].loc[idxs]
-                bounds = (np.min(labels),np.max(labels))
+                bounds = np.array([np.min(labels),np.max(labels)])
                 mi = self.mi(set_,fp.property,set_val=set_val)
                 ent = self.entropy(idxs,fp.property)
 
@@ -592,7 +592,7 @@ class MolSpace():
                             continue
 
                         elif fp.label_type == "continuous":
-                            split = float(dual_annealing(self.cost_generator(set_,fp.property,set_val=set_val),bounds=np.array([*bounds]),maxiter=250)["x"])
+                            split = float(dual_annealing(self.cost_generator(set_,fp.property,set_val=set_val),bounds=bounds.reshape(1,2),maxiter=250)["x"])
                         else:
                             iterable = np.array(range(*bounds))
                             split = iterable[np.argmin(np.apply_along_axis(self.cost_generator(set_,fp.property,set_val=set_val), 0, iterable))]

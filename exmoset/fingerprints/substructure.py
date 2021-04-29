@@ -6,7 +6,17 @@ import numpy as np
 from .fingerprint import Fingerprint
 from rdkit import Chem
 
-substructures = ["[CC]","[OH]","[NH2]","*=O","*O*"]
+# Location that substructures are drawn from - https://daylight.com/dayhtml_tutorials/languages/smarts/smarts_examples.html
+
+substructures = ['*=O',
+                 '[NX3;H2,H1,H0;!$(NC=O)]',
+                 '[OX2H]',
+                 '*O*',
+                 '[OD2]([#6])[#6]',
+                 'C#N',
+                 '[CX3](=O)[OX2H1]',
+                 '[$([CX3]=[OX1]),$([CX3+]-[OX1-])]',
+                 '[NX3][CX3](=[OX1])[#6]']
 
 def contains(substructure):
     match = Chem.MolFromSmarts(substructure)
