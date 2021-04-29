@@ -366,7 +366,7 @@ class MolSpace():
             positions = np.linspace(min([min(x) for x in sets.values()]),max([max(x) for x in sets.values()]),1000)
             for set_val in sets.keys():
                 kernel = gaussian_kde(sets[set_val])
-                ax.plot(positions,kernel(positions),label=self.fingerprints[set_].summary(val=set_val,entropy=0))
+                ax.plot(positions,kernel(positions),label=self.fingerprints[prop].summary(val=set_val,entropy=0))
                 ax.fill_between(positions,kernel(positions),alpha=0.3)
                 kernels.append(kernel)
         else:
