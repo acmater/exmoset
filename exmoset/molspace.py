@@ -284,13 +284,14 @@ class MolSpace():
         Nxs = []
         ms = []
         for set_ in sets:
-            label_data = self.data[prop].loc[set_].to_numpy().reshape(-1,1)
-            N_xi = len(label_data)
-            labeltree = cKDTree(label_data)
+            label_data   = self.data[prop].loc[set_].to_numpy().reshape(-1,1)
+            N_xi         = len(label_data)
+            labeltree    = cKDTree(label_data)
             distances, _ = labeltree.query(label_data,k=k)
-            m_i = full.query_ball_point(label_data,distances[:,-1],return_length=True)
+            m_i          = full.query_ball_point(label_data,distances[:,-1],return_length=True)
             Nxs.append(digamma(N_xi))
-            ms.append(np.mean(digamma(m_i)))
+            ms.append(digamma(m_i))
+        ms = np.concatenate(ms)
         return digamma(N) + digamma(k) - np.mean(ms) - np.mean(Nxs)
 
     def plot(self,set_,prop,set_val=0,title=None):
@@ -406,7 +407,7 @@ class MolSpace():
         else:
             return kl_div(kernel1(positions),kernel2(positions))
 
-    def plot_mi(self,set_, props="all",ax=None,set_val=0):
+    def plot_mi(self,set_, props="all",ax=None,set_val=0,k=3):
         """
         Helper function to plot the mutual information (and its associated sensitivity) for each property of interest within the code.
 
@@ -429,7 +430,7 @@ class MolSpace():
 
         Summary = namedtuple("Summary",["mi","sensitivity"])
 
-        label_dict_sorted    = {key : Summary(self.mi(set_,key,set_val=set_val),self.fingerprints[key].sensitivity) for key in props}
+        label_dict_sorted    = {key : Summary(self.mi(set_,key,set_val=set_val,k=k),self.fingerprints[key].sensitivity) for key in props}
         label_dict_sorted    = {key : val for key, val in sorted(label_dict_sorted.items(), key=lambda item: item[1][0])}
 
         mis = [x.mi for x in label_dict_sorted.values()]
