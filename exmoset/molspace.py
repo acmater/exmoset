@@ -203,12 +203,13 @@ class MolSpace():
         Helper function that calculates mutual information using the available methods
         depending on information available in the fingerprint.
         """
-        assert prop in self.fingerprints.keys(), "Not a valid prop, must be a fingerprint name."
+        assert prop in self.fingerprints.keys() or prop == "Labels_Provided", "Not a valid prop, must be a fingerprint name."
 
         idxs = self[set_][set_val]
         complement = np.setdiff1d(self.indices,idxs)
         set_complement = [idxs,complement]
-
+        if prop == "Labels_Provided":
+            return self.mi_dd(set_complement,prop,*args,**kwargs)
         if self.fingerprints[prop].label_type == "continuous":
             return self.mi_dc(set_complement,prop,k=k,*args,**kwargs)
         else:
@@ -342,7 +343,7 @@ class MolSpace():
         plt.tight_layout()
         return plt.gcf()
 
-    def plot_kdes(self,set_,prop,title=False,ax=None,*args,bins=None):
+    def plot_kdes(self,set_,prop,title=False,ax=None,*args,alpha=(1,0.3),bins=None,**kwargs):
         """
         Generates the density plots for a particular property given different integers sets.
 
@@ -367,8 +368,8 @@ class MolSpace():
             positions = np.linspace(min([min(x) for x in sets.values()]),max([max(x) for x in sets.values()]),1000)
             for set_val in sets.keys():
                 kernel = gaussian_kde(sets[set_val])
-                ax.plot(positions,kernel(positions),label=self.fingerprints[prop].summary(val=set_val,entropy=0))
-                ax.fill_between(positions,kernel(positions),alpha=0.3)
+                ax.plot(positions,kernel(positions),label=self.fingerprints[prop].summary(val=set_val,entropy=0),alpha=alpha[0])
+                ax.fill_between(positions,kernel(positions),alpha=alpha[1])
                 kernels.append(kernel)
         else:
             for datum in sets.values():
@@ -561,6 +562,9 @@ class MolSpace():
         ----------
         set_ : str
             The string identifier for a particular clustering of the space.
+
+        mi_cutoff, float, default=0.005
+            The mutual information cutoff that is used to remove unimportant labels.
         """
         summaries = {}
         for set_val,idxs in tqdm.tqdm(self[set_].items()):
@@ -580,8 +584,8 @@ class MolSpace():
                     if ent < (fp.sensitivity):
                         if fp.label_type == "continuous":
                             u = np.mean(labels)
-                            var = np.variance(labels)
-                            binary_labels.append(((u - 0.1*var) < self.data[fp.property] < (u + 0.1*var)).to_numpy())
+                            var = np.var(labels)
+                            binary_labels.append(np.logical_and((u - 0.1*var) < self.data[fp.property], self.data[fp.property] < (u + 0.1*var)))
                             fingerprints.append(fp.summary(u,entropy=ent))
                         else:
                             binary_labels.append((self.data[fp.property] == round(np.mean(labels))).to_numpy())
@@ -617,7 +621,7 @@ class MolSpace():
                 mut_infs = []
                 for idx in idxs: # Iterate over possible label combinations
                     current_label = reduce(np.logical_and, binary_labels[tuple([idx])])
-                    mut_infs.append(self.mi(set_,"Rings",set_val=set_val,labels=current_label))
+                    mut_infs.append(self.mi(set_,"Labels_Provided",set_val=set_val,labels=current_label))
 
                 summary = [fingerprints[x] for x in idxs[np.argmax(mut_infs)]] # Isolate the fingerprint summaries for each index is the argmax collection
                 summaries[set_val] = "\n\t".join(summary) + (f"\n\tMutual Information {np.max(mut_infs)}")
@@ -704,13 +708,13 @@ class MolSpace():
         """
         self.clusters[cluster[0]] = self.gen_clusters(cluster[1])
 
-    def mol_sample(self,set_,set_val=0,num_mols=16):
+    def sample_mols(self,set_,set_val=0,num_mols=16,molsPerRow=4,subImgSize=(200,200),**kwargs):
         """
         Function that randomly generates a sample of molecules from a particular cluster.
         """
         total_mols = len(self[set_][set_val])
         mols = self.mol_iters["rd"][self[set_][set_val]][np.random.randint(0,total_mols,size=(num_mols,))]
-        return Chem.Draw.MolsToGridImage(mols,molsPerRow=4,subImgSize=(200,200))#,legends=[x.GetProp("_Name") for x in subms])
+        return Chem.Draw.MolsToGridImage(mols,molsPerRow=molsPerRow,subImgSize=subImgSize,**kwargs)
 
     def add_fingerprint(self,fp):
         """
