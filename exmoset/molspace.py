@@ -70,6 +70,9 @@ class MolSpace():
         A dictionary which stores cluster information. The str is used to define the name of the clustering approach
         and the numpy array is the indices which will define each MolSet cluster given a particular clustering approach.
 
+    template_fp : dict, default=template_fp (imported from template_fingerprints.py)
+        The default settings for the fingerprint.
+
     label_types : {str : <Label Class>}, default = {"binary" : Binary, "multiclass" : Multiclass, "continuous" : Continuous}
         A dictionary of possible label types for indexing.
     """
@@ -125,7 +128,14 @@ class MolSpace():
 
     @staticmethod
     def map_fingerprint(func,mol_iter):
-        """ Helper function that maps a fingerprint across its associated mol_iter """
+        """
+        Helper function that maps a fingerprint across its associated mol_iter
+
+        Parameters
+        ----------
+        mol_iter : iterable
+            An iterable of molecules that the function will be mapped across.
+        """
         return list(map(func,mol_iter))
 
     @staticmethod
@@ -133,12 +143,22 @@ class MolSpace():
         """
         Computes entropy of a continuous label distribution.
 
-        There are additional precautions taken to assure that values that are negative or
+        This method utilises the continuous entropy estimator from Paul Broderson (https://github.com/paulbrodersen/entropy_estimators)
+        which is adapted from Kraskov, A.; Stögbauer, H.; Grassberger, P. Estimating mutual information. Phys. Rev. E 2004, 69, 66138.
 
         Parameters
         ----------
         values : np.ndarray
             The array of label values.
+
+        k : int, default=10
+            The number of k nearest neighbours that are used to calculate the entropy.
+
+        norm : str, default="euclidean"
+            The norm to use when calculating the entropy.
+
+        min_dist : 0.001,
+            The minimum distance for the entropy calculator.
         """
         if np.mean(values) < 1:
             values *= 5
@@ -202,6 +222,10 @@ class MolSpace():
         """
         Helper function that calculates mutual information using the available methods
         depending on information available in the fingerprint.
+
+        Parameters
+        ----------
+
         """
         assert prop in self.fingerprints.keys() or prop == "Labels_Provided", "Not a valid prop, must be a fingerprint name."
 
@@ -219,15 +243,15 @@ class MolSpace():
         """
         Mutual information for a discrete - discrete mixture.
 
-        Adapted from - TODO (Add citation)
+        Adapted from - TODO add citation
 
         Parameters
         ----------
-        prop : str
-            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
-
         sets : [np.array(np.int)]
             An iterable (typically a list) of numpy index arrays.
+
+        prop : str
+            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
 
         labels : np.array, default=None
             A custom label array to use when calculating the mutual information.
@@ -262,7 +286,7 @@ class MolSpace():
         Calculates the mutual information for a discrete number of sets and a continuous
         label, hence mutual information - discrete continuous.
 
-        Method adapted from - TODO (Add citation).
+        Method adapted from - Ross, B. C. Mutual Information between Discrete and Continuous Data Sets. PLOS ONE 2014, 9, 1–5.
 
         Parameters
         ----------
