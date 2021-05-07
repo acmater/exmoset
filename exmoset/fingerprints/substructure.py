@@ -9,12 +9,12 @@ from rdkit import Chem
 # Location that substructures are drawn from - https://daylight.com/dayhtml_tutorials/languages/smarts/smarts_examples.html
 
 substructures = ['*=O',
-                 '[NX3;H2,H1,H0;!$(NC=O)]',
-                 '[OX2H]',
+                 '[NX3;H2,H1,H0;!$(NC=[!#6])]',  # Must not be bonded to anything other than carbon
+                 '[OX2H]([#6X4])', # Must be connected to sp3
                  '*O*',
-                 '[OD2]([#6])[#6]',
+                 '[OD2]([#6X4])[#6X4]', # Must also be connected to sp3
                  'C#N',
-                 '[CX3](=O)[OX2H1]',
+                 '[#6]([CX3](=O)[OX2H1])', # Must be connected to another carbon, removes the possibility of carbamates or similar groups.
                  '[$([CX3]=[OX1]),$([CX3+]-[OX1-])]',
                  '[NX3][CX3](=[OX1])[#6]']
 
