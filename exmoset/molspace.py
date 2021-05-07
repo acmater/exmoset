@@ -225,7 +225,14 @@ class MolSpace():
 
         Parameters
         ----------
+        set_ : str
+            The string identifier of the set of interest.
 
+        prop : str
+            The property of interest for the mi calculation.
+
+        set_val : int, default=0
+            The integer identifier of the subset that will define the indices of interest.
         """
         assert prop in self.fingerprints.keys() or prop == "Labels_Provided", "Not a valid prop, must be a fingerprint name."
 
@@ -243,7 +250,7 @@ class MolSpace():
         """
         Mutual information for a discrete - discrete mixture.
 
-        Adapted from - TODO add citation
+        Adapted from https://nlp.stanford.edu/IR-book/html/htmledition/mutual-information-1.html
 
         Parameters
         ----------
@@ -290,11 +297,11 @@ class MolSpace():
 
         Parameters
         ----------
-        prop : str
-            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
-
         sets : [np.array(np.int)]
             An iterable (typically a list) of numpy index arrays.
+
+        prop : str
+            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
 
         k : int, default=3
             The number of k nearest neighbours to consider for each point within the set.\
@@ -328,12 +335,12 @@ class MolSpace():
         set_ : str
             A string to identify the cluster of interest.
 
+        prop : str
+            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
+
         set_val : int, default = 0 (False)
             The value of the set to be isolated, either an integer to multiclass sets (i.e multiple clusters),
             or a numeric bool (0 for False, 1 for True)
-
-        prop : str
-            A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
         """
         assert prop in self.fingerprints.keys(), "Not a valid property."
 
@@ -416,6 +423,8 @@ class MolSpace():
 
         prop : str
             A property that will be analysed - must be a fingerprint name and thus a column in the dataframe.
+
+        symmetrised : bool, default=True
         """
         assert prop in self.fingerprints.keys(), "Not a valid prop, must be a fingerprint name."
 
@@ -738,7 +747,7 @@ class MolSpace():
         """
         total_mols = len(self[set_][set_val])
         mols = self.mol_iters["rd"][self[set_][set_val]][np.random.randint(0,total_mols,size=(num_mols,))]
-        return Chem.Draw.MolsToGridImage(mols,molsPerRow=molsPerRow,subImgSize=subImgSize,**kwargs)
+        return Chem.Draw.MolsToGridImage(mols,molsPerRow=molsPerRow,subImgSize=subImgSize,returnPNG=False,**kwargs) # ReturnPNG=False to allow image to be saved
 
     def add_fingerprint(self,fp):
         """
