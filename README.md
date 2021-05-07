@@ -11,7 +11,7 @@ pip install exmoset
 ```
 
 ## API
-The `MolSpace` Class handles the analysis of a given molecular set in accordance with the list of fingerprints provided. The molecules can be passed to Molspace in any format, with additional conversions specified by the mol_converter argument.
+The `MolSpace` Class handles the analysis of a given molecular set in accordance with the list of fingerprints provided. The molecules can be passed to Molspace in any format, with additional conversions specified by the `mol_converters` argument.
 
 ```python
 analysis = MolSpace(molecules,
@@ -22,7 +22,7 @@ analysis = MolSpace(molecules,
 ```
 
 ### Fingerprints
-Fingerprints are a standardized way for Molspace to calculate the properties for each molecule it is analysing. Its arguments determine the grammatical structure of the label that will be produced, and a function to calculate the property (calculator) along with what molecular format this function works on (mol_format).
+Fingerprints are a standardized way for Molspace to calculate the properties for each molecule it is analysing. Its arguments determine the grammatical structure of the label that will be produced (`property, noun and verb`), and a function to calculate the property (`calculator`) along with what molecular format this function works on (`mol_format`). The grammatical structure of the resulting labels is a work in progress, and may lead to some poor results that require further processing.
 
 ```python
 def contains_C(mol):
@@ -58,5 +58,7 @@ Discrete labels where the value can be any integer. Examples include number of r
 ### Continuous
 Continuous labels where the value can be any real number. Examples include electronic spatial extent, dipole moment, and free energy. Uses the continuous entropy estimator
 
-## Entropy Estimation
-Details for how entropy is estimated and associated papers are provided throughout the codebase, but particular mention to the entropy estimators package of Paul Broderson for its implementation of continuous entropy estimation (https://github.com/paulbrodersen/entropy_estimators).
+## References
+Almost all code in this work is original and based on the work of the following authors.
+
+The exception is continuous entropy estimation which is provided by Paul Broderson's entropy estimators package (https://github.com/paulbrodersen/entropy_estimators).
