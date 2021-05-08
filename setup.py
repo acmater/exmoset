@@ -36,12 +36,12 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.1',  # Required
+    version='0.1.0',  # Required
 
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
-    description='Automating the generation of human readable descriptions of arbitrary subsets of molecular space. ',
+    description='Automating the generation of human readable descriptions of arbitrary subsets of molecular space.',
 
     # This is an optional longer description of your project that represents
     # the body of text which users will see when they visit PyPI.
@@ -102,7 +102,7 @@ setup(
 
     # When your source code is in a subdirectory under the project root, e.g.
     # `src/`, it is necessary to specify the `package_dir` argument.
-    package_dir={'': 'exmoset'},  # Optional
+    package_dir={'exmoset' : 'exmoset'},  # Optional
 
     # You can just specify package directories manually here if your project is
     # simple. Or you can use find_packages().
@@ -113,7 +113,7 @@ setup(
     #
     #   py_modules=["my_module"],
     #
-    packages=find_packages(where='exmoset'),  # Required
+    packages=find_packages(where='.',exclude=["tests"]),  # Required
 
     # Specify which Python versions you support. In contrast to the
     # 'Programming Language' classifiers above, 'pip install' will check this
@@ -129,11 +129,11 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=['numpy',
                       'pandas',
-                      'tqdm',
-                      'multiprocessing',
+                      'tqdm>=4.45.0',
+                      'multiprocess',
                       'entropy_estimators',
                       'scipy',
-                      'sklearn'
+                      'scikit-learn>=0.22.2.post1'
     ],  # Optional
 
     # List additional groups of dependencies here (e.g. development

@@ -5,8 +5,8 @@ from rdkit import Chem
 
 from exmoset.data import *
 from exmoset.molecule import Molecule
-from fingerprints import *
-from exmoset import MolSpace
+from exmoset.fingerprints import *
+from exmoset.molspace import MolSpace
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -105,7 +105,7 @@ class TestGetOutliers(unittest.TestCase):
     def test_outlier_identification(self):
         molspace = MolSpace(molecules=molecules2,
                         fingerprints = fingerprints,
-                        mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
+                        mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str, "bonds" : bond_converter},
                         sensitivity=0.1)
         assert molspace.get_outliers(set_="Full") == np.array([5]), "Outlier identification is not working correctly."
 
@@ -114,7 +114,7 @@ class TestMolSpace(unittest.TestCase):
     def test_molspace_gen(self):
         space = MolSpace(fingerprints = fingerprints,
                          molecules=molecules3,
-                         mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
+                         mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str, "bonds" : bond_converter},
                          sensitivity=0.1,
                          index_col="SMILES")
 

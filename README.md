@@ -60,6 +60,9 @@ Discrete labels where the value can be any integer. Examples include number of r
 Continuous labels where the value can be any real number. Examples include electronic spatial extent, dipole moment, and free energy. Uses the continuous entropy estimator
 
 ## References
-Almost all code in this work is original and based on the work of the following authors.
+The mathematical methods employed in this codebase are based on the following publications:
 
-The exception is continuous entropy estimation which is provided by Paul Broderson's entropy estimators package (https://github.com/paulbrodersen/entropy_estimators).
+- Kraskov, A.; Stögbauer, H.; Grassberger, P. Estimating mutual information. Phys. Rev. E 2004, 69, 66138.
+- Ross, B. C. Mutual Information between Discrete and Continuous Data Sets. PLOS ONE 2014, 9, 1–5.
+
+Continuous entropy estimation is provided by Paul Broderson's entropy estimators package (https://github.com/paulbrodersen/entropy_estimators).

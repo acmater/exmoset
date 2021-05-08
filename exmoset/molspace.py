@@ -5,8 +5,8 @@ import pandas as pd
 import tqdm
 import multiprocessing as mp
 
-from .molecule import Molecule
-from .fingerprints import gen_fp, template_fp
+from exmoset.molecule import Molecule
+from exmoset.fingerprints import gen_fp, template_fp
 
 from math import log, e
 import operator

@@ -42,6 +42,7 @@ mistune @ file:///home/conda/feedstock_root/build_artifacts/mistune_160511565225
 mkl-fft==1.3.0
 mkl-random==1.1.1
 mkl-service==2.3.0
+multiprocess
 nbclassic @ file:///home/conda/feedstock_root/build_artifacts/nbclassic_1610352513187/work
 nbclient @ file:///home/conda/feedstock_root/build_artifacts/nbclient_1614336084111/work
 nbconvert @ file:///home/conda/feedstock_root/build_artifacts/nbconvert_1605401831777/work
