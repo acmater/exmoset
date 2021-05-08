@@ -82,27 +82,14 @@ setup(
     # Classifiers help users find your project by categorizing it.
     #
     # For a list of valid classifiers, see https://pypi.org/classifiers/
-    classifiers=[  # Optional
-        # How mature is this project? Common values are
-        #   3 - Alpha
-        #   4 - Beta
-        #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
-
-        # Indicate who your project is intended for
-        'Intended Audience :: Machine Learners in the Natural Sciences',
+    classifiers=['Development Status :: 3 - Alpha',
+        'Intended Audience :: Science/Research',
         'Topic :: Software Development :: Build Tools',
-
-        # Pick your license as you wish
-        'License :: OSI Approved :: GPL-3.0 License',
-
-        # Specify the Python versions you support here. In particular, ensure
-        # that you indicate you support Python 3. These classifiers are *not*
-        # checked by 'pip install'. See instead 'python_requires' below.
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3 :: Only'
     ],
 
     # This field adds keywords for your project which will appear on the
@@ -141,7 +128,6 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=['numpy',
-                      'rdkit',
                       'pandas',
                       'tqdm',
                       'multiprocessing',

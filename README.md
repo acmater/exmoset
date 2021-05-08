@@ -4,11 +4,12 @@ Package to automate the identification of molecular similarity given an arbitrar
 of molecules and associated functions to calculate the value of particular properties (label fingerprints).
 
 # Installation
-The easiest way to install is using pip:
+The easiest way to install is using pip following the setup of a new conda environment with rdkit installed (rdkit does not play well with pip).
 
-```bash
-pip install exmoset
-```
+1. `conda create -n exmoset python=3.8`
+2. `conda activate exmoset`
+3. `conda install -c conda-forge rdkit`
+4. `pip install exmoset`
 
 ## API
 The `MolSpace` Class handles the analysis of a given molecular set in accordance with the list of fingerprints provided. The molecules can be passed to Molspace in any format, with additional conversions specified by the `mol_converters` argument.

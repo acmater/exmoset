@@ -16,6 +16,10 @@ fingerprints =  general_fingerprints + atom_fingerprints + bond_fingerprints + s
 # Is there a better way to do the global portions of the code below? Intuitively I should be able
 # to customize the initialization of each class and provide it as an attribute, but that doesn't seem to work.
 
+def bond_converter(smiles):
+    return [b.GetBondType().__str__() for b in Chem.MolFromSmiles(smiles).GetBonds()]
+
+
 class TestMolecule(unittest.TestCase):
     def test_mol_gen(self):
         test = Molecule("CCC")
@@ -90,7 +94,7 @@ class TestMolFileSpace(unittest.TestCase):
     global filemolspace
     filemolspace = MolSpace(fingerprints=fingerprints,
                          file="exmoset/data/QM9_tiny.csv",
-                         mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str},
+                         mol_converters={"rd" : Chem.MolFromSmiles, "smiles" : str, "bonds" : bond_converter},
                          index_col="SMILES",
                          clusters={"Test" : np.array([0,0,0,0,1,1,1,1,1])})
     def test_molspace_clusters(self):
