@@ -5,6 +5,7 @@ General molecular fingerprints
 import numpy as np
 from .fingerprint import Fingerprint
 from rdkit import Chem
+from rdkit.Chem import AllChem
 
 def Dipole_Moment(mol,file):
     return file["Dipole Moment"][mol]
