@@ -604,6 +604,7 @@ class MolSpace():
             fingerprints = []
             binary_labels = []
             mis = np.zeros((len(self.fingerprints,)))
+            high_mis = []
             ents = np.zeros_like(mis)
             for i,fp in enumerate(self.fingerprints.values()):
                 mis[i] = self.mi(set_,fp.property,set_val=set_val)
@@ -613,7 +614,9 @@ class MolSpace():
                 mi = self.mi(set_,fp.property,set_val=set_val)
                 ent = self.entropy(idxs,fp.property)
 
+                # The following converts any labels that have multiclass or continuous structure into binary labels.
                 if mi > mi_cutoff:
+                    high_mis.append(mi)
                     if ent < (fp.sensitivity):
                         if fp.label_type == "continuous":
                             u = np.mean(labels)
@@ -642,15 +645,17 @@ class MolSpace():
                             fingerprints.append(fp.to_binary(split,">"))
                             binary_labels.append((self.data[fp.property] >= split).to_numpy())
 
-            # To do - alter this optimizer so that it doesn't brute force it.
             if len(binary_labels) > 1:
-                num_options = len(binary_labels)
+                # Prune to 5 biggest mi labels
+                num_options = np.argsort(np.array(high_mis))[::-1][:5] # Access the 5 largest elements in the reversed argsort list.
                 binary_labels = np.array(binary_labels)
 
                 idxs = []
-                for i in range(1,num_options+1):
-                    idxs.append(list(combinations(list(range(num_options)),i))) # Generate all possible permutations
+                for i in range(1,len(num_options)+1):
+                    #idxs.append(list(combinations(list(range(num_options)),i))) # Generate all possible permutations
+                    idxs.append(list(combinations(num_options,i))) # Generate all possible permutations
                 idxs = [item for sublist in idxs for item in sublist] # Flatten the list of lists
+
                 mut_infs = []
                 for idx in idxs: # Iterate over possible label combinations
                     current_label = reduce(np.logical_and, binary_labels[tuple([idx])])

@@ -5,7 +5,7 @@ Prewritten fingerprints for atom based properties.
 import numpy as np
 from .fingerprint import Fingerprint
 
-atoms = ["C","N","O","F"]
+atoms = ["C","N","O","F","S","P","Cl","Br","I"]
 
 def contains(atom):
     def sub_contains(mol):
